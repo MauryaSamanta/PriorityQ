@@ -11,7 +11,7 @@ const Hubs = ({ userId }) => {
   useEffect(() => {
     const fetchHubs = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/hub`,{
+        const response = await fetch(`https://surf-jtn5.onrender.com/hub`,{
           method:"GET",
           headers: { Authorization: `Bearer ${token}` },
         });

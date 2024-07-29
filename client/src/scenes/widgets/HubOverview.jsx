@@ -13,7 +13,7 @@ const HubOverview = ({members}) => {
   const handleOpenDialog = async() => {
     const inviteBody={hub_id:hubId};
     try {
-      const response=await fetch(`http://localhost:3001/invite/${hubId}`,{
+      const response=await fetch(`https://surf-jtn5.onrender.com/invite/${hubId}`,{
         method:"POST",
         headers: { Authorization: `Bearer ${token}` },
       });

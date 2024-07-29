@@ -9,14 +9,14 @@ const JoinHubWidget = (setHubs) => {
     const codeData={code:code};
     //console.log(code);
     try {
-      const response=await fetch(`http://localhost:3001/invite/${_id}/add`,{
+      const response=await fetch(`https://surf-jtn5.onrender.com/invite/${_id}/add`,{
         method:"POST",
         headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" },    
         body:JSON.stringify(codeData)
       });
       const data=await response.json();
       const hubid=data.hubData.hub_id;
-      const responsehubs = await fetch(`http://localhost:3001/hub`,{
+      const responsehubs = await fetch(`https://surf-jtn5.onrender.com/hub`,{
         method:"GET",
         headers: { Authorization: `Bearer ${token}` },
       });

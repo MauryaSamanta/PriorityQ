@@ -23,7 +23,7 @@ const HubPage = () => {
   const theme = useTheme();
   const fetchZones=async(qube_id)=>{
     try {
-      const response=await fetch(`http://localhost:3001/qube/${qube_id}/zone`,{
+      const response=await fetch(`https://surf-jtn5.onrender.com/qube/${qube_id}/zone`,{
         method:"GET",
         headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" }
       })
@@ -41,7 +41,7 @@ const HubPage = () => {
   const handleCreateZone = async(zoneName) => {
     const zoneData={name:zoneName};
     try {
-      const response=await fetch(`http://localhost:3001/zone/${selectedQube}/new`,{
+      const response=await fetch(`https://surf-jtn5.onrender.com/zone/${selectedQube}/new`,{
         method:"POST",
         headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" },    
         body:JSON.stringify(zoneData)
@@ -60,7 +60,7 @@ const HubPage = () => {
     const fetchQubes = async () => {
       
       try {
-        const response = await fetch(`http://localhost:3001/hub/${hubId}`,{
+        const response = await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}`,{
           method:"GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -78,7 +78,7 @@ const HubPage = () => {
     const fetchMembers=async()=>{
       console.log(hubId);
       try {
-        const response=await fetch(`http://localhost:3001/hub/${hubId}/members`,{
+        const response=await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}/members`,{
           method:"GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -114,7 +114,7 @@ const HubPage = () => {
     //   console.log(key, value);
     // }
     try 
-    {const response=await fetch(`http://localhost:3001/qube/${hubId}/new`,{
+    {const response=await fetch(`https://surf-jtn5.onrender.com/qube/${hubId}/new`,{
     method:"POST",
     headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" },    
     body:JSON.stringify(qubeData),
