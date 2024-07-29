@@ -7,10 +7,11 @@ const UserWidget = ({ _id, avatar_url }) => {
   const theme = useTheme();
   const user = useSelector((state) => state.user);
   const { username, bio } = user;
-
+  const[avatar,setAvatar]=useState(avatar_url);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleOpenDialog = () => {
+    //console.log(avatar_url);
     setIsDialogOpen(true);
   };
 
@@ -36,7 +37,7 @@ const UserWidget = ({ _id, avatar_url }) => {
       }}
     >
       <Avatar
-        src={avatar_url || defaultAvatar}
+        src={avatar || defaultAvatar}
         alt={username}
         sx={{ width: 200, height: 200, mb: 2 }}
       />
@@ -66,6 +67,7 @@ const UserWidget = ({ _id, avatar_url }) => {
         onClose={handleCloseDialog}
         user={user}
         onSave={handleSave}
+        setAvatarMain={setAvatar}
       />
     </Box>
   );

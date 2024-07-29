@@ -5,10 +5,15 @@ import { v2 as cloudinary } from "cloudinary";
 import {v4 as uuid} from "uuid";
 import fs from "fs";
 export const updateAvatar = async (req, res, next) => {
+  
   try {
     // // Find the user
+    
     const user = await User.findById(req.params.userId);
+    //console.log(user);
     const file=req.file;
+    const {username,bio}=req.body;
+    
     if (!user) {
        return res.status(404).json({ error: 'User not found' });
     }
@@ -31,15 +36,20 @@ export const updateAvatar = async (req, res, next) => {
     );
      console.log(user);
     // // // Update user avatar URL
+     if(user.username!==username)
+      user.username=username;
+    if(user.bio!==bio)
+      user.bio=bio;
      user.avatar_url = result.secure_url;
-    const User=await user.save();
+    const Useradd=await user.save();
 
     // // // Delete the file from server after uploading to cloudinary
     // fs.unlinkSync(req.file.path);
     //console.log(req.params.userId);
-    res.json({User});
+    res.json(Useradd);
     next();
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Server error' });
   }
 };

@@ -11,40 +11,52 @@ import {
   Typography
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
+import { useSelector } from "react-redux";
 
-const EditProfileDialog = ({ open, onClose, user, onSave }) => {
-  const [formData, setFormData] = useState({
-    username: user.username,
-    bio: user.bio,
-    avatar_url: user.avatar_url,
-  });
+const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
+  const user=useSelector((state)=>state.user);
+  const [username,setUsername]=useState(user.username);
+  const [bio,setBio]=useState(user.bio);
+  const [avatar,setAvatar]=useState(user.avatar_url);
+  const [avatar_show, setAvatar_Show]=useState('');
+  const handleDrop = (acceptedFiles) => {
+    setAvatar_Show(URL.createObjectURL(acceptedFiles[0]));
+    setAvatar(acceptedFiles[0]);
+  };
 
-  const { getRootProps, getInputProps, acceptedFiles } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: handleDrop,
     accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFormData({
-          ...formData,
-          avatar_url: reader.result,
-        });
-      };
-      reader.readAsDataURL(file);
-    },
+    multiple: false,
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    
   };
 
-  const handleSubmit = () => {
-    onSave(formData);
-    onClose();
+  const handleSubmit = async() => {
+    const formData = new FormData();
+  
+    // Append data to the FormData object
+    formData.append('username', username);
+    formData.append('bio', bio);
+    
+    // Append avatar if it exists
+    if (avatar) {
+      formData.append("avatar", avatar);
+    }
+  
+    const savedUser = await fetch(
+      `http://localhost:3001/users/${user._id}/avatar`,
+      {
+        method: "PATCH",
+        body: formData,
+      }
+    );
+    const savedUserRes = await savedUser.json();
+    console.log(savedUserRes);
+    if(savedUserRes)
+      {setAvatarMain(savedUserRes.avatar_url); console.log(savedUserRes.avatar_url); onClose();}
   };
 
   return (
@@ -58,8 +70,8 @@ const EditProfileDialog = ({ open, onClose, user, onSave }) => {
           label="Username"
           type="text"
           fullWidth
-          value={formData.username}
-          onChange={handleChange}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <TextField
           margin="dense"
@@ -67,29 +79,34 @@ const EditProfileDialog = ({ open, onClose, user, onSave }) => {
           label="Bio"
           type="text"
           fullWidth
-          value={formData.bio}
-          onChange={handleChange}
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
         />
-        <Box
-          {...getRootProps()}
-          sx={{
-            border: "2px dashed #ccc",
-            padding: "1rem",
-            textAlign: "center",
-            marginTop: "1rem",
-            cursor: "pointer",
-          }}
-        >
-          <input {...getInputProps()} />
-          <Typography>Drag 'n' drop an avatar image, or click to select one</Typography>
-          {formData.avatar_url && (
-            <Avatar
-              src={formData.avatar_url}
-              alt="avatar"
-              sx={{ width: 100, height: 100, margin: "1rem auto" }}
-            />
-          )}
-        </Box>
+        
+          <Box
+              {...getRootProps()}
+              sx={{
+                border: "2px dashed #ccc",
+                padding: "1rem",
+                textAlign: "center",
+                marginTop: "1rem",
+                cursor: "pointer",
+              }}
+            >
+              <input {...getInputProps()} />
+              <Typography>
+                {avatar_show ? (
+                  <img
+                    src={avatar_show}
+                    alt="Avatar"
+                    style={{ maxWidth: "100%", maxHeight: "200px" }}
+                  />
+                ) : (
+                  "Drag & drop an image here, or click to select one"
+                )}
+              </Typography>
+            </Box>
+        
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
