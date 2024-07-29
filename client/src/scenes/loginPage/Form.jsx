@@ -61,13 +61,14 @@ const Form = () => {
     for (let value in values) {
       formData.append(value, values[value]);
     }
-    formData.append("picturePath", values.picture.name);
-
+    //formData.append("picturePath", values.picture.name);
+     console.log(values);
     const savedUserResponse = await fetch(
-      "http://localhost:3001/auth/register",
+      "http://localhost:3001/auth/new",
       {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       }
     );
     const savedUser = await savedUserResponse.json();
@@ -90,7 +91,7 @@ const Form = () => {
       dispatch(
         setLogin({
           user: loggedIn.user,
-          token: loggedIn.token,
+          token:loggedIn.token
         })
       );
       navigate("/home");
@@ -98,6 +99,7 @@ const Form = () => {
   };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
+    console.log(isRegister);
     if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
   };
@@ -105,8 +107,7 @@ const Form = () => {
   return (
     <Formik
       onSubmit={handleFormSubmit}
-      initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
-      validationSchema={isLogin ? loginSchema : registerSchema}
+      initialValues={initialValuesLogin}
     >
       {({
         values,
@@ -178,8 +179,8 @@ const Form = () => {
               error={Boolean(touched.email) && Boolean(errors.email)}
               helperText={touched.email && errors.email}
               sx={{ gridColumn: "span 4" }}
-            />
-            <TextField
+            /> 
+             <TextField
               label="Password"
               type="password"
               onBlur={handleBlur}

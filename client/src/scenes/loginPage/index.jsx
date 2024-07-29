@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery, Paper } from "@mui/material";
 import Form from "./Form";
 
 const LoginPage = () => {
@@ -16,7 +16,7 @@ const LoginPage = () => {
           PriorityQ
         </Typography>
       </Box>
-
+      
       <Box
         width={isNonMobileScreens ? "30%" : "93%"}
         p="2rem"
@@ -26,7 +26,9 @@ const LoginPage = () => {
       >
         
         <Form />
+        
       </Box>
+      
     </Box>
   );
 };
