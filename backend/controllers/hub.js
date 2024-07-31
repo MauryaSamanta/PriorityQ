@@ -5,7 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 export const createHub=async(req,res)=>{
     const {name, description}=req.body;
     const file=req.file;
-    //console.log(file);
+    console.log(file);
     cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
@@ -103,6 +103,19 @@ export const listUsersInHub = async (req, res) => {
     } catch (error) {
         console.error('Error listing users in hub:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  export const deleteHubs=async(req,res)=>{
+    const hubid=req.params.hubid;
+    try {
+      const deleteMembers=await Hubmembers.deleteMany({hub_id:hubid});
+      const deletedHub = await Hub.findByIdAndDelete(hubid);
+      console.log(deletedHub);
+      res.status(200).json(deletedHub);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({error:`Internal Server Issue`});
     }
   }
 

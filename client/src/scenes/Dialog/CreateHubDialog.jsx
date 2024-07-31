@@ -15,7 +15,7 @@ import {
 import { Close } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
 
-const CreateHubDialog = ({ open, onClose, userId }) => {
+const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
   const [step, setStep] = useState(1);
   const [hubName, setHubName] = useState("");
   const [hubDescription, setHubDescription] = useState("");
@@ -76,8 +76,11 @@ const CreateHubDialog = ({ open, onClose, userId }) => {
         }
       );
       const savedHub = await savedHubRes.json();
+      
       if(savedHub)
-        onClose();
+      {  window.location.reload();
+         onClose();
+        }
   
     // Handle the form submission logic here, e.g., send the FormData to an API
   };

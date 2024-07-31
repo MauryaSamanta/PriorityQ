@@ -41,6 +41,17 @@ app.use("/invite",inviteRoute);
 // app.use("/api/v1/chat", chatRoute);
 // app.use("/api/v1/admin", adminRoute);
 
+io.on('connection', (socket) => {
+  console.log('a user connected');
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+
+  socket.on('sendMessage', (message) => {
+    io.emit('receiveMessage', message);
+  });
+});
 
 
 server.listen(3001,()=>{//started node server

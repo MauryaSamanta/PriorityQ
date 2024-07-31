@@ -47,7 +47,7 @@ const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
     }
   
     const savedUser = await fetch(
-      `http://localhost:3001/users/${user._id}/avatar`,
+      `https://surf-jtn5.onrender.com/users/${user._id}/avatar`,
       {
         method: "PATCH",
         body: formData,

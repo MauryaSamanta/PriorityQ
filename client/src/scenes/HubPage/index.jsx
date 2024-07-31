@@ -11,15 +11,24 @@ import HubOverview from 'scenes/widgets/HubOverview';
 import CreateQubeDialog from 'scenes/Dialog/CreateQubeDialog';
 import CreateZoneDialog from 'scenes/Dialog/CreateZoneDialog';
 import QubeOverview from 'scenes/widgets/QubeOverview';
+import MessageWidget from 'scenes/widgets/MessageWidget';
+import ChatItem from 'scenes/widgets/ChatItem';
+import  io  from 'socket.io-client';
+const socket = io('https://surf-jtn5.onrender.com');
+
 const HubPage = () => {
   const navigate = useNavigate();
   const { hubId } = useParams();
+  const {username}=useSelector((state)=>state.user);
   const token = useSelector((state) => state.token);
   const [qubes,setQubes]=useState([]);
   const [selectedQube, setSelectedQube] = useState(null);
   const [zones,setZones]=useState([]);
   const [selectedZone, setSelectedZone] = useState(null);
   const [members,setMembers]=useState([]);
+  const [messages,setMessages]=useState([]);
+  const [message,setMessage]=useState([]);
+  //const [messages,setMessages]=useState([]);
   const theme = useTheme();
   const fetchZones=async(qube_id)=>{
     try {
@@ -90,13 +99,21 @@ const HubPage = () => {
         
       }
     }
-
-
-    
     fetchQubes();
     fetchMembers();
-  }, []);
+    socket.on('receiveMessage', (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+     
+    return () => {
+      socket.off('receiveMessage');
+    };
+   
 
+    
+    
+  }, []);
+  
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleOpenDialog = () => {
@@ -177,6 +194,53 @@ const HubPage = () => {
     borderTop: '14.43px solid #40444b',
     bottom: '-14.43px',
   };
+  
+
+  // const messages = [
+  //   {
+  //     text: 'This is a great message!',
+  //     file: null,
+  //     senderName: 'John Doe',
+  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
+  //     reactions: [{ type: 'like' }],
+  //   },
+  //   {
+  //     text: 'This is a great message!',
+  //     file: null,
+  //     senderName: 'John Doe',
+  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
+  //     reactions: [{ type: 'like' }],
+  //   },
+  //   {
+  //     text: 'This is a great message!',
+  //     file: null,
+  //     senderName: 'John Doe',
+  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
+  //     reactions: [{ type: 'like' }],
+  //   },
+  //   {
+  //     text: 'This is a great message!',
+  //     file: null,
+  //     senderName: 'John Doe',
+  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
+  //     reactions: [{ type: 'like' }],
+  //   },
+  //   {
+  //     text: 'This is a great message!',
+  //     file: null,
+  //     senderName: 'John Doe',
+  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
+  //     reactions: [{ type: 'like' }],
+  //   },
+  //   {
+  //     text: 'This is a great message!',
+  //     file: null,
+  //     senderName: 'John Doe',
+  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
+  //     reactions: [{ type: 'like' }],
+  //   }
+    
+  // ];
 
   return (
     <Box height="100vh">
@@ -382,85 +446,89 @@ const HubPage = () => {
 )}
     <Divider orientation="vertical" flexItem />
 
-    {/* Chat Area */}
     {selectedZone && selectedQube ? (
-      <Box
-        width="80%"
-        bgcolor="#36393f"
-        p={2}
-        display="flex"
-        flexDirection="column"
-        sx={{ 
-          overflowY: 'auto', 
-          '&::-webkit-scrollbar': {
-            width: '10px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: '#888',
-            borderRadius: '10px',
-            border: '3px solid transparent',
-            backgroundClip: 'padding-box',
-          },
-          '&::-webkit-scrollbar-thumb:hover': {
-            background: '#555',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: 'transparent',
-          },
-        }}
-      >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6">{selectedZone}</Typography>
-          <Box>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<EarbudsIcon />}
-              sx={{
-                backgroundColor: '#FFEB3B',
-                color: '#36393f',
-                mr: 2,
-                '&:hover': {
-                  backgroundColor: '#FFD700',
-                }
-              }}
-            >
-              Gather
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              startIcon={<AccountTreeIcon />}
-              sx={{
-                backgroundColor: '#FFEB3B',
-                color: '#36393f',
-                '&:hover': {
-                  backgroundColor: '#FFD700',
-                }
-              }}
-            >
-              Mindmap
-            </Button>
-          </Box>
-        </Box>
-        <Box flex={1} mb={2} p={2} bgcolor="#36393f" borderRadius="8px" sx={{ overflowY: 'auto', maxHeight: 'calc(100vh - 150px)' }}>
-          <Typography variant="h3">Welcome to the {selectedZone} Zone</Typography>
-          <Typography>Talk with your Qube members here. We organise your files for you !</Typography>
-        </Box>
-        <Box display="flex">
-          <TextField
-            variant="outlined"
-            placeholder="Type a message..."
-            fullWidth
-            sx={{ mr: 2 }}
-          />
-          <Button variant="contained" color="primary">Send</Button>
-        </Box>
+  <Box
+    width="80%"
+    bgcolor="#36393f"
+    p={2}
+    display="flex"
+    flexDirection="column"
+    height="parent" // Full height to make it easier to handle positioning
+  >
+    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Typography variant="h6">{selectedZone}</Typography>
+      <Box>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<EarbudsIcon />}
+          sx={{
+            backgroundColor: '#FFEB3B',
+            color: '#36393f',
+            mr: 2,
+            '&:hover': {
+              backgroundColor: '#FFD700',
+            }
+          }}
+        >
+          Gather
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          startIcon={<AccountTreeIcon />}
+          sx={{
+            backgroundColor: '#FFEB3B',
+            color: '#36393f',
+            '&:hover': {
+              backgroundColor: '#FFD700',
+            }
+          }}
+        >
+          Mindmap
+        </Button>
       </Box>
-    ) : (
-      selectedQube && !selectedZone &&
-      (<QubeOverview qubeid={selectedQube}/>)
-    )}
+    </Box>
+    
+    {/* Scrollable Area */}
+    <Box
+      flexGrow={1}
+      sx={{
+        overflowY: 'auto',
+        '&::-webkit-scrollbar': {
+          width: '10px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '10px',
+          border: '3px solid transparent',
+          backgroundClip: 'padding-box',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#555',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+      }}
+    >
+      <Box p={2} bgcolor="#36393f" borderRadius="8px">
+        <Typography variant="h3">Welcome to the {selectedZone} Zone</Typography>
+        <Typography>Talk with your Qube members here. We organise your files for you !</Typography>
+      </Box>
+      {messages?.map((message, index) => (
+        <ChatItem key={index} message={message} />
+      ))}
+    </Box>
+
+    {/* Message Widget Area */}
+    <Box sx={{ mt: 2 }}>
+      <MessageWidget message={message} setMessage={setMessage} />
+    </Box>
+  </Box>
+) : (
+  selectedQube && !selectedZone && (<QubeOverview qubeid={selectedQube} />)
+)}
   </Box>
 </Box>
 
