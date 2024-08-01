@@ -4,9 +4,10 @@ import { useSelector } from 'react-redux';
 import { Card, CardContent, Button, Typography, Container, Grid, IconButton, Menu, MenuItem } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import JoinHubWidget from './JoinHubWidget';
 
-const Hubs = ({ userId }) => {
+const Hubs = ({ userId, setPrincipalHubs }) => {
   const [hubs, setHubs] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedHub, setSelectedHub] = useState(null);
@@ -22,6 +23,7 @@ const Hubs = ({ userId }) => {
         });
         const data = await response.json();
         setHubs(data);
+        setPrincipalHubs(data);
         console.log(data);
       } catch (error) {
         console.error('Error fetching hubs:', error);
@@ -40,7 +42,21 @@ const Hubs = ({ userId }) => {
     setAnchorEl(null);
     setSelectedHub(null);
   };
-
+  const handleLeaveHub=async()=>{
+    const membershipData={userid:userId};
+          try {
+            const reponse=await fetch(`https://surf-jtn5.onrender.com/hub/${selectedHub._id}/member`,{
+              method:"DELETE",
+              headers: {"Content-Type": "application/json" },    
+              body:JSON.stringify(membershipData)
+            })
+            setHubs(hubs.filter(hub => hub?._id !== selectedHub._id));
+            handleMenuClose();
+          } catch (error) {
+            console.log(error);
+            
+          }
+  }
   const handleDeleteHub = async () => {
     try {
       const deletion=await fetch(`https://surf-jtn5.onrender.com/hub/${selectedHub._id}`, {
@@ -121,6 +137,10 @@ const Hubs = ({ userId }) => {
                   <MenuItem onClick={handleDeleteHub}>
                     <DeleteIcon style={{ marginRight: '8px' }} />
                     Delete Hub
+                  </MenuItem>
+                  <MenuItem onClick={handleLeaveHub}>
+                  <ExitToAppIcon style={{ marginRight: '8px'}}/>
+                  Leave Hub
                   </MenuItem>
                 </Menu>
               </Card>

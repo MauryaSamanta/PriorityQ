@@ -9,6 +9,7 @@ const HubOverview = ({members}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [code,setCode]=useState(null);
   const { hubId } = useParams();
+  const {_id}=useSelector((state)=>state.user);
   const token = useSelector((state) => state.token);
   const handleOpenDialog = async() => {
     const inviteBody={hub_id:hubId};
@@ -27,7 +28,18 @@ const HubOverview = ({members}) => {
     setIsDialogOpen(true);
 
   };
-
+  // const leaveHub=async()=>{
+  //       const membershipData=
+  //       try {
+  //         const reponse=await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}/member`,{
+  //           method:"DELETE",
+  //           headers: {"Content-Type": "application/json" },    
+  //           body:JSON.stringify(zoneData)
+  //         })
+  //       } catch (error) {
+          
+  //       }
+  // }
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
@@ -76,6 +88,7 @@ const HubOverview = ({members}) => {
   <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 2 }}>
     <Tab label="My Tasks" />
     <Tab label="My Files" />
+    
   </Tabs>
   {tabValue === 0 ? (
     <>

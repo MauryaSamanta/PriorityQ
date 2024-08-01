@@ -85,30 +85,6 @@ const Navbar = () => {
             </IconButton>
             <Notifications sx={{ fontSize: "25px" }} />
             <Help sx={{ fontSize: "25px" }} />
-             <FormControl variant="standard" value={fullName}>
-            <Select
-              value={fullName}
-              sx={{
-                backgroundColor: neutralLight,
-                width: "150px",
-                borderRadius: "0.25rem",
-                p: "0.25rem 1rem",
-                "& .MuiSvgIcon-root": {
-                  pr: "0.25rem",
-                  width: "3rem",
-                },
-                "& .MuiSelect-select:focus": {
-                  backgroundColor: neutralLight,
-                },
-              }}
-              input={<InputBase />}
-            >
-              <MenuItem value={fullName}>
-                <Typography>{fullName}</Typography>
-              </MenuItem>
-              <MenuItem onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
-            </Select>
-          </FormControl>
             <Button
               sx={{ border: '2px solid', borderColor: 'primary.main' }}
               color="primary"
@@ -137,6 +113,42 @@ const Navbar = () => {
                 </Button>
               </span>
             </Tooltip>
+            <FormControl variant="standard" value={fullName}>
+  <Select
+    value={fullName}
+    sx={{
+      backgroundColor: 'transparent',
+      width: "50px",
+      borderRadius: "50%",
+      p: 0,
+      display: 'flex',
+      alignItems: 'center',
+      '& .MuiSelect-select': {
+        display: 'flex',
+        alignItems: 'center',
+        padding: 0,
+      },
+      "& .MuiSvgIcon-root": {
+        display: 'none',
+      },
+      "& .MuiSelect-select:focus": {
+        backgroundColor: 'transparent',
+      },
+    }}
+    input={<InputBase />}
+    renderValue={() => (
+      <Box display="flex" alignItems="center">
+        <img
+          src={user.avatar_url} // Make sure avatarUrl is defined and contains the URL of the avatar image
+          alt="avatar"
+          style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }}
+        />
+      </Box>
+    )}
+  >
+    <MenuItem mt="100" onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
+  </Select>
+</FormControl>
           </FlexBetween>
         ) : (
           <IconButton
@@ -190,6 +202,7 @@ const Navbar = () => {
               <Help sx={{ fontSize: "25px" }} />
               <Button
                 variant="contained"
+                sx={{ border: '2px solid', borderColor: 'primary.main' }}
                 color="primary"
                 onClick={() => navigate("/support")}
               >
@@ -197,7 +210,7 @@ const Navbar = () => {
               </Button>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 onClick={handleCreateHubClick}
               >
                 Start a New Hub

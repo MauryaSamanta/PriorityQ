@@ -12,13 +12,16 @@ import {
 } from "@mui/material";
 import { useDropzone } from "react-dropzone";
 import { useSelector } from "react-redux";
-
+import { useDispatch } from "react-redux";
+import { setLogin } from "state";
 const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
   const user=useSelector((state)=>state.user);
   const [username,setUsername]=useState(user.username);
   const [bio,setBio]=useState(user.bio);
   const [avatar,setAvatar]=useState(user.avatar_url);
   const [avatar_show, setAvatar_Show]=useState('');
+  const dispatch=useDispatch();
+  const token=useSelector((state)=>state.token);
   const handleDrop = (acceptedFiles) => {
     setAvatar_Show(URL.createObjectURL(acceptedFiles[0]));
     setAvatar(acceptedFiles[0]);
@@ -56,7 +59,11 @@ const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
     const savedUserRes = await savedUser.json();
     console.log(savedUserRes);
     if(savedUserRes)
-      {setAvatarMain(savedUserRes.avatar_url); console.log(savedUserRes.avatar_url); onClose();}
+      {setAvatarMain(savedUserRes.avatar_url); console.log(savedUserRes.avatar_url);
+        dispatch(setLogin({user:savedUserRes, token:token}))
+        onClose();}
+
+    
   };
 
   return (

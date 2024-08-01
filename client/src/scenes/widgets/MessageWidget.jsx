@@ -18,6 +18,7 @@ import  io  from 'socket.io-client';
 const socket = io('https://surf-jtn5.onrender.com');
 
 const MessageWidget = ({message, setMessage}) => {
+  //message='';
   const [anchorEl, setAnchorEl] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -40,6 +41,7 @@ const MessageWidget = ({message, setMessage}) => {
   const sendMessage = () => {
     const text=message;
     message={text:message, senderName:username, senderAvatar:avatar_url, file:null, reactions:null};
+    if(message!='')
     socket.emit('sendMessage', message);
     setMessage('');
   };
@@ -114,11 +116,12 @@ const MessageWidget = ({message, setMessage}) => {
           variant="outlined"
           placeholder="Type a message..."
           value={message}
-          onChange={(e)=>setMessage(e.target.value)}
+          onChange={(e)=>{setMessage(e.target.value)}}
           fullWidth
           sx={{ ml: 2, mr: 2 }}
         />
-        <Button variant="contained" color="primary" onClick={sendMessage} sx={{
+        <Button variant="contained" color="primary" onClick={sendMessage} disabled={!message.trim()}
+        sx={{
           position: 'relative',
           overflow: 'hidden',
           

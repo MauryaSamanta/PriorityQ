@@ -18,8 +18,6 @@ export const getInvite=async(req,res)=>{
             const savednewMember=await newMember.save();
             res.status(201).json({savednewMember, hubData});
 
-        
-        res.status(400).json({});
     } catch (error) {
         console.log(error);
         res.status(500).json(`Internal error`);

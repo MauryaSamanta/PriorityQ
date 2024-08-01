@@ -62,6 +62,18 @@ export const addMembertoHub=async(req,res)=>{
     
 }
 
+export const leaveHub=async(req,res)=>{
+  const hubid=req.params.hubid;
+  const {userid}=req.body;
+  try {
+    const deletion=await Hubmembers.deleteOne({hub_id:hubid, user_id:userid});
+    res.status(200).json({deletion});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(`Internal server error`);
+  }
+}
+
 export const listUsersInHub = async (req, res) => {
     try {
       const hubId = req.params.hubid;

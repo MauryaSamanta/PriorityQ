@@ -27,7 +27,7 @@ const HubPage = () => {
   const [selectedZone, setSelectedZone] = useState(null);
   const [members,setMembers]=useState([]);
   const [messages,setMessages]=useState([]);
-  const [message,setMessage]=useState([]);
+  const [message,setMessage]=useState('');
   //const [messages,setMessages]=useState([]);
   const theme = useTheme();
   const fetchZones=async(qube_id)=>{
