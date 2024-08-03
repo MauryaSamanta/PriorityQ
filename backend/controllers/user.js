@@ -18,7 +18,8 @@ export const updateAvatar = async (req, res, next) => {
        return res.status(404).json({ error: 'User not found' });
     }
     //console.log(cloudinary);
-    cloudinary.config({
+    if(file)
+    {cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET
@@ -33,13 +34,14 @@ export const updateAvatar = async (req, res, next) => {
       }
     }
     
-    );
-     console.log(user);
+    );}
+     //console.log(user);
     // // // Update user avatar URL
      if(user.username!==username)
       user.username=username;
     if(user.bio!==bio)
       user.bio=bio;
+     if(file)
      user.avatar_url = result.secure_url;
     const Useradd=await user.save();
 

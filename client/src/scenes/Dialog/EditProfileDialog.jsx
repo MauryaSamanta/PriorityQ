@@ -57,9 +57,9 @@ const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
       }
     );
     const savedUserRes = await savedUser.json();
-    console.log(savedUserRes);
+    //console.log(savedUserRes);
     if(savedUserRes)
-      {setAvatarMain(savedUserRes.avatar_url); console.log(savedUserRes.avatar_url);
+      {setAvatarMain(savedUserRes.avatar_url);
         dispatch(setLogin({user:savedUserRes, token:token}))
         onClose();}
 

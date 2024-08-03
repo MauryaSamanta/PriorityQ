@@ -1,6 +1,6 @@
 import { Box, Typography, useTheme, useMediaQuery, Paper } from "@mui/material";
 import Form from "./Form";
-
+import WaveAnimation from "../animations/Wave";
 const LoginPage = () => {
   const theme = useTheme();
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -13,7 +13,7 @@ const LoginPage = () => {
         
       >
         <Typography fontWeight="bold" fontSize="30px" color="primary">
-          PriorityQ
+          Surf
         </Typography>
       </Box>
       

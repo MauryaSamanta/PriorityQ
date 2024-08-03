@@ -5,8 +5,8 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 
 const ChatItem = ({ message, isOwnMessage }) => {
-  const { text,senderAvatar,file,senderName,reactions} = message;
-  
+  const { text, senderAvatar, file, senderName, reactions } = message;
+
   const getSentimentColor = (text) => {
     // Simple sentiment analysis example: positive if text includes "good", negative if "bad"
     if (text.includes("good")) return '#4caf50'; // Green for positive
@@ -15,39 +15,44 @@ const ChatItem = ({ message, isOwnMessage }) => {
   };
 
   return (
-    <Box>
-      <Box display="flex" alignItems="center">
-        <Avatar src={senderAvatar || '/path/to/random/avatar.jpg'} />
-        <Typography variant="body2" ml={1} fontWeight="bold">{senderName}</Typography>
-
-      </Box>
+    <Box
+      display="flex"
+      flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
+      alignItems="flex-start"
+      mb={2}
+    >
+      <Avatar src={senderAvatar || '/path/to/random/avatar.jpg'} />
       <Box
         display="flex"
-        alignItems="flex-start"
         flexDirection="column"
+        alignItems={isOwnMessage ? 'flex-end' : 'flex-start'}
+        //ml={isOwnMessage ? 0 : 1}
+        //mr={isOwnMessage ? 1 : 0}
         p={1}
-        bgcolor={'primary' }
-        color={ 'white'}
+        bgcolor="primary"
+        color="white"
+        borderRadius="8px"
         maxWidth="60%"
         position="relative"
       >
-        <Box>
-          {file && (
-            <Box mt={1} maxWidth="200px" maxHeight="200px" overflow="hidden" borderRadius="4px">
-              <img src={file} alt="attachment" style={{ width: '100%', height: 'auto' }} />
-            </Box>
-          )}
-          {text && <Typography variant="body2">{text}</Typography>}
-          
+        <Box display="flex" alignItems="center">
+          <Typography variant="body1" fontWeight="bold">{senderName}</Typography>
         </Box>
+        {file && (
+          <Box mt={1} maxWidth="200px" maxHeight="200px" overflow="hidden" borderRadius="4px">
+            <img src={file} alt="attachment" style={{ width: '100%', height: 'auto' }} />
+          </Box>
+        )}
+        {text && <Typography variant="body1" sx={{ color: getSentimentColor(text) }}>{text}</Typography>}
         <Box
           display="flex"
           alignItems="center"
           position="absolute"
-          right={0}
+          right={isOwnMessage ? 'auto' : 0}
+          left={isOwnMessage ? 0 : 'auto'}
           top={0}
           height="100%"
-          sx={{ transform: 'translateX(100%)' }}
+          sx={{ transform: isOwnMessage ? 'translateX(-100%)' : 'translateX(100%)' }}
         >
           {reactions && reactions.map((reaction, index) => (
             <IconButton key={index} size="small" color="inherit">
@@ -59,8 +64,5 @@ const ChatItem = ({ message, isOwnMessage }) => {
     </Box>
   );
 };
-
-// Example messages array
-
 
 export default ChatItem;

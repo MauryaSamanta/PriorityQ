@@ -1,23 +1,18 @@
 import mongoose, { Schema, model, Types } from "mongoose";
 
-const schema = new Schema(
+const messageSchema = new Schema(
   {
-    content: String,
+    text: String,
+    senderAvatar:String,
+    senderName:String,
 
-    attachments: [
-      {
-        public_id: {
-          type: String,
-          required: true,
+    file:
+        {
+          type: String
         },
-        url: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
+      
 
-    sender: {
+    sender_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -27,6 +22,7 @@ const schema = new Schema(
       ref: "Zone",
       required: true,
     },
+
   },
   {
     timestamps: true,

@@ -17,14 +17,14 @@ import { useSelector } from 'react-redux';
 import  io  from 'socket.io-client';
 const socket = io('https://surf-jtn5.onrender.com');
 
-const MessageWidget = ({message, setMessage}) => {
+const MessageWidget = ({zone, message, setMessage}) => {
   //message='';
   const [anchorEl, setAnchorEl] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioUrl, setAudioUrl] = useState(null);
-  const {username, avatar_url}=useSelector((state)=>state.user);
+  const {_id,username, avatar_url}=useSelector((state)=>state.user);
   //const [message,setMessage]=useState('');
   const handleEmojiClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -38,13 +38,20 @@ const MessageWidget = ({message, setMessage}) => {
     const files = event.target.files;
     console.log(files);
   };
+  // const sendMessage = () => {
+  //   const text=message;
+  //   message={text:message, senderName:username, senderAvatar:avatar_url, file:null, reactions:null};
+  //   if(message!='')
+  //   socket.emit('sendMessage', message);
+  //   setMessage('');
+  // };
+
   const sendMessage = () => {
-    const text=message;
-    message={text:message, senderName:username, senderAvatar:avatar_url, file:null, reactions:null};
-    if(message!='')
-    socket.emit('sendMessage', message);
+    message={text:message,senderName:username,senderAvatar:avatar_url,sender_id:_id,file:null,reactions:null, zone:zone};
+    socket.emit('sendMessage',  message );
     setMessage('');
   };
+
   const handleVoiceRecord = async () => {
     if (!isRecording) {
       try {

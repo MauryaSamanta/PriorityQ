@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -28,6 +28,7 @@ const HubPage = () => {
   const [members,setMembers]=useState([]);
   const [messages,setMessages]=useState([]);
   const [message,setMessage]=useState('');
+
   //const [messages,setMessages]=useState([]);
   const theme = useTheme();
   const fetchZones=async(qube_id)=>{
@@ -113,6 +114,20 @@ const HubPage = () => {
     
     
   }, []);
+  
+  const joinZone = async(zone) => {
+    //console.log(zone);
+    try {
+      const messageChunkjson=await fetch(`https://surf-jtn5.onrender.com/message/${zone}`,{
+        method:"GET"
+      });
+      const messageChunk=await messageChunkjson.json();
+      setMessages(messageChunk);
+    } catch (error) {
+      
+    }
+    socket.emit('joinZone', zone);
+  };
   
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -293,6 +308,7 @@ const HubPage = () => {
       color="white"
       p={2}
       display="flex"
+      textAlign="center"
       flexDirection="column"
       sx={{ 
         overflowY: 'auto', 
@@ -330,24 +346,32 @@ const HubPage = () => {
               }}
             >
               <Box
-                sx={{
-                  ...hexagonStyle,
-                  transition: 'transform 0.3s, border-color 0.3s',
-                  marginBottom: '1rem',
-                  '&:hover': {
-                    transform: 'scale(1.1)',
-                    borderColor: '#F5A623',
-                  },
-                  m: '20px',
-                  borderColor: 'transparent',
-                  borderWidth: '2px',
-                  borderStyle: 'solid',
-                }}
-              >
-                <Box sx={{ ...hexagonBefore }} />
-                {qube.name}
-                <Box sx={{ ...hexagonAfter }} />
-              </Box>
+  sx={{
+    width: 60,
+    height: 60,
+    clipPath: 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
+    bgcolor: '#40444b',
+    transition: 'transform 0.3s, border-color 0.3s',
+    marginBottom: '1rem',
+    margin: '20px',
+    borderColor: 'transparent',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    color: 'white',
+    '&:hover': {
+      transform: 'scale(1.1)',
+      borderColor: '#F5A623',
+    },
+  }}
+>
+  <Typography variant="body2" sx={{ lineHeight: 1 }}>
+    {qube.name}
+  </Typography>
+</Box>
             </ListItem>
           ))}
         </List>
@@ -392,8 +416,8 @@ const HubPage = () => {
         {zones.map((zone) => (
   <ListItem
     button
-    key={zone.id}
-    onClick={() => setSelectedZone(zone.name)}
+    key={zone._id}
+    onClick={() => {setSelectedZone(zone); joinZone(zone._id);}}
     sx={{
       display: 'flex',
       alignItems: 'center',
@@ -456,7 +480,7 @@ const HubPage = () => {
     height="parent" // Full height to make it easier to handle positioning
   >
     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-      <Typography variant="h6">{selectedZone}</Typography>
+      <Typography variant="h6">{selectedZone.name}</Typography>
       <Box>
         <Button
           variant="contained"
@@ -513,17 +537,16 @@ const HubPage = () => {
       }}
     >
       <Box p={2} bgcolor="#36393f" borderRadius="8px">
-        <Typography variant="h3">Welcome to the {selectedZone} Zone</Typography>
-        <Typography>Talk with your Qube members here. We organise your files for you !</Typography>
+        <Typography variant="h1">Welcome to the {selectedZone.name} Zone</Typography>
+        <Typography variant="h3" sx={{ color: '#9e9e9e' }}>Talk with your Qube members here. We organise your files for you !</Typography>
       </Box>
       {messages?.map((message, index) => (
-        <ChatItem key={index} message={message} />
+        <ChatItem key={index} message={message} isOwnMessage={message.senderName===username?true:null} />
       ))}
     </Box>
-
     {/* Message Widget Area */}
     <Box sx={{ mt: 2 }}>
-      <MessageWidget message={message} setMessage={setMessage} />
+      <MessageWidget zone={selectedZone._id} message={message} setMessage={setMessage} />
     </Box>
   </Box>
 ) : (

@@ -146,11 +146,12 @@ const Navbar = () => {
       </Box>
     )}
   >
-    <MenuItem mt="100" onClick={() => dispatch(setLogout())}>Log Out</MenuItem>
+    <MenuItem mt="100" onClick={() => dispatch(setLogout())}><Typography color="#fc0320">Log Out</Typography></MenuItem>
   </Select>
 </FormControl>
           </FlexBetween>
         ) : (
+          
           <IconButton
             onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
           >
@@ -197,9 +198,42 @@ const Navbar = () => {
                   <LightMode sx={{ color: dark, fontSize: "25px" }} />
                 )}
               </IconButton>
-              <Message sx={{ fontSize: "25px" }} />
-              <Notifications sx={{ fontSize: "25px" }} />
-              <Help sx={{ fontSize: "25px" }} />
+              <FormControl variant="standard" value={fullName}>
+  <Select
+    value={fullName}
+    sx={{
+      backgroundColor: 'transparent',
+      width: "50px",
+      borderRadius: "50%",
+      p: 0,
+      display: 'flex',
+      alignItems: 'center',
+      '& .MuiSelect-select': {
+        display: 'flex',
+        alignItems: 'center',
+        padding: 0,
+      },
+      "& .MuiSvgIcon-root": {
+        display: 'none',
+      },
+      "& .MuiSelect-select:focus": {
+        backgroundColor: 'transparent',
+      },
+    }}
+    input={<InputBase />}
+    renderValue={() => (
+      <Box display="flex" alignItems="center">
+        <img
+          src={user.avatar_url} // Make sure avatarUrl is defined and contains the URL of the avatar image
+          alt="avatar"
+          style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }}
+        />
+      </Box>
+    )}
+  >
+    <MenuItem mt="100" onClick={() => dispatch(setLogout())}><Typography color="#fc0320">Log Out</Typography></MenuItem>
+  </Select>
+</FormControl>
               <Button
                 variant="contained"
                 sx={{ border: '2px solid', borderColor: 'primary.main' }}
@@ -216,10 +250,12 @@ const Navbar = () => {
                 Start a New Hub
               </Button>
             </FlexBetween>
+           
           </Box>
         )}
+        
       </FlexBetween>
-
+      
       {/* Create Hub Dialog */}
       <CreateHubDialog
         open={isCreateHubDialogOpen}
