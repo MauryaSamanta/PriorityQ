@@ -12,7 +12,10 @@ import qubeRoute from "./routes/qube.js";
 import zoneRoute from "./routes/zone.js";
 import messageRoute from "./routes/message.js";
 import inviteRoute from "./routes/invites.js";
+import fileRoute from "./routes/file.js";
 import Message from "./models/Message.js";
+import { v2 as cloudinary } from "cloudinary";
+import { attachmentsMulter } from "./middlewares/multer.js";
 const app=express();
 const server = http.createServer(app);
 const io = socketConfig(server);
@@ -39,6 +42,7 @@ app.use((req, res, next) => {
 app.use("/zone", zoneRoute);
 app.use("/message",messageRoute);
 app.use("/invite",inviteRoute);
+app.use("/file",fileRoute);
 // app.use("/api/v1/chat", chatRoute);
 // app.use("/api/v1/admin", adminRoute);
 
@@ -58,21 +62,24 @@ io.on('connection', (socket) => {
   //   io.emit('receiveMessage', message);
   // });
 
-  socket.on('sendMessage', async(message) => {
+  socket.on('sendMessage',async(message) => {
     //const { zone, message } = data;
+    //const file=req.file;
     const messageforDB={
       text:message.text,
       senderAvatar:message.senderAvatar,
       senderName:message.senderName,
+      file:'',
       sender_id:message.sender_id,
       zone_id:message.zone
     }
     const newMessage=new Message(messageforDB);
     const savednewMessage=await newMessage.save();
 
-    io.to(message.zone).emit('receiveMessage', message);
+    io.to(message.zone).emit('receiveMessage', message);}
+    
     //console.log(`Message sent to zone ${message.zone}: ${message}`);
-  });
+  );
 
 });
 

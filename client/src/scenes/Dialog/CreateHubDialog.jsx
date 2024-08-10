@@ -191,20 +191,21 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
         )}
       </DialogContent>
       <DialogActions>
-        {step < 4 && (
-          <Button onClick={handleNext} variant="contained" color="primary">
-            Next
-          </Button>
+        {step >1 && (
+          <Button onClick={() => setStep(step - 1)} variant="outlined">
+          Back
+        </Button>
+          
         )}
         {step === 4 && (
           <Button onClick={handleStart} variant="contained" color="primary">
             Start
           </Button>
         )}
-        {step > 1 && (
-          <Button onClick={() => setStep(step - 1)} variant="outlined">
-            Back
-          </Button>
+        {step < 4 && (
+          <Button onClick={handleNext} variant="contained" color="primary">
+          Next
+        </Button>
         )}
       </DialogActions>
     </Dialog>

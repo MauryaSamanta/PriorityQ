@@ -39,7 +39,7 @@ const JoinHubWidget = ({ setHubs }) => {
       bgcolor="parent"
       minHeight="35vh"
       borderRadius="10px"
-      border="2px dotted #FFEB3B"
+      border="primary"
       p={isSmallScreen ? 2 : 4}
     >
       <Typography
@@ -85,13 +85,7 @@ const JoinHubWidget = ({ setHubs }) => {
         variant="contained"
         color="primary"
         onClick={handleJoinHub}
-        sx={{
-          backgroundColor: '#FFEB3B',
-          color: '#36393f',
-          '&:hover': {
-            backgroundColor: '#FFD700',
-          },
-        }}
+        
       >
         Join Hub
       </Button>

@@ -87,11 +87,11 @@ const HomePage = () => {
               color="primary" 
               onClick={handleJoinHubClick}
               sx={{
-                backgroundColor: '#FFEB3B',
-                color: '#36393f',
-                '&:hover': {
-                  backgroundColor: '#FFD700',
-                },
+                // backgroundColor: '#FFEB3B',
+                // color: '#36393f',
+                // '&:hover': {
+                //   backgroundColor: '#FFD700',
+                // },
                 marginLeft: '1rem'
               }}
             >

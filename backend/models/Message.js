@@ -5,7 +5,7 @@ const messageSchema = new Schema(
     text: String,
     senderAvatar:String,
     senderName:String,
-
+    name_file:String,
     file:
         {
           type: String

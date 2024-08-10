@@ -18,7 +18,8 @@ const socket = io('https://surf-jtn5.onrender.com');
 
 const HubPage = () => {
   const navigate = useNavigate();
-  const { hubId } = useParams();
+  const { hubId,ownerId } = useParams();
+  //console.log(owner);
   const {username}=useSelector((state)=>state.user);
   const token = useSelector((state) => state.token);
   const [qubes,setQubes]=useState([]);
@@ -378,7 +379,7 @@ const HubPage = () => {
       ) : (
         <></>
       )}
-      <Button color="secondary" onClick={handleOpenDialog}>Create a Qube</Button>
+      <Button color="secondary" size="small" variant="contained" onClick={handleOpenDialog}>Create a Qube</Button>
       <CreateQubeDialog open={openDialog} onClose={handleCloseDialog} onCreate={handleCreateQube} />
     </Box>
     <Divider orientation="vertical" flexItem />
@@ -466,7 +467,7 @@ const HubPage = () => {
     )}
   </Box>
 ) : (
-  <HubOverview members={members} />
+  <HubOverview members={members} owner={ownerId} />
 )}
     <Divider orientation="vertical" flexItem />
 

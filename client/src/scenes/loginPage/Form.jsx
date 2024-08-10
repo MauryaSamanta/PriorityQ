@@ -129,7 +129,7 @@ const Form = () => {
             }}
           >
             <Typography fontWeight="500" variant="h5"  sx={{ gridColumn: "span 4" }} textAlign={"center"}>
-              {isRegister?"Create an Account":"Welcome Back !"}
+              {isRegister?"Create an Account":""}
             </Typography>
             {isRegister && (
               <>  

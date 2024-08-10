@@ -30,7 +30,7 @@ function App() {
               element={isAuth? <HomePage />:<Navigate to="/" /> }
             />
             <Route
-              path="/hub/:hubId"
+              path="/hub/:hubId/:ownerId/:hubname"
               element={isAuth ? <HubPage hub={hub}/> : <Navigate to="/" />}
             />
           </Routes>

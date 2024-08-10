@@ -13,7 +13,7 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
   const [selectedHub, setSelectedHub] = useState(null);
   const token = useSelector((state) => state.token);
   const navigate = useNavigate();
-
+  console.log(userId);
   useEffect(() => {
     const fetchHubs = async () => {
       try {
@@ -111,14 +111,17 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
                     ) : null}
                     <div>
                       <Typography variant="h5" component="div">
-                        {hub?.name}
+                        {hub?.name} 
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
                         {hub?.description}
                       </Typography>
                     </div>
                   </div>
-                  <Button variant="contained" color="primary" onClick={() => navigate(`/hub/${hub?._id}`)} style={{ alignSelf: 'flex-end', marginTop: '16px' }}>
+                  <Button variant="contained" color="primary" onClick={() =>
+                  { const owner= hub.owner_id===userId? 'owner':'member';
+                    //console.log(owner);
+                    navigate(`/hub/${hub?._id}/${hub?.owner_id}/${hub?.name}`)}} style={{ alignSelf: 'flex-end', marginTop: '16px' }}>
                     ENTER HUB
                   </Button>
                 </CardContent>
@@ -134,14 +137,14 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
                     }
                   }}
                 >
-                  <MenuItem onClick={handleDeleteHub}>
+                 {hub?.owner_id===userId?(<MenuItem onClick={handleDeleteHub}>
                     <DeleteIcon style={{ marginRight: '8px' }} />
-                    Delete Hub
-                  </MenuItem>
-                  <MenuItem onClick={handleLeaveHub}>
+                    Delete Hub 
+                  </MenuItem>):(<MenuItem onClick={handleLeaveHub}>
                   <ExitToAppIcon style={{ marginRight: '8px'}}/>
                   Leave Hub
-                  </MenuItem>
+                  </MenuItem>)}
+                  
                 </Menu>
               </Card>
             </Grid>

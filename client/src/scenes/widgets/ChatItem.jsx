@@ -1,14 +1,47 @@
-import React from 'react';
-import { Box, Typography, IconButton, Avatar } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React, { useState } from 'react';
+import { Box, Typography, IconButton, Avatar, Menu, MenuItem } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 const ChatItem = ({ message, isOwnMessage }) => {
-  const { text, senderAvatar, file, senderName, reactions } = message;
+  const { text, senderAvatar, file, senderName, reactions, name_file } = message;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const hubId = useParams();
+  const token = useSelector((state) => state.token);
+
+  const openMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const closeMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const saveToMyFiles = async () => {
+    const fileData = {
+      hub_id: hubId.hubId,
+      file_url: file,
+      file_name: name_file,
+    };
+    try {
+      const response = await fetch(`https://surf-jtn5.onrender.com/file/new`, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        method: "POST",
+        body: JSON.stringify(fileData),
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error('Error saving file:', error);
+    }
+  };
 
   const getSentimentColor = (text) => {
-    // Simple sentiment analysis example: positive if text includes "good", negative if "bad"
     if (text.includes("good")) return '#4caf50'; // Green for positive
     if (text.includes("bad")) return '#f44336'; // Red for negative
     return '#9e9e9e'; // Grey for neutral
@@ -26,8 +59,6 @@ const ChatItem = ({ message, isOwnMessage }) => {
         display="flex"
         flexDirection="column"
         alignItems={isOwnMessage ? 'flex-end' : 'flex-start'}
-        //ml={isOwnMessage ? 0 : 1}
-        //mr={isOwnMessage ? 1 : 0}
         p={1}
         bgcolor="primary"
         color="white"
@@ -39,11 +70,58 @@ const ChatItem = ({ message, isOwnMessage }) => {
           <Typography variant="body1" fontWeight="bold">{senderName}</Typography>
         </Box>
         {file && (
-          <Box mt={1} maxWidth="200px" maxHeight="200px" overflow="hidden" borderRadius="4px">
-            <img src={file} alt="attachment" style={{ width: '100%', height: 'auto' }} />
+          <Box
+            mt={1}
+            maxWidth="200px"
+            maxHeight="200px"
+            overflow="hidden"
+            borderRadius="4px"
+            position="relative"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            {name_file?.endsWith('.pdf') ? (
+              <Box display="flex" alignItems="center">
+                <PictureAsPdfIcon sx={{ fontSize: 40, color: '#d32f2f', mr: 1 }} />
+                <Typography variant="body2" noWrap>
+                  {name_file}
+                </Typography>
+              </Box>
+            ) : (
+              <img src={file} alt="attachment" style={{ width: '100%', height: 'auto' }} />
+            )}
+            {isHovered && (
+              <IconButton
+                size="small"
+                onClick={openMenu}
+                sx={{
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  color: 'white',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  zIndex: 1,
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
+                }}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )}
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={closeMenu}
+            >
+              <MenuItem onClick={saveToMyFiles}>Save to My Files</MenuItem>
+            </Menu>
           </Box>
         )}
-        {text && <Typography variant="body1" sx={{ color: getSentimentColor(text) }}>{text}</Typography>}
+        {text && (
+          <Typography variant="body1" sx={{ color: getSentimentColor(text) }}>
+            {text}
+          </Typography>
+        )}
         <Box
           display="flex"
           alignItems="center"

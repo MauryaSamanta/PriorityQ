@@ -30,10 +30,11 @@ const UserWidget = ({ _id, avatar_url }) => {
     <Box
       p="1rem"
       sx={{
-        backgroundColor: theme.palette.background.alt,
+        backgroundColor:"parent",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        
       }}
     >
       <Avatar

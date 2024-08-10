@@ -52,7 +52,7 @@ const UserProfileDialog = ({ open, onClose, user }) => {
               }}
             />
           </Box>
-          <Typography variant="h5" sx={{ color: 'primary.main' }}>
+          <Typography variant="h5" sx={{ color: '#ffffff' }}>
             {user.username}
           </Typography>
         </Box>
