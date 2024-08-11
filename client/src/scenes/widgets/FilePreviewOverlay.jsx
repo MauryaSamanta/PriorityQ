@@ -23,7 +23,7 @@ const FilePreviewOverlay = ({ file, onClose }) => {
    
     const fileType = file.file_url.split('.').pop().toLowerCase();
     let file_url=file.file_url;
-    //file_url.replace(".pdf",".jpg");
+    file_url.replace(".pdf",".jpg");
     switch (fileType) {
       case 'jpg':
       case 'jpeg':
@@ -72,7 +72,7 @@ const FilePreviewOverlay = ({ file, onClose }) => {
       }}
     >
       <Document
-        file={file.file_url}
+        file={file_url}
         onLoadSuccess={onDocumentLoadSuccess}
         loading={<div>Loading PDF...</div>}
         noData={<div>No PDF file specified</div>}

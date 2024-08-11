@@ -31,7 +31,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
       file_name: name_file,
     };
     try {
-      const response = await fetch(`https://surf-jtn5.onrender.com/file/new`, {
+      const response = await fetch(`http://localhost:3001/file/new`, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify(fileData),
