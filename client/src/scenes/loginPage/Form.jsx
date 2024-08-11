@@ -64,7 +64,7 @@ const Form = () => {
     //formData.append("picturePath", values.picture.name);
      console.log(values);
     const savedUserResponse = await fetch(
-      "http://localhost:3001/auth/new",
+      "https://surf-jtn5.onrender.com/auth/new",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +80,7 @@ const Form = () => {
   };
 
   const login = async (values, onSubmitProps) => {
-    const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
+    const loggedInResponse = await fetch("https://surf-jtn5.onrender.com/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
