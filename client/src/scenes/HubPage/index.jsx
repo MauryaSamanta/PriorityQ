@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase } from '@mui/material';
+import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip} from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,11 +14,11 @@ import QubeOverview from 'scenes/widgets/QubeOverview';
 import MessageWidget from 'scenes/widgets/MessageWidget';
 import ChatItem from 'scenes/widgets/ChatItem';
 import  io  from 'socket.io-client';
-const socket = io('https://surf-jtn5.onrender.com');
+const socket = io('http://localhost:3001');
 
 const HubPage = () => {
   const navigate = useNavigate();
-  const { hubId,ownerId } = useParams();
+  const { hubId,ownerId,hubname } = useParams();
   //console.log(owner);
   const {username}=useSelector((state)=>state.user);
   const token = useSelector((state) => state.token);
@@ -34,7 +34,7 @@ const HubPage = () => {
   const theme = useTheme();
   const fetchZones=async(qube_id)=>{
     try {
-      const response=await fetch(`https://surf-jtn5.onrender.com/qube/${qube_id}/zone`,{
+      const response=await fetch(`http://localhost:3001/qube/${qube_id}/zone`,{
         method:"GET",
         headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" }
       })
@@ -52,7 +52,7 @@ const HubPage = () => {
   const handleCreateZone = async(zoneName) => {
     const zoneData={name:zoneName};
     try {
-      const response=await fetch(`https://surf-jtn5.onrender.com/zone/${selectedQube}/new`,{
+      const response=await fetch(`http://localhost:3001/zone/${selectedQube}/new`,{
         method:"POST",
         headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" },    
         body:JSON.stringify(zoneData)
@@ -71,7 +71,7 @@ const HubPage = () => {
     const fetchQubes = async () => {
       
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}`,{
+        const response = await fetch(`http://localhost:3001/hub/${hubId}`,{
           method:"GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -89,7 +89,7 @@ const HubPage = () => {
     const fetchMembers=async()=>{
       console.log(hubId);
       try {
-        const response=await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}/members`,{
+        const response=await fetch(`http://localhost:3001/hub/${hubId}/members`,{
           method:"GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -119,7 +119,7 @@ const HubPage = () => {
   const joinZone = async(zone) => {
     //console.log(zone);
     try {
-      const messageChunkjson=await fetch(`https://surf-jtn5.onrender.com/message/${zone}`,{
+      const messageChunkjson=await fetch(`http://localhost:3001/message/${zone}`,{
         method:"GET"
       });
       const messageChunk=await messageChunkjson.json();
@@ -147,7 +147,7 @@ const HubPage = () => {
     //   console.log(key, value);
     // }
     try 
-    {const response=await fetch(`https://surf-jtn5.onrender.com/qube/${hubId}/new`,{
+    {const response=await fetch(`http://localhost:3001/qube/${hubId}/new`,{
     method:"POST",
     headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" },    
     body:JSON.stringify(qubeData),
@@ -330,7 +330,28 @@ const HubPage = () => {
         },
       }}
     >
-      <Typography variant="h6" mb={2} align="center">Qubes</Typography>
+      <Tooltip
+  title={
+    <Box >
+      <Typography variant="h5">Go to Hub Main Page</Typography>
+    </Box>
+  }
+  arrow
+  placement="right"
+  sx={{
+    '& .MuiTooltip-tooltip': {
+      backgroundColor: '#f5f5f5', // Slightly white background
+      color: 'black', // Text color
+      boxShadow: theme.shadows[1], // Optional: Add some shadow for depth
+    },
+    '& .MuiTooltip-arrow': {
+      color: '#f5f5f5', // Match the background color for the arrow
+    }
+  }}
+>
+  <Button color="secondary" onClick={()=>{setSelectedQube(null); setSelectedZone(null);}}>{hubname}</Button>
+</Tooltip>
+
       {qubes ? (
         <List component="nav">
           {qubes.map((qube) => (

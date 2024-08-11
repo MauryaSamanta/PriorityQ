@@ -4,6 +4,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
@@ -11,6 +12,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
   const { text, senderAvatar, file, senderName, reactions, name_file } = message;
   const [anchorEl, setAnchorEl] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [showTick, setShowTick] = useState(false);  // New state for tick mark visibility
   const hubId = useParams();
   const token = useSelector((state) => state.token);
 
@@ -29,13 +31,15 @@ const ChatItem = ({ message, isOwnMessage }) => {
       file_name: name_file,
     };
     try {
-      const response = await fetch(`https://surf-jtn5.onrender.com/file/new`, {
+      const response = await fetch(`http://localhost:3001/file/new`, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify(fileData),
       });
       const data = await response.json();
       console.log(data);
+      setShowTick(true); // Show tick mark after saving
+      setTimeout(() => setShowTick(false), 2000); // Hide tick mark after 2 seconds
     } catch (error) {
       console.error('Error saving file:', error);
     }
@@ -115,6 +119,17 @@ const ChatItem = ({ message, isOwnMessage }) => {
             >
               <MenuItem onClick={saveToMyFiles}>Save to My Files</MenuItem>
             </Menu>
+            {showTick && (
+              <CheckCircleIcon
+                sx={{
+                  position: 'absolute',
+                  color: '#4caf50',
+                  fontSize: 40,
+                  opacity: 10,
+                  animation: 'fadeInOut 2s ease-in-out',
+                }}
+              />
+            )}
           </Box>
         )}
         {text && (

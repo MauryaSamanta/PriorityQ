@@ -69,7 +69,7 @@ const Navbar = () => {
               },
             }}
           >
-            Surf
+            EloKo
           </Typography>
         </FlexBetween>
 
