@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, IconButton, Menu, MenuItem, Typography } from '@mui/material';
+import { Box, TextField, Button, IconButton, Menu, MenuItem, Typography, Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText } from '@mui/material';
 import BoldIcon from '@mui/icons-material/FormatBold';
 import ItalicIcon from '@mui/icons-material/FormatItalic';
 import ListIcon from '@mui/icons-material/FormatListBulleted';
 import EmojiIcon from '@mui/icons-material/EmojiEmotions';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import FolderIcon from '@mui/icons-material/Folder'; // Import Folder Icon
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from 'react-redux';
 import io from 'socket.io-client';
@@ -16,6 +17,9 @@ const MessageWidget = ({ zone, message, setMessage }) => {
   const [filePreview, setFilePreview] = useState(null); // State for file preview URL or name
   const [file, setFile] = useState(null); // State for the actual file
   const [isImage, setIsImage] = useState(false); // State to track if the file is an image
+  const [folderFiles, setFolderFiles] = useState([]); // State for selected folder files
+  const [folderName, setFolderName] = useState(''); // State for folder name
+  const [openDialog, setOpenDialog] = useState(false); // State for dialog visibility
 
   const { _id, username, avatar_url } = useSelector((state) => state.user);
 
@@ -42,14 +46,26 @@ const MessageWidget = ({ zone, message, setMessage }) => {
     }
   };
 
+  const handleFolderUpload = (event) => {
+    const selectedFiles = Array.from(event.target.files).slice(0, 10); // Limit to 10 files
+    setFolderFiles(selectedFiles);
+    setOpenDialog(true); // Open the dialog to show selected files and folder name input
+  };
+
   const handleDeleteFile = () => {
     setFilePreview(null);
     setFile(null);
     setIsImage(false);
   };
 
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+    setFolderFiles([]);
+    setFolderName('');
+  };
+
   const sendMessage = async () => {
-    if (!file) {
+    if (!file && folderFiles.length === 0) {
       const newMessage = {
         text: message,
         senderName: username,
@@ -60,6 +76,27 @@ const MessageWidget = ({ zone, message, setMessage }) => {
         zone: zone,
       };
       socket.emit('sendMessage', newMessage);
+    } else if (folderFiles.length > 0) {
+      const formData = new FormData();
+      formData.append("text",message);
+      formData.append("name_folder", folderName);
+      folderFiles.forEach((folderFile) => {
+        formData.append("files", folderFile);  // Append each file individually
+      });
+      formData.append("senderName", username);
+      formData.append("senderAvatar", avatar_url);
+      formData.append("sender_id", _id);
+      formData.append("zone", zone);
+      try {
+        const result = await fetch(`https://surf-jtn5.onrender.com/message/folder`, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await result.json();
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+      handleDialogClose();
     } else {
       const formData = new FormData();
       formData.append("text", message);
@@ -92,7 +129,7 @@ const MessageWidget = ({ zone, message, setMessage }) => {
       border={1}
       sx={{ borderColor: 'primary' }}
     >
-      {!filePreview ? (
+      {!filePreview && folderFiles.length === 0 ? (
         <Box>
           <IconButton>
             <BoldIcon />
@@ -110,13 +147,24 @@ const MessageWidget = ({ zone, message, setMessage }) => {
             accept="image/*,application/pdf"
             style={{ display: 'none' }}
             id="file-upload"
-            multiple
             type="file"
             onChange={handleFileUpload}
           />
           <label htmlFor="file-upload">
             <IconButton component="span">
               <AttachFileIcon />
+            </IconButton>
+          </label>
+          <input
+            multiple
+            style={{ display: 'none' }}
+            id="folder-upload"
+            type="file"
+            onChange={handleFolderUpload}
+          />
+          <label htmlFor="folder-upload">
+            <IconButton component="span">
+              <FolderIcon />
             </IconButton>
           </label>
         </Box>
@@ -154,7 +202,7 @@ const MessageWidget = ({ zone, message, setMessage }) => {
           variant="contained"
           color="primary"
           onClick={sendMessage}
-          disabled={!message.trim() && !file}
+          disabled={!message.trim() && !file && folderFiles.length === 0}
           sx={{
             position: 'relative',
             overflow: 'hidden',
@@ -183,6 +231,36 @@ const MessageWidget = ({ zone, message, setMessage }) => {
         <MenuItem onClick={handleEmojiClose}>😍</MenuItem>
         {/* Add more emojis here */}
       </Menu>
+
+      <Dialog open={openDialog} onClose={handleDialogClose}>
+        <DialogTitle>Upload Folder</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Folder Name"
+            type="text"
+            fullWidth
+            value={folderName}
+            onChange={(e) => setFolderName(e.target.value)}
+          />
+          <List>
+            {folderFiles.map((file, index) => (
+              <ListItem key={index}>
+                <ListItemText primary={file.name} />
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={sendMessage} color="primary">
+            Send
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

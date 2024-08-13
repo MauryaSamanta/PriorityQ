@@ -52,3 +52,55 @@ export const sendMessagewithFile=async(req,res)=>{
         res.status(400).json('error');
       }
 }
+
+export const sendMessagewithFolder=async(req,res)=>{
+      const files=req.files;
+      // console.log("le");
+      // console.log(files);
+      const {text,name_folder,senderAvatar,senderName,sender_id, zone}=req.body;
+      console.log(name_folder);
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+      });
+
+      const uploadPromises = files.map((file) => {
+        return new Promise((resolve, reject) => {
+          cloudinary.uploader.upload(
+            `data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result) {
+              if (error) {
+                reject(error);
+              } else {
+                resolve({
+                  file_name: file.originalname,
+                  file_url: result.secure_url
+                });
+              }
+            }
+          );
+        });
+      });
+      try {
+        const results = await Promise.all(uploadPromises);
+        console.log(results);
+        const messageforDB={
+          text:text,
+          senderAvatar:senderAvatar,
+          senderName:senderName,
+          name_folder:name_folder,
+          folder:results,
+          sender_id:sender_id,
+          zone_id:zone
+      };
+      
+      req.io.to(zone).emit('receiveMessage', messageforDB);
+      const newMessage=new Message(messageforDB);
+      const savednewMessage=await newMessage.save();
+      console.log(savednewMessage);
+      res.status(200).json('Success');
+        
+      } catch (err) {
+       console.log(err);
+      }
+}

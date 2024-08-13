@@ -13,6 +13,7 @@ const HubOverview = ({ members, owner }) => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [files, setFiles] = useState([]);
   const [code, setCode] = useState(null);
+  const [folder,setFolder]=useState(null);
   const { hubId, hubname } = useParams();
   const { _id } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
@@ -96,8 +97,10 @@ const HubOverview = ({ members, owner }) => {
       }}
       >
         {/* <Typography variant="h6"  mb={2}>{hubname}</Typography> */}
-        <Typography variant="h6" mb={2} align="center">My Files</Typography>
-        <Box
+        {folder?(<Typography variant="h6" mb={2} align="center">{folder.name_folder}</Typography>)
+        :(<Typography variant="h6" mb={2} align="center">My Files</Typography>)}
+        {folder?(<Button sx={{color:"gray"}} onClick={()=>setFolder(null)}>Back to My Files</Button>):(<></>)}
+        {!folder?(<Box
           sx={{ 
             overflowY: 'auto', 
             '&::-webkit-scrollbar': {
@@ -118,34 +121,113 @@ const HubOverview = ({ members, owner }) => {
           }}
         >
         {files.length > 0 ? (
-          files.map((file) => (
-            <Box
-              key={file._id}
-              p={2}
-              mb={2}
-              bgcolor="#2f3136"
-              borderRadius="8px"
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              onClick={() => handleFileClick(file)}
-            >
-              <Box>
-                <Typography variant="body1" fontWeight="bold">
-                  {file.file_name}
-                </Typography>
-              </Box>
-              <IconButton color="primary" edge="end">
-                <ArrowForwardIosIcon />
-              </IconButton>
-            </Box>
-          ))
-        ) : (
-          <Typography variant="body2" align="center">
-            No files available.
+        files.map((file) => (
+    file.name_folder ? (
+      <Box
+        key={file._id}
+        p={2}
+        mb={2}
+        bgcolor="#2f3136"
+        borderRadius="8px"
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        onClick={() => setFolder(file)}
+      >
+        <Box display="flex" alignItems="center">
+         
+          <Typography variant="body1" fontWeight="bold">
+            {file.name_folder}
           </Typography>
-        )}
         </Box>
+        <IconButton color="primary" edge="end">
+          <ArrowForwardIosIcon />
+        </IconButton>
+      </Box>
+    ) : (
+      <Box
+        key={file._id}
+        p={2}
+        mb={2}
+        bgcolor="#2f3136"
+        borderRadius="8px"
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        onClick={() => handleFileClick(file)}
+      >
+        <Box>
+          <Typography variant="body1" fontWeight="bold">
+            {file.file_name}
+          </Typography>
+        </Box>
+        <IconButton color="primary" edge="end">
+          <ArrowForwardIosIcon />
+        </IconButton>
+      </Box>
+    )
+  ))
+) : (
+  <Typography variant="body2" align="center">
+    No files available.
+  </Typography>
+)}
+
+        </Box>):(
+          <Box
+          sx={{ 
+            overflowY: 'auto', 
+            '&::-webkit-scrollbar': {
+              width: '10px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: '#888',
+              borderRadius: '10px',
+              border: '3px solid transparent',
+              backgroundClip: 'padding-box',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              background: '#555',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'transparent',
+            },
+          }}
+        >
+        {folder.folder.length > 0 ? (
+        folder.folder.map((file) => (
+          <Box
+          key={file._id}
+          p={2}
+          mb={2}
+          bgcolor="#2f3136"
+          borderRadius="8px"
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          onClick={() => handleFileClick(file)}
+        >
+          <Box>
+            <Typography variant="body1" fontWeight="bold">
+              {file.file_name}
+            </Typography>
+          </Box>
+          <IconButton color="primary" edge="end">
+            <ArrowForwardIosIcon />
+          </IconButton>
+        </Box>
+      
+    
+  ))
+) : (
+  <Typography variant="body2" align="center">
+    No files available.
+  </Typography>
+)}
+
+        </Box>
+
+        )}
       </Box>
       <Box width="25%" bgcolor="#2f3136" color="white" p={2} display="flex" flexDirection="column" borderRadius="8px">
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>

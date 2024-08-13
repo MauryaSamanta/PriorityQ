@@ -5,11 +5,12 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import FolderIcon from '@mui/icons-material/Folder';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 const ChatItem = ({ message, isOwnMessage }) => {
-  const { text, senderAvatar, file, senderName, reactions, name_file } = message;
+  const { text, senderAvatar, file, senderName, reactions, name_file, folder, name_folder } = message;
   const [anchorEl, setAnchorEl] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [showTick, setShowTick] = useState(false);  // New state for tick mark visibility
@@ -29,6 +30,8 @@ const ChatItem = ({ message, isOwnMessage }) => {
       hub_id: hubId.hubId,
       file_url: file,
       file_name: name_file,
+      name_folder:name_folder,
+      folder:folder
     };
     try {
       const response = await fetch(`https://surf-jtn5.onrender.com/file/new`, {
@@ -73,6 +76,71 @@ const ChatItem = ({ message, isOwnMessage }) => {
         <Box display="flex" alignItems="center">
           <Typography variant="body1" fontWeight="bold">{senderName}</Typography>
         </Box>
+
+        {name_folder && (
+          <Box
+            mt={1}
+            maxWidth="200px"
+            maxHeight="200px"
+            overflow="hidden"
+            borderRadius="4px"
+            position="relative"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              bgcolor: 'parent',
+              //p: 2,
+              //border: '1px solid #ccc',
+              borderRadius: '8px',
+            }}
+          >
+            <Box display="flex" alignItems="center">
+              <FolderIcon sx={{ fontSize: 40, color: '#ff9800', mr: 1 }} />
+              <Typography variant="body2" noWrap>
+                {name_folder}
+              </Typography>
+            </Box>
+            {isHovered && (
+              <IconButton
+                size="small"
+                onClick={openMenu}
+                sx={{
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  color: 'white',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  zIndex: 1,
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
+                }}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )}
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={closeMenu}
+            >
+              <MenuItem onClick={saveToMyFiles}>Save to My Files</MenuItem>
+            </Menu>
+            {showTick && (
+              <CheckCircleIcon
+                sx={{
+                  position: 'absolute',
+                  color: '#4caf50',
+                  fontSize: 40,
+                  opacity: 10,
+                  animation: 'fadeInOut 2s ease-in-out',
+                }}
+              />
+            )}
+          </Box>
+        )}
+
         {file && (
           <Box
             mt={1}
@@ -132,11 +200,13 @@ const ChatItem = ({ message, isOwnMessage }) => {
             )}
           </Box>
         )}
+
         {text && (
           <Typography variant="body1" sx={{ color: getSentimentColor(text) }}>
             {text}
           </Typography>
         )}
+
         <Box
           display="flex"
           alignItems="center"

@@ -11,7 +11,19 @@ const messageSchema = new Schema(
           type: String
         },
       
-
+    folder:[
+      { file_name: {
+       type: String,
+       required: true,
+     },
+     file_url: {
+       type: String,
+       required: true,
+     }}
+     ],
+    name_folder:{
+      type:String
+    },
     sender_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

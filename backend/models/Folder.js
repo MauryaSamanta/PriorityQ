@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const fileSchema = new mongoose.Schema({
+const folderSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
@@ -9,29 +9,22 @@ const fileSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Hub'
       },
-      file_url:{
-        type:String,
-        
-      },
-      file_name:{
-        type:String,
-        
-      },
       name_folder:{
         type:String,
-        
+        required:true
       },
       folder:[
        { file_name: {
         type: String,
-        
+        required: true,
       },
-      file_url: {
+      secure_url: {
         type: String,
-        
+        required: true,
       }}
       ],
+      
   });
   
-  const File = mongoose.model('File', fileSchema);
-  export default File;
+  const Folder = mongoose.model('Folder', folderSchema);
+  export default Folder;
