@@ -120,8 +120,13 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
                   </div>
                   <Button variant="contained" color="primary" onClick={() =>
                   { const owner= hub.owner_id===userId? 'owner':'member';
+                    const des=hub?.description;
+                    const avatar=hub?.avatar_url;
+                    console.log(avatar);
                     //console.log(owner);
-                    navigate(`/hub/${hub?._id}/${hub?.owner_id}/${hub?.name}`)}} style={{ alignSelf: 'flex-end', marginTop: '16px' }}>
+                    navigate(`/hub/${hub?._id}/${hub?.owner_id}/${hub?.name}`,{
+                      state:{des,avatar}
+                    })}} style={{ alignSelf: 'flex-end', marginTop: '16px' }}>
                     ENTER HUB
                   </Button>
                 </CardContent>
