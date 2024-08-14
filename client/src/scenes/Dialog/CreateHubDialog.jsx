@@ -68,7 +68,7 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
     const savedHubRes = await fetch(
-        "http://localhost:3001/hub",
+        "https://surf-jtn5.onrender.com/hub",
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },

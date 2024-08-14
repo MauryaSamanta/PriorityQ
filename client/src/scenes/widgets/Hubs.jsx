@@ -17,7 +17,7 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
   useEffect(() => {
     const fetchHubs = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/hub`, {
+        const response = await fetch(`https://surf-jtn5.onrender.com/hub`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -45,7 +45,7 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
   const handleLeaveHub=async()=>{
     const membershipData={userid:userId};
           try {
-            const reponse=await fetch(`http://localhost:3001/hub/${selectedHub._id}/member`,{
+            const reponse=await fetch(`https://surf-jtn5.onrender.com/hub/${selectedHub._id}/member`,{
               method:"DELETE",
               headers: {"Content-Type": "application/json" },    
               body:JSON.stringify(membershipData)
@@ -59,7 +59,7 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
   }
   const handleDeleteHub = async () => {
     try {
-      const deletion=await fetch(`http://localhost:3001/hub/${selectedHub._id}`, {
+      const deletion=await fetch(`https://surf-jtn5.onrender.com/hub/${selectedHub._id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

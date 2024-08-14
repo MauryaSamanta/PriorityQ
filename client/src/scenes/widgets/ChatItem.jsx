@@ -34,7 +34,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
       folder:folder
     };
     try {
-      const response = await fetch(`http://localhost:3001/file/new`, {
+      const response = await fetch(`https://surf-jtn5.onrender.com/file/new`, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify(fileData),
