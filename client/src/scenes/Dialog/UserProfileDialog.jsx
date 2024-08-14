@@ -36,7 +36,7 @@ const UserProfileDialog = ({ open, onClose, user }) => {
         <Box sx={{ my: 2,ml:2, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
           <Box
             sx={{
-              width: 60,
+              width: 59,
               height: 60,
               clipPath: 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
               bgcolor: 'secondary.main',
