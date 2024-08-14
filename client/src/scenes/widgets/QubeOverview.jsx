@@ -15,7 +15,7 @@ const QubeOverview = ({ qubeid }) => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/qube/${qubeid}`, { method: "GET" });
+        const response = await fetch(`http://localhost:3001/qube/${qubeid}`, { method: "GET" });
         const data = await response.json();
         console.log(data.userDetails);
         setMembers(data.userDetails);
@@ -24,7 +24,7 @@ const QubeOverview = ({ qubeid }) => {
 
     const fetchHubMembers = async () => {
       try {
-        const response=await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}/members`,{
+        const response=await fetch(`http://localhost:3001/hub/${hubId}/members`,{
             method:"GET",
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -58,7 +58,7 @@ const QubeOverview = ({ qubeid }) => {
       const addBody={memberId:userid};
       console.log(addBody);
       try {
-        const reponse=await fetch(`https://surf-jtn5.onrender.com/qube/${qubeid}`,{
+        const reponse=await fetch(`http://localhost:3001/qube/${qubeid}`,{
             method:"POST",
             headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" },
             body:JSON.stringify(addBody)
