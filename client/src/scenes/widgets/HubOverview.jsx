@@ -6,7 +6,9 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import AddMemberDialog from 'scenes/Dialog/AddMemberDialog';
 import UserProfileDialog from 'scenes/Dialog/UserProfileDialog';
 import FilePreviewOverlay from './FilePreviewOverlay';
-
+import FilterIcon from '@mui/icons-material/Filter';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import TopicIcon from '@mui/icons-material/Topic';
 const HubOverview = ({ members, owner }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUserProfileDialogOpen, setIsUserProfileDialogOpen] = useState(false);
@@ -60,13 +62,26 @@ const HubOverview = ({ members, owner }) => {
 
   useEffect(() => {
     const getFiles = async () => {
-      const response = await fetch(`https://surf-jtn5.onrender.com/file/${hubId}`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
-      });
-      const file = await response.json();
-      setFiles(file);
-    }
+      try {
+        const response = await fetch(`https://surf-jtn5.onrender.com/file/${hubId}`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
+        });
+        const files = await response.json();
+    
+        // Sorting the files array
+        const sortedFiles = files.sort((a, b) => {
+          if (a.name_folder && !b.name_folder) return -1; // a comes first
+          if (!a.name_folder && b.name_folder) return 1;  // b comes first
+          return 0; // leave the order unchanged if both have or both don't have name_folder
+        });
+    
+        setFiles(sortedFiles);
+      } catch (error) {
+        console.error('Error fetching files:', error);
+      }
+    };
+    
     getFiles();
   }, [hubId, token]);
 
@@ -135,7 +150,7 @@ const HubOverview = ({ members, owner }) => {
         onClick={() => setFolder(file)}
       >
         <Box display="flex" alignItems="center">
-         
+         <TopicIcon/>
           <Typography variant="body1" fontWeight="bold">
             {file.name_folder}
           </Typography>
@@ -156,7 +171,10 @@ const HubOverview = ({ members, owner }) => {
         alignItems="center"
         onClick={() => handleFileClick(file)}
       >
-        <Box>
+        <Box display="flex">
+          {file.file_url.split('.').pop().toLowerCase()==='jpg'||file.file_url.split('.').pop().toLowerCase()
+          ==='jpeg'||file.file_url.split('.').pop().toLowerCase()==='png'?(<FilterIcon/>)
+          :(<PictureAsPdfIcon/>)}
           <Typography variant="body1" fontWeight="bold">
             {file.file_name}
           </Typography>
