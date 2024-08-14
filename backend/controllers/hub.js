@@ -6,13 +6,15 @@ export const createHub=async(req,res)=>{
     const {name, description}=req.body;
     const file=req.file;
     console.log(file);
+    let avatar_url='';
     cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
         api_secret: process.env.CLOUDINARY_API_SECRET
       });
       // // Upload to Cloudinary
-       const result = await cloudinary.uploader
+        if(file)
+       {const result = await cloudinary.uploader
        .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
         //console.log(result);
         if (error){
@@ -20,8 +22,9 @@ export const createHub=async(req,res)=>{
           res.status(400).json("Not working");
         }
       }
-      
       );
+      avatar_url=result.secure_url;
+    }
     //console.log(req.user.id);
     try {
 
@@ -29,7 +32,7 @@ export const createHub=async(req,res)=>{
             name,
             description,
             owner_id:req.user.id,
-            avatar_url:result.secure_url
+            avatar_url:avatar_url
         });
         const savedHub=await newHub.save();
         console.log(req.user.id);

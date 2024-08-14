@@ -368,32 +368,33 @@ const HubPage = () => {
               }}
             >
               <Box
-  sx={{
-    width: 60,
-    height: 60,
-    clipPath: 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
-    bgcolor: '#40444b',
-    transition: 'transform 0.3s, border-color 0.3s',
-    marginBottom: '1rem',
-    margin: '20px',
-    borderColor: 'transparent',
-    borderWidth: '2px',
-    borderStyle: 'solid',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    color: 'white',
-    '&:hover': {
-      transform: 'scale(1.1)',
-      borderColor: '#F5A623',
-    },
-  }}
->
-  <Typography variant="body2" sx={{ lineHeight: 1 }}>
-    {qube.name}
-  </Typography>
-</Box>
+    sx={{
+      width: selectedQube === qube._id ? 80 : 60,  // Change width when selected
+      height: selectedQube === qube._id ? 60 : 60, // Change height when selected
+      clipPath: selectedQube === qube._id ? 'none' : 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
+      bgcolor: selectedQube === qube._id ? '#F5A623' : '#40444b', // Change background color when selected
+      transition: 'all 0.3s ease', // Smooth transition for all properties
+      borderRadius:2,
+      marginBottom: '1rem',
+      margin: '20px',
+      borderColor: 'transparent',
+      borderWidth: '2px',
+      borderStyle: 'solid',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center',
+      color: selectedQube === qube._id ? 'black' : 'white', // Change text color when selected
+      '&:hover': {
+        transform: 'scale(1.1)',
+        borderColor: '#F5A623',
+      },
+    }}
+  >
+    <Typography variant="body2" sx={{ lineHeight: 1 }}>
+      {qube.name}
+    </Typography>
+  </Box>
             </ListItem>
           ))}
         </List>
