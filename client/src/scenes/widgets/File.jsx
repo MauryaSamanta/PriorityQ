@@ -1,56 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, IconButton, Divider, Button, ButtonBase, Avatar, List, ListItem } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import AddMemberDialog from 'scenes/Dialog/AddMemberDialog';
-import UserProfileDialog from 'scenes/Dialog/UserProfileDialog';
-import FilePreviewOverlay from './FilePreviewOverlay';
-import FilterIcon from '@mui/icons-material/Filter';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TopicIcon from '@mui/icons-material/Topic';
+import FilterIcon from '@mui/icons-material/Filter';
+import FilePreviewOverlay from './FilePreviewOverlay';
+import Draggable from 'react-draggable';
+
 const File = ({ members, owner }) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isUserProfileDialogOpen, setIsUserProfileDialogOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState(null);
   const [files, setFiles] = useState([]);
-  const [code, setCode] = useState(null);
-  const [folder,setFolder]=useState(null);
-  const { hubId, hubname } = useParams();
-  const { _id } = useSelector((state) => state.user);
+  const [folder, setFolder] = useState(null);
+  const { hubId } = useParams();
   const token = useSelector((state) => state.token);
   const [selectedFile, setSelectedFile] = useState(null);
-
-  const handleOpenDialog = async () => {
-    const inviteBody = { hub_id: hubId };
-    try {
-      const response = await fetch(`https://surf-jtn5.onrender.com/invite/${hubId}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setCode(data.code);
-      console.log(code);
-    } catch (error) {
-      console.error(error);
-    }
-
-    setIsDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
-
-  const handleMemberClick = (member) => {
-    setSelectedMember(member);
-    setIsUserProfileDialogOpen(true);
-  };
-
-  const handleUserProfileDialogClose = () => {
-    setIsUserProfileDialogOpen(false);
-    setSelectedMember(null);
-  };
 
   const handleFileClick = (file) => {
     setSelectedFile(file);
@@ -85,167 +48,128 @@ const File = ({ members, owner }) => {
     getFiles();
   }, [hubId, token]);
 
+  // Split files or folder content into columns with a maximum of 5 items per column
+  const displayedFiles = folder ? folder.folder : files;
+  const columns = [];
+  const maxItemsPerColumn = 5;
+
+  for (let i = 0; i < displayedFiles.length; i += maxItemsPerColumn) {
+    columns.push(displayedFiles.slice(i, i + maxItemsPerColumn));
+  }
+
+  // Function to handle the position after drag
+  const handleStop = (file, e, position) => {
+    const { x, y } = position;
+    const fileKey = `${hubId}-${file._id}`;
+    localStorage.setItem(fileKey, JSON.stringify({ x, y }));
+    console.log(`File ${file.file_name || file.name_folder} moved to X: ${x}, Y: ${y}`);
+  };
+
+  // Retrieve saved positions and apply them
+  const getSavedPosition = (file) => {
+    const fileKey = `${hubId}-${file._id}`;
+    const savedPosition = localStorage.getItem(fileKey);
+    return savedPosition ? JSON.parse(savedPosition) : { x: 0, y: 0 };
+  };
+
   return (
-    <Box display="flex" width="100%" height="100%" p={2} bgcolor="#36393f">
-      {/* Members List */}
-      <Divider orientation="vertical" flexItem />
-      {/* Files Overview */}
-      
-      <Box width="100%" bgcolor="#40444b" color="white" p={2} display="flex" flexDirection="column" borderRadius="8px"
-       sx={{ 
-        overflowY: 'auto', 
-        '&::-webkit-scrollbar': {
-          width: '10px',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: '#888',
-          borderRadius: '10px',
-          border: '3px solid transparent',
-          backgroundClip: 'padding-box',
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-          background: '#555',
-        },
-        '&::-webkit-scrollbar-track': {
-          background: 'transparent',
-        },
+    <Box 
+      display="flex" 
+      width="100%" 
+      height="100%" 
+      p={2} 
+      sx={{
+        backgroundImage: 'url(https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/coffee.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
       }}
-      >
-        {/* <Typography variant="h6"  mb={2}>{hubname}</Typography> */}
-        {folder?(<Typography variant="h6" mb={2} align="center">{folder.name_folder}</Typography>)
-        :(<Typography variant="h6" mb={2} align="center">Library</Typography>)}
-        {folder?(<Button sx={{color:"gray"}} onClick={()=>setFolder(null)}>Back to Library</Button>):(<></>)}
-        {!folder?(<Box
-          sx={{ 
-            overflowY: 'auto', 
-            '&::-webkit-scrollbar': {
-              width: '10px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: '#888',
-              borderRadius: '10px',
-              border: '3px solid transparent',
-              backgroundClip: 'padding-box',
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-              background: '#555',
-            },
-            '&::-webkit-scrollbar-track': {
-              background: 'transparent',
-            },
-          }}
-        >
-        {files.length > 0 ? (
-        files.map((file) => (
-    file.name_folder ? (
-      <Box
-        key={file._id}
-        p={2}
-        mb={2}
-        bgcolor="#2f3136"
+      borderRadius={3}
+    >
+      {/* Files Overview */}
+      <Box 
+        width="100%" 
+        height="100%"
+        color="white" 
+        p={2} 
+        display="flex" 
+        flexDirection="column" 
         borderRadius="8px"
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        onClick={() => setFolder(file)}
+        sx={{ 
+          overflowY: 'auto',
+          position: 'relative',
+          padding: '20px',
+          '&::-webkit-scrollbar': {
+            width: '10px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#888',
+            borderRadius: '10px',
+            border: '3px solid transparent',
+            backgroundClip: 'padding-box',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: '#555',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+        }}
       >
-        <Box display="flex" alignItems="center">
-         <TopicIcon sx={{color:"#de9210"}}/>
-          <Typography variant="body1" fontWeight="bold">
-            {file.name_folder}
-          </Typography>
-        </Box>
-        <IconButton color="primary" edge="end">
-          <ArrowForwardIosIcon />
-        </IconButton>
-      </Box>
-    ) : (
-      <Box
-        key={file._id}
-        p={2}
-        mb={2}
-        bgcolor="#2f3136"
-        borderRadius="8px"
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        onClick={() => handleFileClick(file)}
-      >
-        <Box display="flex">
-          {file.file_url.split('.').pop().toLowerCase()==='jpg'||file.file_url.split('.').pop().toLowerCase()
-          ==='jpeg'||file.file_url.split('.').pop().toLowerCase()==='png'?(<FilterIcon sx={{color:'#1084de'}}/>)
-          :(<PictureAsPdfIcon sx={{color: '#de1016'}}/>)}
-          <Typography variant="body1" fontWeight="bold">
-            {file.file_name}
-          </Typography>
-        </Box>
-        <IconButton color="primary" edge="end">
-          <ArrowForwardIosIcon />
-        </IconButton>
-      </Box>
-    )
-  ))
-) : (
-  <Typography variant="body2" align="center">
-    No files available.
-  </Typography>
-)}
+        <Typography variant="h6" mb={2} align="center">
+          {folder ? folder.name_folder : 'Library'}
+        </Typography>
 
-        </Box>):(
-          <Box
-          sx={{ 
-            overflowY: 'auto', 
-            '&::-webkit-scrollbar': {
-              width: '10px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              background: '#888',
-              borderRadius: '10px',
-              border: '3px solid transparent',
-              backgroundClip: 'padding-box',
-            },
-            '&::-webkit-scrollbar-thumb:hover': {
-              background: '#555',
-            },
-            '&::-webkit-scrollbar-track': {
-              background: 'transparent',
-            },
-          }}
-        >
-        {folder.folder.length > 0 ? (
-        folder.folder.map((file) => (
-          <Box
-          key={file._id}
-          p={2}
-          mb={2}
-          bgcolor="#2f3136"
-          borderRadius="8px"
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          onClick={() => handleFileClick(file)}
-        >
-          <Box>
-            <Typography variant="body1" fontWeight="bold">
-              {file.file_name}
-            </Typography>
-          </Box>
-          <IconButton color="primary" edge="end">
-            <ArrowForwardIosIcon />
-          </IconButton>
-        </Box>
-      
-    
-  ))
-) : (
-  <Typography variant="body2" align="center">
-    No files available.
-  </Typography>
-)}
-
-        </Box>
-
+        {folder && (
+          <Button sx={{ color: "gray", marginBottom: '20px' }} onClick={() => setFolder(null)}>
+            Back to Library
+          </Button>
         )}
+
+        <Box
+          display="grid"
+          gridTemplateColumns={`repeat(${columns.length}, 100px)`} // Adjust number of columns based on files
+          sx={{
+            position: 'relative',
+            minHeight: '100%',
+          }}
+        >
+          {columns.map((column, colIndex) => (
+            <Box key={colIndex} display="flex" flexDirection="column">
+              {column.map((file) => {
+                const savedPosition = getSavedPosition(file);
+                return (
+                  <Draggable 
+                    key={file._id}
+                    defaultPosition={{ x: savedPosition.x, y: savedPosition.y }}
+                    onStop={(e, position) => handleStop(file, e, position)} // Capture the position on drag stop
+                  >
+                    <Box
+                      width="80px"
+                      textAlign="center"
+                      p={1}
+                      onDoubleClick={() => file.name_folder ? setFolder(file) : handleFileClick(file)}
+                      sx={{
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {file.name_folder ? (
+                        <TopicIcon sx={{ color: '#de9210', fontSize: '48px' }} />
+                      ) : file.file_url.split('.').pop().toLowerCase() === 'pdf' ? (
+                        <PictureAsPdfIcon sx={{ color: '#de1016', fontSize: '48px' }} />
+                      ) : (
+                        <FilterIcon sx={{ color: '#1084de', fontSize: '48px' }} />
+                      )}
+                      <Typography variant="body2" sx={{ color: 'white', mt: 1 }} noWrap>
+                        {file.name_folder || file.file_name}
+                      </Typography>
+                    </Box>
+                  </Draggable>
+                );
+              })}
+            </Box>
+          ))}
+        </Box>
       </Box>
       
       {/* File Preview Overlay */}
