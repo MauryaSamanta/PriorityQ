@@ -10,7 +10,10 @@ const qubeSchema = new mongoose.Schema({
     required: true,
     maxlength: 255
   },
-  
+  nickname:{
+    type:String,
+    required:true
+  },
   created_at: {
     type: Date,
     default: Date.now

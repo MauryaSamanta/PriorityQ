@@ -1,23 +1,58 @@
 import React, { useState } from 'react';
-import { Box, Typography, IconButton, Slide, Avatar, Button } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip } from '@mui/material';
+import { useParams, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import File from './File';
-import { useLocation } from 'react-router-dom';
 import GroupIcon from '@mui/icons-material/Group';
+import EditIcon from '@mui/icons-material/Edit';
+import UserProfileDialog from '../Dialog/UserProfileDialog';
+import MembersDialog from '../Dialog/MembersDialog';
+import EditHubBannerDialog from '../Dialog/EditHubBannerDialog'; // Import your EditHubBannerDialog component
+import File from './File';
+import { useTheme } from '@emotion/react';
 
 const HubOverview = ({ members, owner }) => {
   const { hubId, hubname } = useParams();
   const { _id } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-
+  const theme = useTheme();
   const [showFiles, setShowFiles] = useState(false);
+  const [openUserProfileDialog, setOpenUserProfileDialog] = useState(false);
+  const [openMembersDialog, setOpenMembersDialog] = useState(false);
+  const [openEditBannerDialog, setOpenEditBannerDialog] = useState(false); // State for EditHubBannerDialog
   const location = useLocation();
-  const { des, avatar } = location.state || {};
-
+  const { des, avatar, banner } = location.state || {};
+  const setBanner=(banner)=>{
+    banner=banner;
+  }
   const handleToggleFiles = () => {
     setShowFiles(!showFiles);
   };
+
+  const handleOpenUserProfileDialog = () => {
+    setOpenUserProfileDialog(true);
+  };
+
+  const handleCloseUserProfileDialog = () => {
+    setOpenUserProfileDialog(false);
+  };
+
+  const handleOpenMembersDialog = () => {
+    setOpenMembersDialog(true);
+  };
+
+  const handleCloseMembersDialog = () => {
+    setOpenMembersDialog(false);
+  };
+
+  const handleOpenEditBannerDialog = () => {
+    setOpenEditBannerDialog(true);
+  };
+
+  const handleCloseEditBannerDialog = () => {
+    setOpenEditBannerDialog(false);
+  };
+
+  const hubOwner = members.find((member) => member._id === owner);
 
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
@@ -26,19 +61,40 @@ const HubOverview = ({ members, owner }) => {
         sx={{
           height: 200,
           width: '100%',
-          backgroundImage: 'url(https://res.cloudinary.com/df9fz5s3o/image/upload/v1723645908/l100qep0zpgob6t5erd0.png)', // Replace with actual banner image path
+          backgroundImage: `url(${banner})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderRadius: 2,
           boxShadow: 3,
           position: 'relative',
+          '&:hover .edit-icon': {
+            opacity: 1,
+          },
         }}
       >
-        {/* Hexagon Avatar Hanging */}
+       {owner===_id?( <IconButton
+          className="edit-icon"
+          sx={{
+            position: 'absolute',
+            bottom: 16,
+            right: 16,
+            backgroundColor: 'black',
+            borderRadius: '50%',
+            boxShadow: 3,
+            opacity: 0,
+            transition: 'opacity 0.3s ease-in-out',
+            '&:hover': {
+              backgroundColor: 'black',
+            },
+          }}
+          onClick={handleOpenEditBannerDialog} // Open EditHubBannerDialog on click
+        >
+          <EditIcon />
+        </IconButton>):(<></>)}
         <Box
           sx={{
             position: 'absolute',
-            bottom: -30,  // Adjust to make the avatar hang
+            bottom: -30,
             left: 16,
             width: 80,
             height: 80,
@@ -46,7 +102,7 @@ const HubOverview = ({ members, owner }) => {
             overflow: 'hidden',
             borderRadius: 2,
             boxShadow: 3,
-            backgroundColor: '#fff',  // Optional background color
+            backgroundColor: '#fff',
           }}
         >
           <Avatar
@@ -56,7 +112,7 @@ const HubOverview = ({ members, owner }) => {
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              borderRadius: 0,  // Ensures the hexagon effect is preserved
+              borderRadius: 0,
             }}
           />
         </Box>
@@ -70,12 +126,55 @@ const HubOverview = ({ members, owner }) => {
         <Typography variant="body1" color="textSecondary" paragraph>
           {des}
         </Typography>
+
+        {/* Hub Owner */}
+        {hubOwner && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
+            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+              Hub Owner:
+            </Typography>
+            <IconButton onClick={handleOpenUserProfileDialog}>
+              <Avatar
+                src={hubOwner.avatar_url}
+                alt={hubOwner.name}
+                sx={{ width: 40, height: 40 }}
+              />
+            </IconButton>
+          </Box>
+        )}
+
         {/* Members Count */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
-          <GroupIcon sx={{ color: '#635acc', fontSize: 30 }} />
-          <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#635acc', fontSize: 18 }}>
-            {members.length} Members
+        <GroupIcon sx={{ color: '#635acc', fontSize: 30 }} />
+          <Tooltip
+            title={
+              <Box>
+                <Typography variant="h5">Explore Members</Typography>
+              </Box>
+            }
+            arrow
+            placement="right"
+            sx={{
+              '& .MuiTooltip-tooltip': {
+                backgroundColor: '#f5f5f5',
+                color: 'black',
+                boxShadow: theme.shadows[1],
+              },
+              '& .MuiTooltip-arrow': {
+                color: '#f5f5f5',
+              },
+            }}
+          >
+            
+         
+          <Typography
+            variant="body1"
+            sx={{ fontWeight: 'bold', color: '#635acc', cursor: 'pointer' }}
+            onClick={handleOpenMembersDialog}
+          >
+            {members.length} {members.length > 1 ? 'Members' : 'Member'}
           </Typography>
+          </Tooltip>
         </Box>
       </Box>
 
@@ -112,19 +211,43 @@ const HubOverview = ({ members, owner }) => {
             position: 'absolute',
             top: 0,
             height: '100%',
-            left: showFiles ? 0 : '-100%', // Slide in and out
-            width: '100%',  // Full width of the content area
+            left: showFiles ? 0 : '-100%',
+            width: '100%',
             backgroundColor: 'primary',
             boxShadow: 4,
             padding: 2,
             overflowY: 'auto',
             zIndex: 5,
-            transition: 'left 0.3s ease', // Smooth transition
+            transition: 'left 0.3s ease',
           }}
         >
           <File members={members} owner={owner} />
         </Box>
       </Slide>
+
+      {/* User Profile Dialog */}
+      {hubOwner && (
+        <Dialog open={openUserProfileDialog} onClose={handleCloseUserProfileDialog}>
+          <UserProfileDialog open={openUserProfileDialog} onClose={handleCloseUserProfileDialog} user={hubOwner} />
+        </Dialog>
+      )}
+
+      {/* Members Dialog */}
+      <MembersDialog
+        open={openMembersDialog}
+        onClose={handleCloseMembersDialog}
+        members={members}
+        owner={owner}
+        hubId={hubId}
+        token={token}
+      />
+
+      {/* Edit Hub Banner Dialog */}
+      <EditHubBannerDialog
+        open={openEditBannerDialog}
+        onClose={handleCloseEditBannerDialog}
+        banner={banner}
+      />
     </Box>
   );
 };

@@ -91,7 +91,7 @@ const File = ({ members, owner }) => {
       <Divider orientation="vertical" flexItem />
       {/* Files Overview */}
       
-      <Box width="75%" bgcolor="#40444b" color="white" p={2} display="flex" flexDirection="column" borderRadius="8px"
+      <Box width="100%" bgcolor="#40444b" color="white" p={2} display="flex" flexDirection="column" borderRadius="8px"
        sx={{ 
         overflowY: 'auto', 
         '&::-webkit-scrollbar': {
@@ -150,7 +150,7 @@ const File = ({ members, owner }) => {
         onClick={() => setFolder(file)}
       >
         <Box display="flex" alignItems="center">
-         <TopicIcon/>
+         <TopicIcon sx={{color:"#de9210"}}/>
           <Typography variant="body1" fontWeight="bold">
             {file.name_folder}
           </Typography>
@@ -173,8 +173,8 @@ const File = ({ members, owner }) => {
       >
         <Box display="flex">
           {file.file_url.split('.').pop().toLowerCase()==='jpg'||file.file_url.split('.').pop().toLowerCase()
-          ==='jpeg'||file.file_url.split('.').pop().toLowerCase()==='png'?(<FilterIcon/>)
-          :(<PictureAsPdfIcon/>)}
+          ==='jpeg'||file.file_url.split('.').pop().toLowerCase()==='png'?(<FilterIcon sx={{color:'#1084de'}}/>)
+          :(<PictureAsPdfIcon sx={{color: '#de1016'}}/>)}
           <Typography variant="body1" fontWeight="bold">
             {file.file_name}
           </Typography>
@@ -247,44 +247,7 @@ const File = ({ members, owner }) => {
 
         )}
       </Box>
-      <Box width="25%" bgcolor="#2f3136" color="white" p={2} display="flex" flexDirection="column" borderRadius="8px">
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6" align="center">Members</Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{
-              backgroundColor: 'primary',
-              color: '#2f3136',
-              
-            }}
-            onClick={handleOpenDialog}
-          >
-            Add Member
-          </Button>
-        </Box>
-        {members ? (
-          <List component="nav">
-            {members.map((member) => (
-              <ButtonBase key={member._id} sx={{ width: '100%', display: 'flex', alignItems: 'center', mb: 1 }} onClick={() => handleMemberClick(member)}>
-                <ListItem sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                  <Avatar src={member.avatar_url} sx={{ mr: 2 }} />
-                  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <Typography variant="body1" sx={{ flexGrow: 1 }}>{member.username}</Typography>
-                    {owner === member._id && (
-                      <Typography variant="body2" sx={{ color: 'gray', ml: 2 }}>Owner</Typography>
-                    )}
-                  </Box>
-                </ListItem>
-              </ButtonBase>
-            ))}
-          </List>
-        ) : null}
-        <AddMemberDialog open={isDialogOpen} onClose={handleCloseDialog} code={code} />
-        <UserProfileDialog open={isUserProfileDialogOpen} onClose={handleUserProfileDialogClose} user={selectedMember} />
-      </Box>
-
+      
       {/* File Preview Overlay */}
       {selectedFile && <FilePreviewOverlay file={selectedFile} onClose={handleCloseFilePreview} />}
     </Box>

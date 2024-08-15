@@ -3,11 +3,12 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } 
 
 const CreateQubeDialog = ({ open, onClose, onCreate }) => {
   const [qubeName, setQubeName] = useState('');
-
+  const [nickName,setNickName]=useState('');
   const handleCreate = () => {
     console.log(qubeName);
-    onCreate(qubeName);
+    onCreate(qubeName,nickName);
     setQubeName('');
+    setNickName('');
     onClose();
   };
 
@@ -24,6 +25,16 @@ const CreateQubeDialog = ({ open, onClose, onCreate }) => {
           fullWidth
           value={qubeName}
           onChange={(e) => setQubeName(e.target.value)}
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          id="nickName"
+          label="Qube Nick Name"
+          type="text"
+          fullWidth
+          value={nickName}
+          onChange={(e) => setNickName(e.target.value)}
         />
       </DialogContent>
       <DialogActions>

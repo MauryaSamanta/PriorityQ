@@ -140,9 +140,9 @@ const HubPage = () => {
     setOpenDialog(false);
   };
 
-  const handleCreateQube = async(name) => {
+  const handleCreateQube = async(name,nickname) => {
     //console.log('Qube Created:', name);
-    const qubeData={qube_name:name};
+    const qubeData={qube_name:name,nick_name:nickname};
     // for (let [key, value] of formData.entries()) {
     //   console.log(key, value);
     // }
@@ -364,9 +364,30 @@ const HubPage = () => {
                 minHeight: 0,
                 '&:hover': {
                   backgroundColor: 'transparent',
-                }
+                },
+                bgcolor:'transparent',
+                clipPath:'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)'
               }}
             >
+              <Tooltip
+  title={
+    <Box >
+      <Typography variant="h5">{qube.name}</Typography>
+    </Box>
+  }
+  arrow
+  placement="right"
+  sx={{
+    '& .MuiTooltip-tooltip': {
+      backgroundColor: '#f5f5f5', // Slightly white background
+      color: 'black', // Text color
+      boxShadow: theme.shadows[1], // Optional: Add some shadow for depth
+    },
+    '& .MuiTooltip-arrow': {
+      color: '#f5f5f5', // Match the background color for the arrow
+    }
+  }}
+>
               <Box
     sx={{
       width: selectedQube === qube._id ? 80 : 60,  // Change width when selected
@@ -392,9 +413,10 @@ const HubPage = () => {
     }}
   >
     <Typography variant="body2" sx={{ lineHeight: 1 }}>
-      {qube.name}
+      {qube.nickname?(qube.nickname):(qube.name)}
     </Typography>
   </Box>
+  </Tooltip>
             </ListItem>
           ))}
         </List>

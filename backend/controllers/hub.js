@@ -121,6 +121,38 @@ export const listUsersInHub = async (req, res) => {
     }
   }
 
+  export const editHub=async(req,res)=>{
+    const {hubid}=req.params;
+    const file=req.file;
+    
+    const hub = await Hub.findById(hubid);
+    
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+    try {
+      const result = await cloudinary.uploader
+       .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
+        //console.log(result);
+        if (error){
+          console.log(error);
+          res.status(400).json("Not working");
+        }
+      }
+      );
+      
+      hub.banner_url=result.secure_url;
+      const savedHub=await hub.save();
+      
+    res.status(200).json({ savedHub });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(`Error`);
+    }
+  }
+
   export const deleteHubs=async(req,res)=>{
     const hubid=req.params.hubid;
     try {
