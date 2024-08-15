@@ -16,6 +16,9 @@ const hubSchema = new mongoose.Schema({
   avatar_url: {
     type: String
   },
+  banner_url:{
+    type:String
+  },
   created_at: {
     type: Date,
     default: Date.now

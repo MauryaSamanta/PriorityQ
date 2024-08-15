@@ -3,12 +3,13 @@ import Qubemembers from "../models/Qubemembers.js";
 import Zone from "../models/Zone.js";
 export const createQube=async(req,res)=>{
     const hubid=req.params.hubid;
-    const {qube_name} =req.body;
+    const {qube_name,nick_name} =req.body;
     console.log(req.body);
     try {
         const newQube=new Qube({
             hub_id:hubid,
-            name:qube_name
+            name:qube_name,
+            nickname:nick_name
         })
         const savedQube=await newQube.save();
 
