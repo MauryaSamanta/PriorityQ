@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, IconButton } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TopicIcon from '@mui/icons-material/Topic';
 import FilterIcon from '@mui/icons-material/Filter';
+import DeleteIcon from '@mui/icons-material/Delete'; // Import DeleteIcon
 import FilePreviewOverlay from './FilePreviewOverlay';
+import FolderDialog from '../Dialog/FolderDialog'; // Import FolderDialog
 import Draggable from 'react-draggable';
 
 const File = ({ members, owner }) => {
@@ -14,6 +16,8 @@ const File = ({ members, owner }) => {
   const { hubId } = useParams();
   const token = useSelector((state) => state.token);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [folderDialogOpen, setFolderDialogOpen] = useState(false); // State to manage dialog open/close
+  const [selectedFolder, setSelectedFolder] = useState(null); // State to hold the selected folder
 
   const handleFileClick = (file) => {
     setSelectedFile(file);
@@ -21,6 +25,16 @@ const File = ({ members, owner }) => {
 
   const handleCloseFilePreview = () => {
     setSelectedFile(null);
+  };
+
+  const handleFolderClick = (folder) => {
+    setSelectedFolder(folder);
+    setFolderDialogOpen(true); // Open the dialog when a folder is clicked
+  };
+
+  const handleCloseFolderDialog = () => {
+    setFolderDialogOpen(false); // Close the dialog
+    setSelectedFolder(null); // Reset the selected folder
   };
 
   useEffect(() => {
@@ -62,7 +76,7 @@ const File = ({ members, owner }) => {
     const { x, y } = position;
     const fileKey = `${hubId}-${file._id}`;
     localStorage.setItem(fileKey, JSON.stringify({ x, y }));
-    console.log(`File ${file.file_name || file.name_folder} moved to X: ${x}, Y: ${y}`);
+    //console.log(`File ${file.file_name || file.name_folder} moved to X: ${x}, Y: ${y}`);
   };
 
   // Retrieve saved positions and apply them
@@ -70,6 +84,56 @@ const File = ({ members, owner }) => {
     const fileKey = `${hubId}-${file._id}`;
     const savedPosition = localStorage.getItem(fileKey);
     return savedPosition ? JSON.parse(savedPosition) : { x: 0, y: 0 };
+  };
+
+  const handleDeleteFile = async (fileId) => {
+     try {
+       const response=await fetch(`https://surf-jtn5.onrender.com/file/${fileId}`,{
+        method:"DELETE"
+       });
+       console.log('SUCCESS');
+       if (response.ok) {
+        setFiles(files.filter(file => file._id !== fileId));
+      } 
+     } catch (error) {
+      
+     }
+  };
+  const handleAddFile=async(fileId,folder)=>{
+    try {
+      const response=await fetch(`https://surf-jtn5.onrender.com/file/${fileId}/${folder._id}`,{
+        method:"PATCH"
+      });
+      const file=await response.json();
+      if (response.ok) {
+        setFiles(files.filter(file => file._id !== fileId));
+        folder.folder.push({file_name:file.file_name, file_url:file.file_url})
+      } 
+    } catch (error) {
+      
+    }
+  }
+   const handleDrop=(e,folder)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    const fileId = e.dataTransfer.getData('fileId');
+    if (fileId) {
+      handleAddFile(fileId,folder);
+    }
+   }
+  const handleDropDelete = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const fileId = e.dataTransfer.getData('fileId');
+    if (fileId) {
+      handleDeleteFile(fileId);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   return (
@@ -148,9 +212,14 @@ const File = ({ members, owner }) => {
                       width="80px"
                       textAlign="center"
                       p={1}
-                      onDoubleClick={() => file.name_folder ? setFolder(file) : handleFileClick(file)}
+                      draggable
+                      onDragStart={(e) => e.dataTransfer.setData('fileId', file._id)} // Set fileId for drag
+                      onDoubleClick={() => file.name_folder ? handleFolderClick(file) : handleFileClick(file)} // Open dialog on folder click
+                      onDragOver={handleDragOver}
+                      onDrop={(e)=>file.name_folder?handleDrop(e,file):null}
                       sx={{
                         cursor: 'pointer',
+                        position: 'relative',
                       }}
                     >
                       {file.name_folder ? (
@@ -170,10 +239,40 @@ const File = ({ members, owner }) => {
             </Box>
           ))}
         </Box>
+
+        {/* Delete Icon */}
+        <IconButton
+          sx={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            backgroundColor: 'red',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'darkred',
+            },
+          }}
+          onDragOver={handleDragOver}
+          onDrop={handleDropDelete}
+        >
+          <DeleteIcon />
+        </IconButton>
       </Box>
       
       {/* File Preview Overlay */}
       {selectedFile && <FilePreviewOverlay file={selectedFile} onClose={handleCloseFilePreview} />}
+      
+      {/* Folder Dialog */}
+      {selectedFolder && (
+        <FolderDialog
+          open={folderDialogOpen}
+          folder={selectedFolder}
+          onClose={handleCloseFolderDialog}
+          handleFileClick={handleFileClick}
+          files={files}
+          setFiles={setFiles}
+        />
+      )}
     </Box>
   );
 };

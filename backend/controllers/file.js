@@ -36,3 +36,30 @@ export const saveFile=async(req,res)=>{
         res.status(400).json(`Internal Server Error`);
     }
 }
+
+export const addfiletofolder=async(req,res)=>{
+    const{fileid,folderid}=req.params;
+    try {
+        const file=await File.findById(fileid);
+        const fileData={file_name:file.file_name, file_url:file.file_url};
+        const folder=await File.findById(folderid);
+        folder.folder.push(fileData);
+        await folder.save();
+        const deleteFile=await File.deleteOne({_id:fileid});
+        res.status(200).json({file_name:fileData.file_name,file_url:fileData.file_url});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(`Error`);
+    }
+}
+
+export const deleteFiles=async(req,res)=>{
+    const {fileid}=req.params;
+    try {
+        const deleteFile=await File.deleteOne({_id:fileid});
+        res.status(200).json(`Success`);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(`Error`);
+    }
+}

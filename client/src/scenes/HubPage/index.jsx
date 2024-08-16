@@ -19,7 +19,8 @@ const socket = io('https://surf-jtn5.onrender.com');
 const HubPage = () => {
   const navigate = useNavigate();
   const { hubId,ownerId,hubname } = useParams();
-  //console.log(owner);
+  const containerRef = useRef(null);
+  const bottomRef = useRef(null);
   const {username}=useSelector((state)=>state.user);
   const token = useSelector((state) => state.token);
   const [qubes,setQubes]=useState([]);
@@ -85,7 +86,7 @@ const HubPage = () => {
         console.error('Error fetching hubs:', error);
       }
     };
-
+    
     const fetchMembers=async()=>{
       console.log(hubId);
       try {
@@ -106,7 +107,7 @@ const HubPage = () => {
     socket.on('receiveMessage', (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
-     
+    
     return () => {
       socket.off('receiveMessage');
     };
@@ -115,7 +116,11 @@ const HubPage = () => {
     
     
   }, []);
-  
+  useEffect(() => {
+    if (bottomRef.current)
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const joinZone = async(zone) => {
     //console.log(zone);
     try {
@@ -581,13 +586,14 @@ const HubPage = () => {
         },
       }}
     >
-      <Box p={2} bgcolor="#36393f" borderRadius="8px">
+      <Box p={2} bgcolor="#36393f" borderRadius="8px" ref={containerRef}>
         <Typography variant="h1">Welcome to the {selectedZone.name} Zone</Typography>
         <Typography variant="h3" sx={{ color: '#9e9e9e' }}>Talk with your Qube members here. We organise your files for you !</Typography>
       </Box>
       {messages?.map((message, index) => (
         <ChatItem key={index} message={message} isOwnMessage={message.senderName===username?true:null} />
       ))}
+      <div ref={bottomRef} />
     </Box>
     {/* Message Widget Area */}
     <Box sx={{ mt: 2 }}>
