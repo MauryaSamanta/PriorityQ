@@ -9,7 +9,8 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
   const [isUserProfileDialogOpen, setIsUserProfileDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
   const [code, setCode] = useState(null);
-  const {_id}=useSelector((state)=>state.user);
+  const { _id } = useSelector((state) => state.user);
+
   const handleOpenAddMemberDialog = async () => {
     try {
       const response = await fetch(`https://surf-jtn5.onrender.com/invite/${hubId}`, {
@@ -24,7 +25,9 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
 
     setIsAddMemberDialogOpen(true);
   };
+  const handleaddOwner=async()=>{
 
+  }
   const handleCloseAddMemberDialog = () => {
     setIsAddMemberDialogOpen(false);
   };
@@ -44,26 +47,21 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
       <Box position="relative">
         <DialogTitle
           sx={{
-            backgroundColor: '#1f1f1f', // Dark background for the title
+            backgroundColor: '#1f1f1f',
             color: '#fff',
             fontWeight: 'bold',
             fontSize: '1.25rem',
             borderBottom: '1px solid #333',
-            //paddingRight: '120px', // Ensure there's space for the button
           }}
         >
           Members
-            
-           {_id===owner?( <Button
+          {_id === owner && (
+            <Button
               variant="contained"
               color="primary"
               size="small"
               sx={{
-                //position: 'absolute',
-                //right: 16,
-                //top: '50%',
-                //transform: 'translateY(-50%)',
-                marginLeft:'320px',
+                marginLeft: '320px',
                 backgroundColor: '#635acc',
                 color: '#fff',
                 '&:hover': {
@@ -76,12 +74,12 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
               onClick={handleOpenAddMemberDialog}
             >
               Add Member
-            </Button>):(<></>)}
-         
+            </Button>
+          )}
         </DialogTitle>
         <DialogContent
           sx={{
-            background: 'linear-gradient(180deg, #1f1f1f 0%, #2a2a2a 100%)', // Gradient background
+            background: 'linear-gradient(180deg, #1f1f1f 0%, #2a2a2a 100%)',
             padding: 3,
             borderRadius: 2,
           }}
@@ -97,11 +95,11 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
                     alignItems: 'center',
                     mb: 1,
                     borderRadius: 1,
-                    backgroundColor: '#333', // Dark background for list items
+                    backgroundColor: '#333',
                     boxShadow: 1,
                     transition: 'background-color 0.3s ease',
                     '&:hover': {
-                      backgroundColor: '#444', // Lighter gray on hover
+                      backgroundColor: '#444',
                     },
                   }}
                   onClick={() => handleMemberClick(member)}
@@ -117,9 +115,33 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
                       }} 
                     />
                     <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                      <Typography variant="body1" sx={{ flexGrow: 1, fontWeight: 'bold', color: '#fff' }}>{member.username}</Typography>
+                      <Typography variant="body1" sx={{ flexGrow: 1, fontWeight: 'bold', color: '#fff' }}>
+                        {member.username}
+                      </Typography>
                       {owner === member._id && (
                         <Typography variant="body2" sx={{ color: 'gray', ml: 2 }}>Owner</Typography>
+                      )}
+                      {_id === owner && member._id !== owner && (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          size="small"
+                          sx={{
+                            backgroundColor: '#635acc',
+                            color: '#fff',
+                            borderRadius: 20,
+                            paddingX: 2,
+                            paddingY: 0.5,
+                            '&:hover': {
+                              backgroundColor: '#4a4b9b',
+                            },
+                            ml: 2,
+                            whiteSpace: 'nowrap',
+                          }}
+                          onClick={()=>handleaddOwner()}
+                        >
+                          + Owner
+                        </Button>
                       )}
                     </Box>
                   </ListItem>
@@ -128,7 +150,7 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
             </List>
           ) : (
             <Typography variant="body2" color="textSecondary" align="center">
-              No members available
+              Invite your friends to your hub 😀
             </Typography>
           )}
           <AddMemberDialog open={isAddMemberDialogOpen} onClose={handleCloseAddMemberDialog} code={code} />

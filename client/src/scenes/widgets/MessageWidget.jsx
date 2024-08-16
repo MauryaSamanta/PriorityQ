@@ -131,18 +131,7 @@ const MessageWidget = ({ zone, message, setMessage }) => {
     >
       {!filePreview && folderFiles.length === 0 ? (
         <Box>
-          <IconButton>
-            <BoldIcon />
-          </IconButton>
-          <IconButton>
-            <ItalicIcon />
-          </IconButton>
-          <IconButton>
-            <ListIcon />
-          </IconButton>
-          <IconButton onClick={handleEmojiClick}>
-            <EmojiIcon />
-          </IconButton>
+          
           <input
             accept="image/*,application/pdf"
             style={{ display: 'none' }}
