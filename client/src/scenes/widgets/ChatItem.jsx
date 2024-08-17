@@ -30,8 +30,8 @@ const ChatItem = ({ message, isOwnMessage }) => {
       hub_id: hubId.hubId,
       file_url: file,
       file_name: name_file,
-      name_folder:name_folder,
-      folder:folder
+      name_folder: name_folder,
+      folder: folder
     };
     try {
       const response = await fetch(`https://surf-jtn5.onrender.com/file/new`, {
@@ -48,10 +48,24 @@ const ChatItem = ({ message, isOwnMessage }) => {
     }
   };
 
-  const getSentimentColor = (text) => {
-    if (text.includes("good")) return '#4caf50'; // Green for positive
-    if (text.includes("bad")) return '#f44336'; // Red for negative
-    return '#9e9e9e'; // Grey for neutral
+  const handleHashtagClick = (hashtag) => {
+    
+  };
+
+  const renderHighlightedMessage = (text) => {
+    return text.split(/(#\w+)/g).map((part, index) =>
+      part.match(/#\w+/) ? (
+        <span
+          key={index}
+          style={{ color: '#854be3', cursor: 'pointer' }}
+          onClick={() => handleHashtagClick(part)}
+        >
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
   };
 
   return (
@@ -92,8 +106,6 @@ const ChatItem = ({ message, isOwnMessage }) => {
               alignItems: 'center',
               justifyContent: 'center',
               bgcolor: 'parent',
-              //p: 2,
-              //border: '1px solid #ccc',
               borderRadius: '8px',
             }}
           >
@@ -202,9 +214,9 @@ const ChatItem = ({ message, isOwnMessage }) => {
         )}
 
         {text && (
-          <Typography variant="body1" sx={{ color: getSentimentColor(text) }}>
-            {text}
-          </Typography>
+             <Typography variant="body1" >
+             {renderHighlightedMessage(text)}
+           </Typography>
         )}
 
         <Box

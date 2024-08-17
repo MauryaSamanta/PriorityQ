@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, IconButton, Menu, MenuItem, Typography, Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText } from '@mui/material';
-import BoldIcon from '@mui/icons-material/FormatBold';
-import ItalicIcon from '@mui/icons-material/FormatItalic';
-import ListIcon from '@mui/icons-material/FormatListBulleted';
-import EmojiIcon from '@mui/icons-material/EmojiEmotions';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import FolderIcon from '@mui/icons-material/Folder'; // Import Folder Icon
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -12,7 +8,7 @@ import io from 'socket.io-client';
 
 const socket = io('https://surf-jtn5.onrender.com');
 
-const MessageWidget = ({ zone, message, setMessage }) => {
+const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [filePreview, setFilePreview] = useState(null); // State for file preview URL or name
   const [file, setFile] = useState(null); // State for the actual file
@@ -74,7 +70,9 @@ const MessageWidget = ({ zone, message, setMessage }) => {
         file: null,
         reactions: null,
         zone: zone,
+        qube:qube
       };
+      console.log(qube);
       socket.emit('sendMessage', newMessage);
     } else if (folderFiles.length > 0) {
       const formData = new FormData();
@@ -87,6 +85,7 @@ const MessageWidget = ({ zone, message, setMessage }) => {
       formData.append("senderAvatar", avatar_url);
       formData.append("sender_id", _id);
       formData.append("zone", zone);
+      formData.append("qube",qube);
       try {
         const result = await fetch(`https://surf-jtn5.onrender.com/message/folder`, {
           method: "POST",
@@ -105,6 +104,7 @@ const MessageWidget = ({ zone, message, setMessage }) => {
       formData.append("sender_id", _id);
       formData.append("file", file);
       formData.append("zone", zone);
+      formData.append("qube",qube);
       try {
         const result = await fetch(`https://surf-jtn5.onrender.com/message/file`, {
           method: "POST",
@@ -119,6 +119,22 @@ const MessageWidget = ({ zone, message, setMessage }) => {
     handleDeleteFile();
   };
 
+  // Function to render the message with highlighted hashtags
+  const renderHighlightedMessage = (text) => {
+    const parts = text?.split(/(#\w+)/g); // Split the text into parts using regex to match hashtags
+    return parts?.map((part, index) =>
+      part.startsWith('#') ? (
+        <span key={index} style={{ color: '#1E90FF', fontWeight: 'bold' }}>
+          {part}
+        </span>
+      ) : (
+        <span key={index} style={{ color: 'white' }}>
+          {part}
+        </span>
+      )
+    );
+  };
+
   return (
     <Box
       alignItems="center"
@@ -131,7 +147,6 @@ const MessageWidget = ({ zone, message, setMessage }) => {
     >
       {!filePreview && folderFiles.length === 0 ? (
         <Box>
-          
           <input
             accept="image/*,application/pdf"
             style={{ display: 'none' }}
@@ -161,12 +176,11 @@ const MessageWidget = ({ zone, message, setMessage }) => {
         <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
           <Box mt={1}>
             {isImage ? (
-             <img
-             src={filePreview}
-             alt="file preview"
-             style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px', margin: '0 16px' }}
-           />
-           
+              <img
+                src={filePreview}
+                alt="file preview"
+                style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '8px', margin: '0 16px' }}
+              />
             ) : (
               <Typography variant="body1" sx={{ margin: '0 16px' }}>
                 {filePreview}
@@ -186,6 +200,7 @@ const MessageWidget = ({ zone, message, setMessage }) => {
           onChange={(e) => setMessage(e.target.value)}
           fullWidth
           sx={{ ml: 2, mr: 2 }}
+          
         />
         <Button
           variant="contained"
@@ -234,18 +249,18 @@ const MessageWidget = ({ zone, message, setMessage }) => {
             onChange={(e) => setFolderName(e.target.value)}
           />
           <List>
-            {folderFiles.map((file, index) => (
+            {folderFiles.map((folderFile, index) => (
               <ListItem key={index}>
-                <ListItemText primary={file.name} />
+                <ListItemText primary={folderFile.name} />
               </ListItem>
             ))}
           </List>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose} color="secondary">
+          <Button onClick={handleDialogClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={sendMessage} color="primary">
+          <Button onClick={sendMessage} color="primary" disabled={!folderName.trim()}>
             Send
           </Button>
         </DialogActions>
