@@ -13,6 +13,7 @@ import zoneRoute from "./routes/zone.js";
 import messageRoute from "./routes/message.js";
 import inviteRoute from "./routes/invites.js";
 import fileRoute from "./routes/file.js";
+import tagRoute from "./routes/tag.js";
 import Message from "./models/Message.js";
 import { v2 as cloudinary } from "cloudinary";
 import { attachmentsMulter } from "./middlewares/multer.js";
@@ -43,6 +44,7 @@ app.use("/zone", zoneRoute);
 app.use("/message",messageRoute);
 app.use("/invite",inviteRoute);
 app.use("/file",fileRoute);
+app.use("/tag",tagRoute);
 // app.use("/api/v1/chat", chatRoute);
 // app.use("/api/v1/admin", adminRoute);
 
@@ -65,18 +67,28 @@ io.on('connection', (socket) => {
   socket.on('sendMessage',async(message) => {
     //const { zone, message } = data;
     //const file=req.file;
-    const messageforDB={
+    io.to(message.zone).emit('receiveMessage', message);
+    const hashtagRegex = /#\w+/g;
+    const hashtags = message.text.match(hashtagRegex);
+
+    
+    let messageforDB={
       text:message.text,
       senderAvatar:message.senderAvatar,
       senderName:message.senderName,
       file:'',
       sender_id:message.sender_id,
-      zone_id:message.zone
+      zone_id:message.zone,
+      qube_id:message.qube
     }
+    if(hashtags){
+      messageforDB={...messageforDB,tags:hashtags[0]};
+    }
+
     const newMessage=new Message(messageforDB);
     const savednewMessage=await newMessage.save();
-
-    io.to(message.zone).emit('receiveMessage', message);}
+    
+   }
     
     //console.log(`Message sent to zone ${message.zone}: ${message}`);
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip} from '@mui/material';
+import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery} from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
 import SearchIcon from '@mui/icons-material/Search';
@@ -10,9 +10,11 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HubOverview from 'scenes/widgets/HubOverview';
 import CreateQubeDialog from 'scenes/Dialog/CreateQubeDialog';
 import CreateZoneDialog from 'scenes/Dialog/CreateZoneDialog';
+import TagStoreDialog from 'scenes/Dialog/TagStoreDialog';
 import QubeOverview from 'scenes/widgets/QubeOverview';
 import MessageWidget from 'scenes/widgets/MessageWidget';
 import ChatItem from 'scenes/widgets/ChatItem';
+import MobileHubPage from 'scenes/widgets/MobileHubPage';
 import  io  from 'socket.io-client';
 const socket = io('https://surf-jtn5.onrender.com');
 
@@ -21,7 +23,7 @@ const HubPage = () => {
   const { hubId,ownerId,hubname } = useParams();
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
-  const {username}=useSelector((state)=>state.user);
+  const {_id,username}=useSelector((state)=>state.user);
   const token = useSelector((state) => state.token);
   const [qubes,setQubes]=useState([]);
   const [selectedQube, setSelectedQube] = useState(null);
@@ -30,10 +32,13 @@ const HubPage = () => {
   const [members,setMembers]=useState([]);
   const [messages,setMessages]=useState([]);
   const [message,setMessage]=useState('');
+  const [storeDialog,setStoreDialog]=useState(false);
+  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
   //const [messages,setMessages]=useState([]);
   const theme = useTheme();
   const fetchZones=async(qube_id)=>{
+    setZones([]);
     try {
       const response=await fetch(`https://surf-jtn5.onrender.com/qube/${qube_id}/zone`,{
         method:"GET",
@@ -41,7 +46,9 @@ const HubPage = () => {
       })
       const data=await response.json();
       setZones(data.zones);
-      console.log(zones);
+      setSelectedZone(data.zones[0]);
+      joinZone(data.zones[0]._id);
+      //console.log(zones);
     } catch (error) {
       
     }
@@ -144,7 +151,13 @@ const HubPage = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+  const handleOpenStoreDialog = () => {
+    setStoreDialog(true);
+  };
 
+  const handleCloseStoreDialog = () => {
+    setStoreDialog(false);
+  };
   const handleCreateQube = async(name,nickname) => {
     //console.log('Qube Created:', name);
     const qubeData={qube_name:name,nick_name:nickname};
@@ -170,101 +183,11 @@ const HubPage = () => {
   };
 
 
-  // const qubes = [
-  //   { id: 1, name: 'Qube 1' },
-  //   { id: 2, name: 'Qube 2' },
-  //   { id: 3, name: 'Qube 3' },
-  // ];
 
-  // const zones = selectedQube ? [
-  //   { id: 1, name: 'Zone 1' },
-  //   { id: 2, name: 'Zone 2' },
-  //   { id: 3, name: 'Zone 3' },
-  // ] : [];
-
-  const hexagonStyle = {
-    width: '50px',
-    height: '28.87px',
-    backgroundColor: '#40444b',
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'white',
-    fontWeight: 'bold',
-    marginRight: '16px',
-    marginBottom: '14.43px',
-  };
-
-  const hexagonBeforeAfter = {
-    content: '""',
-    position: 'absolute',
-    width: '0',
-    borderLeft: '25px solid transparent',
-    borderRight: '25px solid transparent',
-  };
-
-  const hexagonBefore = {
-    ...hexagonBeforeAfter,
-    borderBottom: '14.43px solid #40444b',
-    top: '-14.43px',
-  };
-
-  const hexagonAfter = {
-    ...hexagonBeforeAfter,
-    borderTop: '14.43px solid #40444b',
-    bottom: '-14.43px',
-  };
   
 
-  // const messages = [
-  //   {
-  //     text: 'This is a great message!',
-  //     file: null,
-  //     senderName: 'John Doe',
-  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
-  //     reactions: [{ type: 'like' }],
-  //   },
-  //   {
-  //     text: 'This is a great message!',
-  //     file: null,
-  //     senderName: 'John Doe',
-  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
-  //     reactions: [{ type: 'like' }],
-  //   },
-  //   {
-  //     text: 'This is a great message!',
-  //     file: null,
-  //     senderName: 'John Doe',
-  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
-  //     reactions: [{ type: 'like' }],
-  //   },
-  //   {
-  //     text: 'This is a great message!',
-  //     file: null,
-  //     senderName: 'John Doe',
-  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
-  //     reactions: [{ type: 'like' }],
-  //   },
-  //   {
-  //     text: 'This is a great message!',
-  //     file: null,
-  //     senderName: 'John Doe',
-  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
-  //     reactions: [{ type: 'like' }],
-  //   },
-  //   {
-  //     text: 'This is a great message!',
-  //     file: null,
-  //     senderName: 'John Doe',
-  //     senderAvatar: 'https://i.pravatar.cc/150?img=1',
-  //     reactions: [{ type: 'like' }],
-  //   }
-    
-  // ];
-
-  return (
-    <Box height="100vh">
+  return (<>
+   {isNonMobileScreens?( <Box height="100vh">
   <AppBar position="static" sx={{ bgcolor: 'primary.main', color: 'black', boxShadow: '0 4px 20px rgba(0,0,0,0.2)', height: '55px' }}>
     <Toolbar sx={{ justifyContent: 'center' }}>
       <Box
@@ -283,25 +206,7 @@ const HubPage = () => {
           }
         }}
       >
-        <SearchIcon sx={{ color: 'primary.main' }} />
-        <InputBase
-          placeholder="Search for anything in your qube"
-          sx={{
-            height: '25px',
-            color: 'inherit',
-            ml: 1,
-            width: '100%',
-            pl: 1,
-            '& .MuiInputBase-input': {
-              padding: '8px',
-              transition: 'width 0.3s ease',
-              width: '50ch',
-              '&:focus': {
-                width: '70ch',
-              },
-            },
-          }}
-        />
+        
       </Box>
     </Toolbar>
   </AppBar>
@@ -395,7 +300,7 @@ const HubPage = () => {
 >
               <Box
     sx={{
-      width: selectedQube === qube._id ? 80 : 60,  // Change width when selected
+      width: selectedQube === qube._id ? 60 : 60,  // Change width when selected
       height: selectedQube === qube._id ? 60 : 60, // Change height when selected
       clipPath: selectedQube === qube._id ? 'none' : 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
       bgcolor: selectedQube === qube._id ? '#F5A623' : '#40444b', // Change background color when selected
@@ -514,6 +419,21 @@ const HubPage = () => {
 <CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
       </Box>
     )}
+    <Button 
+  variant="contained" 
+  color="primary" 
+  size="small"
+  sx={{
+    fontSize: '0.75rem',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    textTransform: 'none',
+  }}
+  onClick={handleZoneOpenDialog}
+>
+  Create a Zone
+</Button>
+<CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
   </Box>
 ) : (
   <HubOverview members={members} owner={ownerId} />
@@ -531,37 +451,30 @@ const HubPage = () => {
   >
     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
       <Typography variant="h6">{selectedZone.name}</Typography>
-      <Box>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<EarbudsIcon />}
-          sx={{
-            backgroundColor: '#FFEB3B',
-            color: '#36393f',
-            mr: 2,
-            '&:hover': {
-              backgroundColor: '#FFD700',
-            }
-          }}
-        >
-          Gather
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          startIcon={<AccountTreeIcon />}
-          sx={{
-            backgroundColor: '#FFEB3B',
-            color: '#36393f',
-            '&:hover': {
-              backgroundColor: '#FFD700',
-            }
-          }}
-        >
-          Mindmap
-        </Button>
-      </Box>
+      <Button
+    variant="contained"
+    color="primary"
+    sx={{
+      ml: 'auto',
+      backgroundColor: '#854be3',
+      color: 'white',
+      '&:hover': {
+        backgroundColor: '#6f3cbe',
+      },
+      borderRadius: '20px',
+      textTransform: 'none',
+      padding: '6px 16px',
+    }}
+    onClick={handleOpenStoreDialog}
+  >
+    #store
+  </Button>
+  <TagStoreDialog
+        open={storeDialog}
+        qubeid={selectedQube}
+        onClose={handleCloseStoreDialog}
+       
+      />
     </Box>
     
     {/* Scrollable Area */}
@@ -589,23 +502,50 @@ const HubPage = () => {
       <Box p={2} bgcolor="#36393f" borderRadius="8px" ref={containerRef}>
         <Typography variant="h1">Welcome to the {selectedZone.name} Zone</Typography>
         <Typography variant="h3" sx={{ color: '#9e9e9e' }}>Talk with your Qube members here. We organise your files for you !</Typography>
+        
       </Box>
       {messages?.map((message, index) => (
-        <ChatItem key={index} message={message} isOwnMessage={message.senderName===username?true:null} />
+        <ChatItem key={index} message={message} isOwnMessage={message.sender_id===_id?true:null} />
       ))}
       <div ref={bottomRef} />
     </Box>
     {/* Message Widget Area */}
     <Box sx={{ mt: 2 }}>
-      <MessageWidget zone={selectedZone._id} message={message} setMessage={setMessage} />
+      <MessageWidget qube={selectedQube} zone={selectedZone._id} message={message} setMessage={setMessage} />
     </Box>
   </Box>
 ) : (
   selectedQube && !selectedZone && (<QubeOverview qubeid={selectedQube} />)
 )}
   </Box>
-</Box>
-
+</Box>):(<MobileHubPage
+  hubname={hubname}
+  qubes={qubes}
+  zones={zones}
+  members={members}
+  ownerId={ownerId}
+  messages={messages}
+  _id={_id} // Assuming this is the ID for the logged-in user
+  setMessage={setMessage}
+  message={message}
+  setSelectedQube={setSelectedQube}
+  fetchZones={fetchZones}
+  setSelectedZone={setSelectedZone}
+  joinZone={joinZone}
+  handleOpenDialog={handleOpenDialog}
+  handleCloseDialog={handleCloseDialog}
+  handleCreateQube={handleCreateQube}
+  openDialog={openDialog}
+  handleZoneOpenDialog={handleZoneOpenDialog}
+  handleZoneCloseDialog={handleZoneCloseDialog}
+  handleCreateZone={handleCreateZone}
+  openZoneDialog={openZoneDialog}
+  handleOpenStoreDialog={handleOpenStoreDialog}
+  storeDialog={storeDialog}
+  handleCloseStoreDialog={handleCloseStoreDialog}
+/>
+)}
+</>
   );
 };
 

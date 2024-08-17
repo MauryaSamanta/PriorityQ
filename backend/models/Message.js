@@ -34,7 +34,14 @@ const messageSchema = new Schema(
       ref: "Zone",
       required: true,
     },
-
+    qube_id:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Qube",
+      required: true,
+    },
+    tags:{
+      type:String
+    }
   },
   {
     timestamps: true,

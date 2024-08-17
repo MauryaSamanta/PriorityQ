@@ -18,6 +18,11 @@ export const createQube=async(req,res)=>{
             user_id:req.user.id
         })
         const savedQubeMember=await newQubeMember.save();
+        const newZone=new Zone({
+            qube_id:savedQube.id.toString(),
+            name:'Discussion'
+        });
+        const savedZone=await newZone.save();
         res.status(200).json({savedQube, savedQubeMember});
     } catch (error) {
         console.log(error);

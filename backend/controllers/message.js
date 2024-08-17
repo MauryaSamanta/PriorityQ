@@ -14,7 +14,7 @@ export const getMessages=async(req,res)=>{
 
 export const sendMessagewithFile=async(req,res)=>{
     const file=req.file;
-    const {text,senderAvatar,senderName,sender_id, zone}=req.body;
+    const {text,senderAvatar,senderName,sender_id, zone,qube}=req.body;
     cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
@@ -31,17 +31,23 @@ export const sendMessagewithFile=async(req,res)=>{
       }
       
       );
+      const hashtagRegex = /#\w+/g;
+      const hashtags = text.match(hashtagRegex);
+
       try {
-        const messageforDB={
+        let messageforDB={
             text:text,
             senderAvatar:senderAvatar,
             senderName:senderName,
             name_file:file.originalname,
             file:result.secure_url,
             sender_id:sender_id,
-            zone_id:zone
+            zone_id:zone,
+            qube_id:qube
         };
-        
+        if(hashtags){
+          messageforDB={...messageforDB,tags:hashtags[0]};
+        }
         req.io.to(zone).emit('receiveMessage', messageforDB);
         const newMessage=new Message(messageforDB);
         const savednewMessage=await newMessage.save();
@@ -57,7 +63,7 @@ export const sendMessagewithFolder=async(req,res)=>{
       const files=req.files;
       // console.log("le");
       // console.log(files);
-      const {text,name_folder,senderAvatar,senderName,sender_id, zone}=req.body;
+      const {text,name_folder,senderAvatar,senderName,sender_id, zone,qube}=req.body;
       console.log(name_folder);
       cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -81,19 +87,25 @@ export const sendMessagewithFolder=async(req,res)=>{
           );
         });
       });
+      const hashtagRegex = /#\w+/g;
+      const hashtags = text.match(hashtagRegex);
+
       try {
         const results = await Promise.all(uploadPromises);
         console.log(results);
-        const messageforDB={
+        let messageforDB={
           text:text,
           senderAvatar:senderAvatar,
           senderName:senderName,
           name_folder:name_folder,
           folder:results,
           sender_id:sender_id,
-          zone_id:zone
+          zone_id:zone,
+          qube_id:qube
       };
-      
+      if(hashtags){
+        messageforDB={...messageforDB,tags:hashtags[0]};
+      }
       req.io.to(zone).emit('receiveMessage', messageforDB);
       const newMessage=new Message(messageforDB);
       const savednewMessage=await newMessage.save();
