@@ -82,7 +82,7 @@ const HomePage = () => {
               }}
             />
             )}
-             <Button 
+             {hubs.length>0?(<Button 
               variant="contained" 
               color="primary" 
               onClick={handleJoinHubClick}
@@ -96,7 +96,7 @@ const HomePage = () => {
               }}
             >
               Join Hub
-            </Button>
+            </Button>):(<></>)}
           </Box>
         </FlexBetween>
         <Box display="flex" justifyContent="space-between" width="100%">
