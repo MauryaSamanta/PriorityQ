@@ -1,5 +1,7 @@
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
+import LandingPage from "scenes/LandingPage";
 import HomePage from "scenes/homePage";
+import AboutUs from "scenes/AboutUs";
 import LoginPage from "scenes/loginPage";
 import HubPage from "scenes/HubPage";
 import { useMemo } from "react";
@@ -24,11 +26,13 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage/>}/>
             <Route
               path="/home"
-              element={isAuth? <HomePage />:<Navigate to="/" /> }
+              element={isAuth? <HomePage />:<Navigate to="/login" /> }
             />
+            <Route path="/about-us" element={<AboutUs/>}/>
             <Route
               path="/hub/:hubId/:ownerId/:hubname"
               element={isAuth ? <HubPage hub={hub}/> : <Navigate to="/" />}

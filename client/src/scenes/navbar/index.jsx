@@ -83,8 +83,8 @@ const Navbar = () => {
                 <LightMode sx={{ color: dark, fontSize: "25px" }} />
               )}
             </IconButton>
-            <Notifications sx={{ fontSize: "25px" }} />
-            <Help sx={{ fontSize: "25px" }} />
+            
+           
             <Button
               sx={{ border: '2px solid', borderColor: 'primary.main' }}
               color="primary"

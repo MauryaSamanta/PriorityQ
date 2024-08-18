@@ -367,38 +367,36 @@ const HubPage = () => {
   >
     <Typography variant="h6" mb={2} align="center">Zones</Typography>
     {zones.length > 0 ? (
-      <List component="nav">
-        {zones.map((zone) => (
-  <ListItem
-    button
-    key={zone._id}
-    onClick={() => {setSelectedZone(zone); joinZone(zone._id);}}
-    sx={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      '&.Mui-selected': {
-        bgcolor: '#40444b',
-        '& .arrow': {
-          transform: 'rotate(90deg)',
-        },
-      },
-      '&:hover': {
-        bgcolor: '#40444b',
-      },
-      '& .arrow': {
-        transition: 'transform 0.3s ease',
-      },
-    }}
-  >
-    <Box display="flex" alignItems="center">
-      <Typography sx={{ flexGrow: 1 }}>{zone.name}</Typography>
-    </Box>
-    <ChevronRightIcon className="arrow" />
-  </ListItem>
-))}
-
-      </List>
+     <List component="nav" width="100%">
+     {zones.map((zone) => (
+       <ListItem
+         button
+         key={zone._id}
+         onClick={() => { setSelectedZone(zone); joinZone(zone._id); }}
+         sx={{
+           display: 'flex',
+           alignItems: 'center',
+           justifyContent: 'space-between',
+           width: '100%',
+           bgcolor: selectedZone._id === zone._id ? '#555759' : 'transparent', // Conditional bgcolor
+           borderRadius: selectedZone._id === zone._id ? '4px' : '0px', // Conditional border-radius
+           '&:hover': {
+             bgcolor: selectedZone._id !== zone._id ? '#40444b' : '#555759', // Change hover color if not selected
+           },
+           '& .arrow': {
+             transition: 'transform 0.3s ease',
+             transform: selectedZone._id === zone._id ? 'rotate(90deg)' : 'rotate(0deg)', // Conditional arrow rotation
+           },
+         }}
+       >
+         <Box display="flex" alignItems="center">
+           <Typography sx={{ flexGrow: 1 }}>{zone.name}</Typography>
+         </Box>
+         <ChevronRightIcon className="arrow" />
+       </ListItem>
+     ))}
+   </List>
+   
     ) : (
       <Box display="flex" flexDirection="column" alignItems="center">
         
@@ -504,11 +502,13 @@ const HubPage = () => {
         <Typography variant="h3" sx={{ color: '#9e9e9e' }}>Talk with your Qube members here. We organise your files for you !</Typography>
         
       </Box>
+      
       {messages?.map((message, index) => (
         <ChatItem key={index} message={message} isOwnMessage={message.sender_id===_id?true:null} />
       ))}
       <div ref={bottomRef} />
-    </Box>
+      </Box>
+    
     {/* Message Widget Area */}
     <Box sx={{ mt: 2 }}>
       <MessageWidget qube={selectedQube} zone={selectedZone._id} message={message} setMessage={setMessage} />
