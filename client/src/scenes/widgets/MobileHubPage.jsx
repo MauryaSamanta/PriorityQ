@@ -198,9 +198,16 @@ const MobileHubPage = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                bgcolor: selectedZone?._id === zone._id ? '#555759' : 'transparent', // Conditional bgcolor
+                borderRadius: selectedZone?._id === zone._id ? '4px' : '0px', // Conditional border-radius
                 '&:hover': {
-                  bgcolor: '#40444b',
+                bgcolor: selectedZone?._id !== zone._id ? '#40444b' : '#555759', // Change hover color if not selected
                 },
+                '& .arrow': {
+                transition: 'transform 0.3s ease',
+                transform: selectedZone?._id === zone._id ? 'rotate(90deg)' : 'rotate(0deg)', // Conditional arrow rotation
+                },
+                
               }}
             >
               <Typography sx={{ flexGrow: 1 }}>{zone.name}</Typography>
