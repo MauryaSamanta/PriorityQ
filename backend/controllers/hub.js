@@ -1,6 +1,7 @@
 import Hub from "../models/Hub.js";
 import Hubmembers from "../models/Hubmembers.js";
 import Qube from "../models/Qube.js";
+import Qubemembers from "../models/Qubemembers.js";
 import { v2 as cloudinary } from "cloudinary";
 export const createHub=async(req,res)=>{
     const {name, description}=req.body;
@@ -97,9 +98,11 @@ export const listUsersInHub = async (req, res) => {
 
   export const listQubesInHub=async(req,res)=>{
     const hubid=req.params.hubid;
+    const id=req.user.id;
     console.log(hubid);
     try {
         const qubes=await Qube.find({hub_id:hubid});
+       // const qubes=myqubes.map(myqube=>myqube.qube_id);
         res.status(200).json({qubes});
     } catch (error) {
         console.log(error);

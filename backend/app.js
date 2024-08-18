@@ -8,6 +8,7 @@ import socketConfig from './socket.js';
 import authRoute from "./routes/auth.js";
 import userRoute from "./routes/user.js";
 import hubRoute from "./routes/hub.js";
+import wallRoute from "./routes/wallpaper.js";
 import qubeRoute from "./routes/qube.js";
 import zoneRoute from "./routes/zone.js";
 import messageRoute from "./routes/message.js";
@@ -35,6 +36,7 @@ app.use(cors());
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/hub",hubRoute);
+app.use("/wall",wallRoute);
 app.use("/qube",qubeRoute);
 app.use((req, res, next) => {
     req.io = io;

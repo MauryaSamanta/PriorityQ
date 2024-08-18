@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery,Drawer
-    , IconButton
+    , IconButton, Menu, MenuItem
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
 import SearchIcon from '@mui/icons-material/Search';
 import EarbudsIcon from '@mui/icons-material/Earbuds';
-import AccountTreeIcon from '@mui/icons-material/AccountTree'; 
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import MoreVertIcon from '@mui/icons-material/MoreVert'; 
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuIcon from '@mui/icons-material/Menu';
 import HubOverview from 'scenes/widgets/HubOverview';
 import CreateQubeDialog from 'scenes/Dialog/CreateQubeDialog';
 import CreateZoneDialog from 'scenes/Dialog/CreateZoneDialog';
+import EditQubeDialog from 'scenes/Dialog/EditQubeDialog';
 import TagStoreDialog from 'scenes/Dialog/TagStoreDialog';
 import QubeOverview from 'scenes/widgets/QubeOverview';
 import MessageWidget from 'scenes/widgets/MessageWidget';
@@ -40,6 +42,15 @@ const MobileHubPage = ({
   handleZoneCloseDialog,
   handleCreateZone,
   openZoneDialog,
+  editQube,
+  setEditQube,
+  handleOpenEditQubeDialog,
+  handleCloseEditQubeDialog,
+  handleEditQube,
+  OpenEditQubeDialog,
+  handleMenuClose,
+  anchorEl,
+  setAnchorEl,
   handleOpenStoreDialog,
   storeDialog,
   handleCloseStoreDialog
@@ -47,6 +58,7 @@ const MobileHubPage = ({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedQube, setSelectedQubeState] = useState(null);
   const [selectedZone, setSelectedZoneState] = useState(null);
+  //const [editQube,setEditQube]=useState(null);
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
 
@@ -74,7 +86,7 @@ const MobileHubPage = ({
               <MenuIcon />
             </IconButton>
           )}
-          <Typography variant="h6">{hubname}</Typography>
+         
         </Toolbar>
       </AppBar>
 
@@ -82,10 +94,10 @@ const MobileHubPage = ({
   <Box display="flex" height="100%" sx={{ width: '100%' }}>
     {/* Qubes Section */}
     <Box
-      width={selectedQube ? '30%' : '100%'} // Adjust width based on selection
+      width={selectedQube ? '60%' : '100%'} // Adjust width based on selection
       role="presentation"
       sx={{
-        height: '100%',
+        height: '100vh',
         display: 'flex',
         flexDirection: 'column',
         bgcolor: 'primary.main',
@@ -105,7 +117,7 @@ const MobileHubPage = ({
         {hubname}
       </Button>
 
-      <List>
+      <List height="100%">
         {qubes.map((qube) => (
           <ListItem
             button
@@ -135,41 +147,75 @@ const MobileHubPage = ({
                 }
               }}
             >
-              <Box
-                sx={{
-                  width: 50,
-                  height: 50,
-                  bgcolor: selectedQube === qube._id ? '#F5A623' : '#40444b',
-                  transition: 'all 0.3s ease',
-                  borderRadius: 2,
-                  marginBottom: '1rem',
-                  margin: '20px',
-                  borderColor: 'transparent',
-                  borderWidth: '2px',
-                  borderStyle: 'solid',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                  color: selectedQube === qube._id ? 'black' : 'white',
-                  '&:hover': {
-                    transform: 'scale(1.1)',
-                    borderColor: '#F5A623',
-                  },
-                }}
-              >
-                <Typography variant="body2" sx={{ lineHeight: 1 }}>
-                  {qube.nickname ? qube.nickname : qube.name}
-                </Typography>
-              </Box>
+               <Box
+      sx={{
+        position: 'relative', // Needed for positioning the icon
+        width: selectedQube === qube._id ? 50 : 50,
+        height: selectedQube === qube._id ? 50 : 50,
+        clipPath: selectedQube === qube._id
+          ? 'none'
+          : 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
+        bgcolor: selectedQube === qube._id ? '#F5A623' : '#40444b',
+        transition: 'all 0.3s ease',
+        borderRadius: 2,
+        marginBottom: '1rem',
+        margin: '20px',
+        borderColor: 'transparent',
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        color: selectedQube === qube._id ? 'black' : 'white',
+        '&:hover': {
+          transform: 'scale(1.1)',
+          borderColor: '#F5A623',
+        },
+      }}
+    >
+      {selectedQube === qube._id && (
+        <IconButton
+        sx={{
+          position: 'absolute',
+          top: '-8px', // Adjust to position closer to the edge
+          right: '-8px', // Adjust to position closer to the edge
+          color: 'black',
+          backgroundColor: 'white', // Add a white background for better contrast
+          boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)', // Optional: add some shadow for depth
+          padding: '2px', // Smaller padding for a more compact icon
+          borderRadius: '50%', // Make the background circular
+          zIndex: 1, // Ensure it stays on top
+        }}
+        onClick={()=>{setEditQube(qube); handleOpenEditQubeDialog();}}
+      >
+        <MoreVertIcon fontSize="small" />
+      </IconButton>
+      )}
+      <Typography variant="body2" sx={{ lineHeight: 1 }}>
+        {qube.nickname ? qube.nickname : qube.name}
+      </Typography>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem >Edit Qube</MenuItem>
+        
+      </Menu>
+    </Box>
             </Tooltip>
           </ListItem>
         ))}
-      </List>
-
-      <Button color="secondary" size="small" variant="contained" onClick={handleOpenDialog} sx={{ mt: 'auto' }}>
+        <Button color="secondary" size="small" variant="contained" onClick={handleOpenDialog} sx={{ mt: 'auto' }}>
         Create a Qube
       </Button>
+      </List>
+
+      
       <CreateQubeDialog open={openDialog} onClose={handleCloseDialog} onCreate={handleCreateQube} />
+      <EditQubeDialog qube={editQube} open={OpenEditQubeDialog} onClose={handleCloseEditQubeDialog} onEdit={handleEditQube}/>
     </Box>
 
     {/* Zones Section */}

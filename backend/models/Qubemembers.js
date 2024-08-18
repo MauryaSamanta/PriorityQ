@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 const qubeMemberSchema = new mongoose.Schema({
   qube_id: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Qube',
+    required: true
+  },
+  hub_id:{
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Hub',
     required: true
   },

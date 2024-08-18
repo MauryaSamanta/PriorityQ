@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery} from '@mui/material';
+import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery
+  , MenuItem, IconButton,Menu
+} from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
 import SearchIcon from '@mui/icons-material/Search';
 import EarbudsIcon from '@mui/icons-material/Earbuds';
 import AccountTreeIcon from '@mui/icons-material/AccountTree'; 
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HubOverview from 'scenes/widgets/HubOverview';
 import CreateQubeDialog from 'scenes/Dialog/CreateQubeDialog';
@@ -16,6 +19,7 @@ import MessageWidget from 'scenes/widgets/MessageWidget';
 import ChatItem from 'scenes/widgets/ChatItem';
 import MobileHubPage from 'scenes/widgets/MobileHubPage';
 import  io  from 'socket.io-client';
+import EditQubeDialog from 'scenes/Dialog/EditQubeDialog';
 const socket = io('https://surf-jtn5.onrender.com');
 
 const HubPage = () => {
@@ -27,6 +31,7 @@ const HubPage = () => {
   const token = useSelector((state) => state.token);
   const [qubes,setQubes]=useState([]);
   const [selectedQube, setSelectedQube] = useState(null);
+  const [editQube, setEditQube]=useState(null);
   const [zones,setZones]=useState([]);
   const [selectedZone, setSelectedZone] = useState(null);
   const [members,setMembers]=useState([]);
@@ -34,7 +39,15 @@ const HubPage = () => {
   const [message,setMessage]=useState('');
   const [storeDialog,setStoreDialog]=useState(false);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+  const [anchorEl, setAnchorEl] = useState(null);
 
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
   //const [messages,setMessages]=useState([]);
   const theme = useTheme();
   const fetchZones=async(qube_id)=>{
@@ -181,10 +194,37 @@ const HubPage = () => {
            console.log(error);
      }
   };
-
-
-
-  
+  const [OpenEditQubeDialog, setOpenEditQubeDialog]=useState(false);
+  const handleOpenEditQubeDialog=()=>{
+    setOpenEditQubeDialog(true);
+  }
+  const handleCloseEditQubeDialog=()=>{
+    setOpenEditQubeDialog(false);
+    setEditQube(null);
+  }
+  const handleEditQube = async (name, nickname) => {
+    const qubeData = { qubename: name, qubenickname: nickname };
+    try {
+      const response = await fetch(`https://surf-jtn5.onrender.com/qube/${editQube._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(qubeData),
+      });
+      if(!name)
+        name=editQube.name;
+      if(!nickname)
+        nickname=editQube.nickname;
+      if (response.ok) {
+        setQubes((prevQubes) =>
+          prevQubes.map((qube) =>
+            qube._id === editQube._id ? { ...qube, name, nickname } : qube
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Error updating qube:', error);
+    }
+  };
 
   return (<>
    {isNonMobileScreens?( <Box height="100vh">
@@ -221,24 +261,7 @@ const HubPage = () => {
       display="flex"
       textAlign="center"
       flexDirection="column"
-      sx={{ 
-        overflowY: 'auto', 
-        '&::-webkit-scrollbar': {
-          width: '10px',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: '#888',
-          borderRadius: '10px',
-          border: '3px solid transparent',
-          backgroundClip: 'padding-box',
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-          background: '#555',
-        },
-        '&::-webkit-scrollbar-track': {
-          background: 'transparent',
-        },
-      }}
+      
     >
       <Tooltip
   title={
@@ -261,7 +284,24 @@ const HubPage = () => {
 >
   <Button color="secondary" onClick={()=>{setSelectedQube(null); setSelectedZone(null);}}>{hubname}</Button>
 </Tooltip>
-
+      <Box sx={{ 
+        overflowY: 'auto', 
+        '&::-webkit-scrollbar': {
+          width: '10px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '10px',
+          border: '3px solid transparent',
+          backgroundClip: 'padding-box',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#555',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+      }}>
       {qubes ? (
         <List component="nav">
           {qubes.map((qube) => (
@@ -298,34 +338,65 @@ const HubPage = () => {
     }
   }}
 >
-              <Box
-    sx={{
-      width: selectedQube === qube._id ? 60 : 60,  // Change width when selected
-      height: selectedQube === qube._id ? 60 : 60, // Change height when selected
-      clipPath: selectedQube === qube._id ? 'none' : 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
-      bgcolor: selectedQube === qube._id ? '#F5A623' : '#40444b', // Change background color when selected
-      transition: 'all 0.3s ease', // Smooth transition for all properties
-      borderRadius:2,
-      marginBottom: '1rem',
-      margin: '20px',
-      borderColor: 'transparent',
-      borderWidth: '2px',
-      borderStyle: 'solid',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      textAlign: 'center',
-      color: selectedQube === qube._id ? 'black' : 'white', // Change text color when selected
-      '&:hover': {
-        transform: 'scale(1.1)',
-        borderColor: '#F5A623',
-      },
-    }}
-  >
-    <Typography variant="body2" sx={{ lineHeight: 1 }}>
-      {qube.nickname?(qube.nickname):(qube.name)}
-    </Typography>
-  </Box>
+      <Box
+      sx={{
+        position: 'relative', // Needed for positioning the icon
+        width: selectedQube === qube._id ? 60 : 60,
+        height: selectedQube === qube._id ? 60 : 60,
+        clipPath: selectedQube === qube._id
+          ? 'none'
+          : 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
+        bgcolor: selectedQube === qube._id ? '#F5A623' : '#40444b',
+        transition: 'all 0.3s ease',
+        borderRadius: 2,
+        marginBottom: '1rem',
+        margin: '20px',
+        borderColor: 'transparent',
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        color: selectedQube === qube._id ? 'black' : 'white',
+        '&:hover': {
+          transform: 'scale(1.1)',
+          borderColor: '#F5A623',
+        },
+      }}
+    >
+      {selectedQube === qube._id && (
+        <IconButton
+        sx={{
+          position: 'absolute',
+          top: '-8px', // Adjust to position closer to the edge
+          right: '-8px', // Adjust to position closer to the edge
+          color: 'black',
+          backgroundColor: 'white', // Add a white background for better contrast
+          boxShadow: '0 0 5px rgba(0, 0, 0, 0.2)', // Optional: add some shadow for depth
+          padding: '2px', // Smaller padding for a more compact icon
+          borderRadius: '50%', // Make the background circular
+          zIndex: 1, // Ensure it stays on top
+        }}
+        onClick={()=>{setEditQube(qube); handleOpenEditQubeDialog();}}
+      >
+        <MoreVertIcon fontSize="small" />
+      </IconButton>
+      )}
+      <Typography variant="body2" sx={{ lineHeight: 1 }}>
+        {qube.nickname ? qube.nickname : qube.name}
+      </Typography>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem >Edit Qube</MenuItem>
+        
+      </Menu>
+    </Box>
+   
   </Tooltip>
             </ListItem>
           ))}
@@ -333,9 +404,12 @@ const HubPage = () => {
       ) : (
         <></>
       )}
+      </Box>
       <Button color="secondary" size="small" variant="contained" onClick={handleOpenDialog}>Create a Qube</Button>
       <CreateQubeDialog open={openDialog} onClose={handleCloseDialog} onCreate={handleCreateQube} />
+      <EditQubeDialog qube={editQube} open={OpenEditQubeDialog} onClose={handleCloseEditQubeDialog} onEdit={handleEditQube}/>
     </Box>
+    
     <Divider orientation="vertical" flexItem />
     {/* Zones List */}
 {selectedQube ? (
@@ -535,6 +609,15 @@ const HubPage = () => {
   handleOpenDialog={handleOpenDialog}
   handleCloseDialog={handleCloseDialog}
   handleCreateQube={handleCreateQube}
+  editQube={editQube}
+  setEditQube={setEditQube}
+  OpenEditQubeDialog={OpenEditQubeDialog}
+  handleOpenEditQubeDialog={handleOpenEditQubeDialog}
+  handleCloseEditQubeDialog={handleCloseEditQubeDialog}
+  handleEditQube={handleEditQube}
+  handleMenuClose={handleMenuClose}
+  anchorEl={anchorEl}
+  setAnchorEl={setAnchorEl}
   openDialog={openDialog}
   handleZoneOpenDialog={handleZoneOpenDialog}
   handleZoneCloseDialog={handleZoneCloseDialog}
