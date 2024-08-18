@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip } from '@mui/material';
 import { useParams, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -19,6 +19,28 @@ const HubOverview = ({ members, owner }) => {
   const [openUserProfileDialog, setOpenUserProfileDialog] = useState(false);
   const [openMembersDialog, setOpenMembersDialog] = useState(false);
   const [openEditBannerDialog, setOpenEditBannerDialog] = useState(false); // State for EditHubBannerDialog
+  const [wallpaper,setWallpaper]=useState(null);
+
+  useEffect(()=>{
+    const getWall=async()=>{
+      try {
+        const response=await fetch(`https://surf-jtn5.onrender.com/wall/${_id}/${hubId}`,{
+          method:"GET"
+        })
+        const wall=await response.json();
+        if(wall)
+          setWallpaper(wall[0].wall_url);
+        else
+        setWallpaper('https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/coffee.jpg');
+
+        console.log(wall);
+      } catch (error) {
+        
+      }
+    }
+    getWall();
+  }
+  )
   const location = useLocation();
   const { des, avatar, banner } = location.state || {};
   const setBanner=(banner)=>{
@@ -221,7 +243,7 @@ const HubOverview = ({ members, owner }) => {
             transition: 'left 0.3s ease',
           }}
         >
-          <File members={members} owner={owner} />
+          <File members={members} owner={owner} wallpaper={wallpaper} setWallpaperMain={setWallpaper} />
         </Box>
       </Slide>
 

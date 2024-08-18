@@ -15,6 +15,7 @@ export const createQube=async(req,res)=>{
 
         const newQubeMember=new Qubemembers({
             qube_id:savedQube.id.toString(),
+            hub_id:hubid,
             user_id:req.user.id
         })
         const savedQubeMember=await newQubeMember.save();
@@ -62,6 +63,23 @@ export const listUsersInQube=async(req,res)=>{
         console.error('Error listing users in hub:', error);
         res.status(500).json({ error: 'Internal server error' });
       }
+}
+
+export const editQube=async(req,res)=>{
+    try {
+        const qubeid=req.params.qubeid;
+        const {qubename, qubenickname}=req.body;
+        const qube=await Qube.findById(qubeid);
+        if(qubename)
+        qube.name=qubename;
+        if(qubenickname)
+        qube.nickname=qubenickname;
+        await qube.save();
+        res.status(200).json({qube});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(`Error`);
+    }
 }
 
 export const listZonesInQube=async(req,res)=>{

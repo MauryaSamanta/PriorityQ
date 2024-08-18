@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, IconButton } from '@mui/material';
+import { Box, Typography, Button, IconButton, Tooltip } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import TopicIcon from '@mui/icons-material/Topic';
 import FilterIcon from '@mui/icons-material/Filter';
 import DeleteIcon from '@mui/icons-material/Delete'; // Import DeleteIcon
+import EditIcon from '@mui/icons-material/Edit';
 import FilePreviewOverlay from './FilePreviewOverlay';
 import FolderDialog from '../Dialog/FolderDialog'; // Import FolderDialog
 import Draggable from 'react-draggable';
+import EditWallpaperDialog from 'scenes/Dialog/EditWallpaperDialog';
 
-const File = ({ members, owner }) => {
+const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
   const [files, setFiles] = useState([]);
   const [folder, setFolder] = useState(null);
   const { hubId } = useParams();
@@ -18,7 +20,7 @@ const File = ({ members, owner }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [folderDialogOpen, setFolderDialogOpen] = useState(false); // State to manage dialog open/close
   const [selectedFolder, setSelectedFolder] = useState(null); // State to hold the selected folder
-
+  const [walldiag,setwalldiag]=useState(false);
   const handleFileClick = (file) => {
     setSelectedFile(file);
   };
@@ -36,7 +38,13 @@ const File = ({ members, owner }) => {
     setFolderDialogOpen(false); // Close the dialog
     setSelectedFolder(null); // Reset the selected folder
   };
+  const handleopenwalldiag=()=>{
+    setwalldiag(true);
+  }
 
+  const handleclosewalldiag=()=>{
+    setwalldiag(false);
+  }
   useEffect(() => {
     const getFiles = async () => {
       try {
@@ -143,7 +151,7 @@ const File = ({ members, owner }) => {
       height="100%" 
       p={2} 
       sx={{
-        backgroundImage: 'url(https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/coffee.jpg)',
+        backgroundImage: `url(${wallpaper})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -180,9 +188,7 @@ const File = ({ members, owner }) => {
           },
         }}
       >
-        <Typography variant="h6" mb={2} align="center">
-          {folder ? folder.name_folder : 'Library'}
-        </Typography>
+       
 
         {folder && (
           <Button sx={{ color: "gray", marginBottom: '20px' }} onClick={() => setFolder(null)}>
@@ -257,6 +263,24 @@ const File = ({ members, owner }) => {
         >
           <DeleteIcon />
         </IconButton>
+        <Tooltip title="Change Library Wallpaper" arrow>
+          <IconButton
+            sx={{
+              position: 'absolute',
+              bottom: 16,
+              right: 16,
+              backgroundColor: '#635acc',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: '#4a47a3',
+              },
+            }}
+            onClick={ handleopenwalldiag}
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+        <EditWallpaperDialog open={walldiag} onClose={handleclosewalldiag} setWallpaperMain={setWallpaperMain}/>
       </Box>
       
       {/* File Preview Overlay */}
