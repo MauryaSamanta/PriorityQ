@@ -113,9 +113,9 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
                       <Typography variant="h5" component="div">
                         {hub?.name} 
                       </Typography>
-                      <Typography variant="body2" color="textSecondary">
+                      {/* <Typography variant="body2" color="textSecondary">
                         {hub?.description}
-                      </Typography>
+                      </Typography> */}
                     </div>
                   </div>
                   <Button variant="contained" color="primary" onClick={() =>

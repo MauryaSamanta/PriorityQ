@@ -94,7 +94,9 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
         <IconButton
           edge="end"
           color="inherit"
-          onClick={onClose}
+          onClick={()=>{setHubName(''); setHubAvatar('');
+            setHubAvatarDB(''); setHubDescription(''); onClose();
+          }}
           aria-label="close"
           sx={{ position: "absolute", right: 8, top: 8 }}
         >

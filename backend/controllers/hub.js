@@ -149,7 +149,7 @@ export const listUsersInHub = async (req, res) => {
       hub.banner_url=result.secure_url;
       const savedHub=await hub.save();
       
-    res.status(200).json({ savedHub });
+    res.status(200).json( savedHub );
     } catch (error) {
       console.log(error);
       res.status(400).json(`Error`);

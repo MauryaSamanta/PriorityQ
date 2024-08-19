@@ -72,13 +72,16 @@ io.on('connection', (socket) => {
     io.to(message.zone).emit('receiveMessage', message);
     const hashtagRegex = /#\w+/g;
     const hashtags = message.text.match(hashtagRegex);
-
+    console.log(message.folder);
     
     let messageforDB={
       text:message.text,
       senderAvatar:message.senderAvatar,
       senderName:message.senderName,
-      file:'',
+      name_file:message.name_file,
+      file:message.file,
+      folder:message.folder,
+      name_folder:message.name_folder,
       sender_id:message.sender_id,
       zone_id:message.zone,
       qube_id:message.qube

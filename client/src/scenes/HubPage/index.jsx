@@ -71,6 +71,7 @@ const HubPage = () => {
   const handleZoneOpenDialog = () => setZoneOpenDialog(true);
   const handleZoneCloseDialog = () => setZoneOpenDialog(false);
   const handleCreateZone = async(zoneName) => {
+    //console.log(selectedQube);
     const zoneData={name:zoneName};
     try {
       const response=await fetch(`https://surf-jtn5.onrender.com/zone/${selectedQube}/new`,{
@@ -474,21 +475,7 @@ const HubPage = () => {
     ) : (
       <Box display="flex" flexDirection="column" alignItems="center">
         
-        <Button 
-  variant="contained" 
-  color="primary" 
-  size="small"
-  sx={{
-    fontSize: '0.75rem',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    textTransform: 'none',
-  }}
-  onClick={handleZoneOpenDialog}
->
-  Create a Zone
-</Button>
-<CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
+        
       </Box>
     )}
     <Button 
@@ -512,7 +499,7 @@ const HubPage = () => {
 )}
     <Divider orientation="vertical" flexItem />
 
-    {selectedZone && selectedQube ? (
+    {selectedZone &&  (
   <Box
     width="80%"
     bgcolor="#36393f"
@@ -588,8 +575,6 @@ const HubPage = () => {
       <MessageWidget qube={selectedQube} zone={selectedZone._id} message={message} setMessage={setMessage} />
     </Box>
   </Box>
-) : (
-  selectedQube && !selectedZone && (<QubeOverview qubeid={selectedQube} />)
 )}
   </Box>
 </Box>):(<MobileHubPage

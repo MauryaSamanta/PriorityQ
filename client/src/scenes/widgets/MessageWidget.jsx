@@ -3,8 +3,10 @@ import { Box, TextField, Button, IconButton, Menu, MenuItem, Typography, Dialog,
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import FolderIcon from '@mui/icons-material/Folder'; // Import Folder Icon
 import DeleteIcon from '@mui/icons-material/Delete';
+import CloudCircleIcon from '@mui/icons-material/CloudCircle';
 import { useSelector } from 'react-redux';
 import io from 'socket.io-client';
+import FileDialog from 'scenes/Dialog/FileDialog';
 
 const socket = io('https://surf-jtn5.onrender.com');
 
@@ -16,17 +18,35 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const [folderFiles, setFolderFiles] = useState([]); // State for selected folder files
   const [folderName, setFolderName] = useState(''); // State for folder name
   const [openDialog, setOpenDialog] = useState(false); // State for dialog visibility
-
+  const [shareOpen, setshareOpen]=useState(false);
+  const [filetoshare,setfiletoshare]=useState(null);
   const { _id, username, avatar_url } = useSelector((state) => state.user);
 
-  const handleEmojiClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleshareOpen=()=>{
+    setshareOpen(true);
+  }
+  const handleshareClose=()=>{
+    setshareOpen(false);
+  }
+  const handlefileshare=(file)=>{
 
-  const handleEmojiClose = () => {
-    setAnchorEl(null);
-  };
+    setfiletoshare(file);
+    if(file.file_url && file.file_url.split('.').pop().toLowerCase() === 'pdf')
+    {
+      setFilePreview(filetoshare.file_name);
+      setIsImage(false);
+    }
+    else if(file.file_url)
+    {
+      setFilePreview(filetoshare.file_url);
+      setIsImage(true);
+    }
+    else if(file.name_folder){
+      setFilePreview(filetoshare.name_folder);
+    }
+    console.log(filetoshare);
 
+  }
   const handleFileUpload = (event) => {
     const uploadedFile = event.target.files[0];
     if (uploadedFile) {
@@ -67,7 +87,10 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
         senderName: username,
         senderAvatar: avatar_url,
         sender_id: _id,
-        file: null,
+        name_file:filetoshare?.file_name,
+        file: filetoshare?.file_url,
+        folder:filetoshare?.folder,
+        name_folder:filetoshare?.name_folder,
         reactions: null,
         zone: zone,
         qube:qube
@@ -156,7 +179,10 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
           />
           <label htmlFor="file-upload">
             <IconButton component="span">
-              <AttachFileIcon />
+              <AttachFileIcon sx={{
+      '&:hover': {
+        color: '#f5a442', // Change this to your desired color
+      }}} />
             </IconButton>
           </label>
           <input
@@ -168,9 +194,22 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
           />
           <label htmlFor="folder-upload">
             <IconButton component="span">
-              <FolderIcon />
+              <FolderIcon sx={{
+      '&:hover': {
+        color: '#c4ad12', // Change this to your desired color
+      }}}/>
             </IconButton>
           </label>
+          
+          
+            <IconButton component="span" onClick={handleshareOpen}>
+              <CloudCircleIcon sx={{
+      '&:hover': {
+        color: '#3486eb', // Change this to your desired color
+      }}}/>
+            </IconButton>
+          
+          <FileDialog open={shareOpen} onClose={handleshareClose} handlefileshare={handlefileshare}/>
         </Box>
       ) : (
         <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
@@ -206,7 +245,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
           variant="contained"
           color="primary"
           onClick={sendMessage}
-          disabled={!message.trim() && !file && folderFiles.length === 0}
+          disabled={!message.trim() && !file && folderFiles.length === 0 && !filetoshare}
           sx={{
             position: 'relative',
             overflow: 'hidden',
@@ -229,12 +268,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
           Send
         </Button>
       </Box>
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleEmojiClose}>
-        <MenuItem onClick={handleEmojiClose}>😊</MenuItem>
-        <MenuItem onClick={handleEmojiClose}>😂</MenuItem>
-        <MenuItem onClick={handleEmojiClose}>😍</MenuItem>
-        {/* Add more emojis here */}
-      </Menu>
+      
 
       <Dialog open={openDialog} onClose={handleDialogClose}>
         <DialogTitle>Upload Folder</DialogTitle>

@@ -97,12 +97,12 @@ const FolderDialog = ({ open, folder, onClose, handleFileClick, files, setFiles 
               p={1}
               display="flex"
               alignItems="center"
-              onDoubleClick={() => { handleFileClick(file); onClose(); }}
+              onClick={() => { handleFileClick(file); onClose(); }}
             >
               {file.file_url?.split('.').pop().toLowerCase() === 'pdf' ? (
-                <PictureAsPdfIcon sx={{ color: '#de1016', fontSize: '36px' }} /> // Smaller icon size
+                <img src='/assets/file.png' width={30} sx={{ color: '#de1016', fontSize: '36px' }} /> // Smaller icon size
               ) : (
-                <FilterIcon sx={{ color: '#1084de', fontSize: '36px' }} /> // Smaller icon size
+                <img src='/assets/photo.png' width={30} sx={{ color: '#1084de', fontSize: '36px' }} /> // Smaller icon size
               )}
               <Typography variant="body2" sx={{ color: 'white', mt: 1 }} noWrap>
                 {file.file_name}

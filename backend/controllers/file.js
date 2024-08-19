@@ -13,6 +13,18 @@ export const getFiles=async(req,res)=>{
     }
 }
 
+export const getFilesUser=async(req,res)=>{
+    const userid=req.params.userid;
+    try {
+        const files=await File.find({user_id:userid});
+        console.log(files);
+        res.status(200).json(files);
+    } catch (error) {
+        console.log(error);
+        res.status(200).json(`Error`);
+    }
+}
+
 
 export const saveFile=async(req,res)=>{
     const userid=req.user.id;
@@ -34,6 +46,28 @@ export const saveFile=async(req,res)=>{
     } catch (error) {
         console.log(error);
         res.status(400).json(`Internal Server Error`);
+    }
+}
+
+export const createfolder=async(req,res)=>{
+    const {hubid, foldername, id}=req.params;
+    //console.log(req.body);
+    //const{id,name_folder}=req.body;
+    //console.log(name_folder);
+    try {
+        const newfile=new File({
+            user_id:id,
+            hub_id:hubid,
+            file_url:'',
+            file_name:'',
+            name_folder:foldername,
+            folder:[]
+        })
+        const savedFile=await newfile.save();
+        res.status(200).json(savedFile);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(`Error`);
     }
 }
 

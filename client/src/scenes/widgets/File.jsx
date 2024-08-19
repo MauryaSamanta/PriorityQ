@@ -7,8 +7,10 @@ import TopicIcon from '@mui/icons-material/Topic';
 import FilterIcon from '@mui/icons-material/Filter';
 import DeleteIcon from '@mui/icons-material/Delete'; // Import DeleteIcon
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import FilePreviewOverlay from './FilePreviewOverlay';
 import FolderDialog from '../Dialog/FolderDialog'; // Import FolderDialog
+import CreateFolderDialog from 'scenes/Dialog/CreateFolderDialog';
 import Draggable from 'react-draggable';
 import EditWallpaperDialog from 'scenes/Dialog/EditWallpaperDialog';
 
@@ -16,11 +18,13 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
   const [files, setFiles] = useState([]);
   const [folder, setFolder] = useState(null);
   const { hubId } = useParams();
+  const {_id}=useSelector((state)=>state.user);
   const token = useSelector((state) => state.token);
   const [selectedFile, setSelectedFile] = useState(null);
   const [folderDialogOpen, setFolderDialogOpen] = useState(false); // State to manage dialog open/close
   const [selectedFolder, setSelectedFolder] = useState(null); // State to hold the selected folder
   const [walldiag,setwalldiag]=useState(false);
+  const [createfolder, setcreatefolder]=useState(false);
   const handleFileClick = (file) => {
     setSelectedFile(file);
   };
@@ -44,6 +48,13 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
 
   const handleclosewalldiag=()=>{
     setwalldiag(false);
+  }
+
+  const handlecreatefolder=()=>{
+    setcreatefolder(true);
+  }
+  const handlecreatefolderclose=()=>{
+    setcreatefolder(false);
   }
   useEffect(() => {
     const getFiles = async () => {
@@ -121,6 +132,24 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
       
     }
   }
+  const createFolder=async(foldername)=>{
+    //console.log(foldername);
+    const folderdata={id:_id, name_folder:foldername};
+    //console.log(folderdata);
+    //console.log(foldername);
+    try {
+      const response=await fetch(`https://surf-jtn5.onrender.com/file/${hubId}/${foldername}/${_id}`,{
+        method:"POST",
+        header:{"Content-Type": "application/json"},
+        body:JSON.stringify(folderdata)
+      });
+      const savedFolder=await response.json();
+      console.log(savedFolder);
+      setFiles((prevFiles)=>[...prevFiles, savedFolder]);
+    } catch (error) {
+      
+    }
+  }
    const handleDrop=(e,folder)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -151,13 +180,28 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
       height="100%" 
       p={2} 
       sx={{
-        backgroundImage: `url(${wallpaper})`,
+        backgroundImage: wallpaper?`url(${wallpaper})`:'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}
       borderRadius={3}
     >
+       {!wallpaper && (
+    <Typography
+      variant="h6"
+      sx={{
+        color: '#888',
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        textShadow: '1px 1px 2px rgba(0,0,0,0.2)',
+        cursor:'pointer'
+      }}
+      
+    >
+      Select a wallpaper
+    </Typography>
+  )}
       {/* Files Overview */}
       <Box 
         width="100%" 
@@ -229,11 +273,11 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
                       }}
                     >
                       {file.name_folder ? (
-                        <TopicIcon sx={{ color: '#de9210', fontSize: '48px' }} />
+                        <img src='/assets/folder.png' width={50} sx={{ color: '#de9210', fontSize: '48px' }} />
                       ) : file.file_url.split('.').pop().toLowerCase() === 'pdf' ? (
-                        <PictureAsPdfIcon sx={{ color: '#de1016', fontSize: '48px' }} />
+                        <img src='/assets/file.png' width={50} sx={{ color: '#de1016', fontSize: '48px' }} />
                       ) : (
-                        <FilterIcon sx={{ color: '#1084de', fontSize: '48px' }} />
+                        <img src='/assets/photo.png' width={50} sx={{ color: '#1084de', fontSize: '48px' }} />
                       )}
                       <Typography variant="body2" sx={{ color: 'white', mt: 1 }} noWrap>
                         {file.name_folder || file.file_name}
@@ -263,6 +307,24 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
         >
           <DeleteIcon />
         </IconButton>
+        <IconButton
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 0,
+            backgroundColor: 'red',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'darkred',
+            },
+          }}
+          onClick={handlecreatefolder}
+          //onDragOver={handleDragOver}
+          //onDrop={handleDropDelete}
+        >
+          <AddIcon />
+        </IconButton>
+        <CreateFolderDialog open={createfolder} onClose={handlecreatefolderclose} createFolder={createFolder}/>
         <Tooltip title="Change Library Wallpaper" arrow>
           <IconButton
             sx={{
