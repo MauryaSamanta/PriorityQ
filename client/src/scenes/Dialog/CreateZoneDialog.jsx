@@ -48,7 +48,7 @@ const CreateZoneDialog = ({ open, onClose, onCreate }) => {
           variant="contained"
           sx={{
             textTransform: 'none',
-            backgroundColor: '#FFEB3B',
+            backgroundColor: 'primary',
             color: '#36393f',
             '&:hover': {
               backgroundColor: '#FFD700',

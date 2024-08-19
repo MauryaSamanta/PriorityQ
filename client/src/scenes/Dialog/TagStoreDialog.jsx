@@ -51,7 +51,8 @@ const TagStoreDialog = ({ open, qubeid, onClose }) => {
           method: "GET",
         });
         const data = await response.json();
-        setTagCountsArray(data.tagCountsArray);
+        const sortedTags = data.tagCountsArray.sort((a, b) => b.count - a.count);
+        setTagCountsArray(sortedTags);
       } catch (error) {
         console.error('Error fetching tags:', error);
       }

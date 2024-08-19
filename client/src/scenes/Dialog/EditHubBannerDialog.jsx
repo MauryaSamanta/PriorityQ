@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Typogra
 import { useDropzone } from "react-dropzone";
 import { useParams } from 'react-router-dom';
 
-const EditHubBannerDialog = ({ open, onClose, onSubmit, banner }) => {
+const EditHubBannerDialog = ({ open, onClose, onSubmit, banner, setBanner }) => {
   const [hubBanner, setHubBanner] = useState(null);
   const [hubBannerDB,setHubBannerDB]=useState(null);
   const {hubId}=useParams();
@@ -14,14 +14,17 @@ const EditHubBannerDialog = ({ open, onClose, onSubmit, banner }) => {
   const handleSubmit = async() => {
       const formData=new FormData();
       formData.append("avatar", hubBannerDB);
+      //setBanner(hubBanner);
       try {
         const savedHubResponse=await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}`,{
           method:"PATCH",
           body:formData
         });
         const savedHub=await savedHubResponse.json();
-        window.location.reload();
-        //banner=savedHub.banner_url;
+        //console.log(savedHub);
+        
+        setBanner(savedHub.banner_url);
+        //console.log(banner);
         onClose();
       } catch (error) {
         

@@ -53,10 +53,9 @@ const FilePreviewOverlay = ({ file, onClose }) => {
             alignItems="center"
             height="100%"
             overflow="auto"
-            
             p={2}
             sx={{
-              zIndex:1200,
+              zIndex: 1200,
               overflowY: 'auto',
               '&::-webkit-scrollbar': {
                 width: '10px',
@@ -83,13 +82,13 @@ const FilePreviewOverlay = ({ file, onClose }) => {
               error={<div>Error while loading PDF</div>}
             >
               {Array.from(new Array(numPages), (el, index) => (
-                <Box mb={1} key={index}>
+                <Box mb={1} key={index} sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
                   <Page
                     pageNumber={index + 1}
-                    width={600}
                     renderMode="canvas"
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
+                    width={Math.min(window.innerWidth - 40, 600)} // Adjust width for better mobile view
                     style={{ margin: "0 auto", padding: 0 }}
                   />
                 </Box>

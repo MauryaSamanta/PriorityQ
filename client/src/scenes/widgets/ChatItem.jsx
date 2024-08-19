@@ -6,6 +6,7 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FolderIcon from '@mui/icons-material/Folder';
+import UserProfileDialog from 'scenes/Dialog/UserProfileDialog';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
@@ -14,6 +15,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [showTick, setShowTick] = useState(false);  // New state for tick mark visibility
+  const [userprof, setUserprof]=useState(false);
   const hubId = useParams();
   const token = useSelector((state) => state.token);
 
@@ -24,7 +26,12 @@ const ChatItem = ({ message, isOwnMessage }) => {
   const closeMenu = () => {
     setAnchorEl(null);
   };
-
+  const handleuserprof=()=>{
+    setUserprof(true);
+  }
+  const handleuserprofclose=()=>{
+    setUserprof(false);
+  }
   const saveToMyFiles = async () => {
     const fileData = {
       hub_id: hubId.hubId,
@@ -90,7 +97,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
         <Box display="flex" alignItems="center">
           <Typography variant="body1" fontWeight="bold">{senderName}</Typography>
         </Box>
-
+        
         {name_folder && (
           <Box
             mt={1}

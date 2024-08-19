@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip } from '@mui/material';
+import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip, useMediaQuery } from '@mui/material';
 import { useParams, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import GroupIcon from '@mui/icons-material/Group';
@@ -9,6 +9,7 @@ import MembersDialog from '../Dialog/MembersDialog';
 import EditHubBannerDialog from '../Dialog/EditHubBannerDialog'; // Import your EditHubBannerDialog component
 import File from './File';
 import { useTheme } from '@emotion/react';
+import MobileFile from './MobileFile';
 
 const HubOverview = ({ members, owner }) => {
   const { hubId, hubname } = useParams();
@@ -20,6 +21,7 @@ const HubOverview = ({ members, owner }) => {
   const [openMembersDialog, setOpenMembersDialog] = useState(false);
   const [openEditBannerDialog, setOpenEditBannerDialog] = useState(false); // State for EditHubBannerDialog
   const [wallpaper,setWallpaper]=useState(null);
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   useEffect(()=>{
     const getWall=async()=>{
@@ -42,7 +44,7 @@ const HubOverview = ({ members, owner }) => {
   }
   )
   const location = useLocation();
-  const { des, avatar, banner } = location.state || {};
+  let { des, avatar, banner } = location.state || {};
   const setBanner=(banner)=>{
     banner=banner;
   }
@@ -77,24 +79,44 @@ const HubOverview = ({ members, owner }) => {
   const hubOwner = members.find((member) => member._id === owner);
 
   return (
-    <Box sx={{ width: '100%', position: 'relative' }}>
+    <Box sx={{ width: '100%', position: 'relative',
+      
+     }}>
       {/* Hub Banner */}
       <Box
         sx={{
           height: 200,
           width: '100%',
-          backgroundImage: `url(${banner})`,
+          backgroundImage: banner?`url(${banner})`:'null',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderRadius: 2,
           boxShadow: 3,
           position: 'relative',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           '&:hover .edit-icon': {
             opacity: 1,
           },
         }}
       >
-       {owner===_id?( <IconButton
+        {!banner && (
+    <Typography
+      variant="h6"
+      sx={{
+        color: '#888',
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        textShadow: '1px 1px 2px rgba(0,0,0,0.2)',
+        cursor:'pointer'
+      }}
+      onClick={handleOpenEditBannerDialog}
+    >
+      Select a hub banner
+    </Typography>
+  )}
+       {owner===_id && banner?( <IconButton
           className="edit-icon"
           sx={{
             position: 'absolute',
@@ -232,18 +254,21 @@ const HubOverview = ({ members, owner }) => {
           sx={{
             position: 'absolute',
             top: 0,
-            height: '100%',
+            height: !isMobile?'100%':'100vh',
             left: showFiles ? 0 : '-100%',
             width: '100%',
             backgroundColor: 'primary',
             boxShadow: 4,
             padding: 2,
-            overflowY: 'auto',
+           // overflowY: 'auto',
             zIndex: 5,
-            transition: 'left 0.3s ease',
+            transition: 'left 1.0s ease',
           }}
         >
-          <File members={members} owner={owner} wallpaper={wallpaper} setWallpaperMain={setWallpaper} />
+          {!isMobile?(<File members={members} owner={owner} wallpaper={wallpaper} setWallpaperMain={setWallpaper} />
+          ):(
+            <MobileFile members={members} owner={owner} wallpaper={wallpaper} setWallpaperMain={setWallpaper}/>
+          )}
         </Box>
       </Slide>
 
@@ -269,6 +294,7 @@ const HubOverview = ({ members, owner }) => {
         open={openEditBannerDialog}
         onClose={handleCloseEditBannerDialog}
         banner={banner}
+        setBanner={setBanner}
       />
     </Box>
   );

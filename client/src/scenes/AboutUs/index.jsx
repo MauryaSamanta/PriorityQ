@@ -7,7 +7,6 @@ const AboutUsContainer = styled('div')({
   minHeight: '100vh',
   background: 'linear-gradient(135deg, #1e1e2f 30%, #635acc 100%)',
   color: '#faf6f6',
-  //padding: '10px 0',
   fontFamily: 'Roboto, sans-serif',
 });
 
@@ -15,6 +14,11 @@ const ContentContainer = styled(Box)({
   textAlign: 'center',
   marginBottom: '40px',
   padding: '0 20px',
+});
+
+const SectionTitle = styled(Typography)({
+  fontWeight: 'bold',
+  marginBottom: '25px',
 });
 
 const TeamCard = styled(Card)({
@@ -44,7 +48,6 @@ const Hexagon = styled('div')({
   margin: '0 auto 20px auto',
   clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
   backgroundColor: '#635acc',
-  
   boxShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
 });
 
@@ -56,57 +59,69 @@ const Image = styled('img')({
 });
 
 const AboutUs = () => {
-    const navigate=useNavigate();
+  const navigate = useNavigate();
+
   return (
     <AboutUsContainer>
-      <Typography variant="h1" 
-      sx={{ fontWeight: 'bold', color: '#ffffff', ml:'20px',padding:'10px', cursor:'pointer' }} 
-      onClick={()=>navigate('/')}>
-            EloKo
-          </Typography>
+      <Typography
+        variant="h1"
+        sx={{ fontWeight: 'bold', color: '#ffffff', ml: '20px', padding: '10px', cursor: 'pointer' }}
+        onClick={() => navigate('/')}
+      >
+        EloKo
+      </Typography>
       <Container>
         <ContentContainer>
-          <Typography variant="h2" sx={{ fontWeight: 'bold', marginBottom: '25px' }}>About Us</Typography>
+          <SectionTitle variant="h2">The Project</SectionTitle>
           <Typography variant="body1" sx={{ maxWidth: '800px', margin: 'auto', fontSize: '18px', lineHeight: '1.6' }}>
             Welcome to Surf! Too many files? Can't find the one you are looking for? Surf is your one-stop solution to all your problems.
-            
           </Typography>
         </ContentContainer>
-        <Grid container spacing={4} justifyContent="center">
-          <Grid item xs={12} sm={6} md={4}>
-            <TeamCard>
-              <Hexagon>
-                <Image src='https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg' alt="Team Member 1" />
-              </Hexagon>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Maurya Samanta</Typography>
-                <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>Founder, Can't live without Horlicks and racing cars</Typography>
-              </CardContent>
-            </TeamCard>
+        
+        <ContentContainer>
+          <SectionTitle variant="h2">The People</SectionTitle>
+          <Grid container spacing={4} justifyContent="center">
+            <Grid item xs={12} sm={6} md={4}>
+              <TeamCard>
+                <Hexagon>
+                  <Image src="https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg" alt="Team Member 1" />
+                </Hexagon>
+                <CardContent>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Maurya Samanta</Typography>
+                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>
+                    Founder, Can't live without Horlicks and racing cars
+                  </Typography>
+                </CardContent>
+              </TeamCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TeamCard>
+                <Hexagon>
+                  <Image src="https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg" alt="Team Member 2" />
+                </Hexagon>
+                <CardContent>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Arya Bhattacharya</Typography>
+                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>
+                    Design Lead, May have traded people for money
+                  </Typography>
+                </CardContent>
+              </TeamCard>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TeamCard>
+                <Hexagon>
+                  <Image src="https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg" alt="Team Member 3" />
+                </Hexagon>
+                <CardContent>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Rituraj Ray</Typography>
+                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>
+                    Social Media and Marketing, Probably has a foot fetish
+                  </Typography>
+                </CardContent>
+              </TeamCard>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <TeamCard>
-              <Hexagon>
-                <Image src='https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg' alt="Team Member 2" />
-              </Hexagon>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Arya Bhattacharya</Typography>
-                <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>Design Lead, May have traded people for money</Typography>
-              </CardContent>
-            </TeamCard>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <TeamCard>
-              <Hexagon>
-                <Image src='https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg' alt="Team Member 3" />
-              </Hexagon>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Rituraj Ray</Typography>
-                <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>Social Media and Marketing, Probably has a foot fetish</Typography>
-              </CardContent>
-            </TeamCard>
-          </Grid>
-        </Grid>
+        </ContentContainer>
       </Container>
     </AboutUsContainer>
   );

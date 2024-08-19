@@ -19,7 +19,6 @@ import TagStoreDialog from 'scenes/Dialog/TagStoreDialog';
 import QubeOverview from 'scenes/widgets/QubeOverview';
 import MessageWidget from 'scenes/widgets/MessageWidget';
 import ChatItem from 'scenes/widgets/ChatItem';
-
 const MobileHubPage = ({
   hubname,
   qubes,
@@ -116,7 +115,7 @@ const MobileHubPage = ({
       }} sx={{ mb: 2 }}>
         {hubname}
       </Button>
-
+      <Box sx={{overflowY:'auto'}}>
       <List height="100%">
         {qubes.map((qube) => (
           <ListItem
@@ -124,6 +123,7 @@ const MobileHubPage = ({
             key={qube.id}
             onClick={() => {
               setSelectedQubeState(qube._id);
+              setSelectedQube(qube._id);
               fetchZones(qube._id);
               setSelectedZoneState(null);
             }}
@@ -195,23 +195,18 @@ const MobileHubPage = ({
       <Typography variant="body2" sx={{ lineHeight: 1 }}>
         {qube.nickname ? qube.nickname : qube.name}
       </Typography>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem >Edit Qube</MenuItem>
-        
-      </Menu>
+       
+      
     </Box>
             </Tooltip>
           </ListItem>
         ))}
+        </List>
+        </Box>
         <Button color="secondary" size="small" variant="contained" onClick={handleOpenDialog} sx={{ mt: 'auto' }}>
         Create a Qube
       </Button>
-      </List>
+      
 
       
       <CreateQubeDialog open={openDialog} onClose={handleCloseDialog} onCreate={handleCreateQube} />
@@ -230,6 +225,7 @@ const MobileHubPage = ({
         sx={{ transition: 'width 0.3s ease' }}
       >
         <Typography variant="h6" mb={2}>Zones</Typography>
+        <Box sx={{overflowY:'auto'}}>
         <List component="nav">
           {zones.map((zone) => (
             <ListItem
@@ -261,6 +257,22 @@ const MobileHubPage = ({
             </ListItem>
           ))}
         </List>
+        </Box>
+        <Button 
+  variant="contained" 
+  color="primary" 
+  size="small"
+  sx={{
+    fontSize: '0.75rem',
+    padding: '4px 8px',
+    borderRadius: '4px',
+    textTransform: 'none',
+  }}
+  onClick={handleZoneOpenDialog}
+>
+  Create a Zone
+</Button>
+<CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
       </Box>
     )}
   </Box>
