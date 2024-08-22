@@ -10,6 +10,7 @@ import EarbudsIcon from '@mui/icons-material/Earbuds';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import MoreVertIcon from '@mui/icons-material/MoreVert'; 
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import SettingsIcon from '@mui/icons-material/Settings'
 import MenuIcon from '@mui/icons-material/Menu';
 import HubOverview from 'scenes/widgets/HubOverview';
 import CreateQubeDialog from 'scenes/Dialog/CreateQubeDialog';
@@ -19,6 +20,7 @@ import TagStoreDialog from 'scenes/Dialog/TagStoreDialog';
 import QubeOverview from 'scenes/widgets/QubeOverview';
 import MessageWidget from 'scenes/widgets/MessageWidget';
 import ChatItem from 'scenes/widgets/ChatItem';
+import EditHubDialog from 'scenes/Dialog/EditHubDialog';
 const MobileHubPage = ({
   hubname,
   qubes,
@@ -33,6 +35,7 @@ const MobileHubPage = ({
   fetchZones,
   setSelectedZone,
   joinZone,
+  exitZone,
   handleOpenDialog,
   handleCloseDialog,
   handleCreateQube,
@@ -57,7 +60,7 @@ const MobileHubPage = ({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedQube, setSelectedQubeState] = useState(null);
   const [selectedZone, setSelectedZoneState] = useState(null);
-  //const [editQube,setEditQube]=useState(null);
+  const [edithub, setedithub]=useState(false);
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
 
@@ -67,6 +70,13 @@ const MobileHubPage = ({
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
   };
+
+  const handleedithub=()=>{
+    setedithub(true);
+  }
+  const closeedithub=()=>{
+    setedithub(false);
+  }
   useEffect(() => {
     if (bottomRef.current)
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
@@ -85,7 +95,22 @@ const MobileHubPage = ({
               <MenuIcon />
             </IconButton>
           )}
-         
+          <Box
+      sx={{ flexGrow: 1 }} // Ensures space is taken up on the left, pushing the right content to the edge
+    />
+    <IconButton
+      sx={{
+        color: 'black',
+        '&:hover': {
+          transform: 'rotate(360deg)',
+          transition: 'transform 0.3s ease',
+        }
+      }}
+      onClick={handleedithub}
+    >
+      <SettingsIcon sx={{color:'white'}} />
+    </IconButton>
+    <EditHubDialog open={edithub} onClose={closeedithub} hub={hubname} />
         </Toolbar>
       </AppBar>
 
@@ -107,6 +132,9 @@ const MobileHubPage = ({
     >
       <Button color="secondary" onClick={() => {
         setDrawerOpen(false);
+        if(selectedZone){
+          exitZone(selectedZone);
+        }
         setSelectedQube(null);
         setSelectedZone(null);
         setSelectedQubeState(null);
@@ -122,6 +150,9 @@ const MobileHubPage = ({
             button
             key={qube.id}
             onClick={() => {
+              if(selectedZone){
+                exitZone(selectedZone);
+              }
               setSelectedQubeState(qube._id);
               setSelectedQube(qube._id);
               fetchZones(qube._id);
@@ -148,32 +179,34 @@ const MobileHubPage = ({
               }}
             >
                <Box
-      sx={{
-        position: 'relative', // Needed for positioning the icon
-        width: selectedQube === qube._id ? 50 : 50,
-        height: selectedQube === qube._id ? 50 : 50,
-        clipPath: selectedQube === qube._id
-          ? 'none'
-          : 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
-        bgcolor: selectedQube === qube._id ? '#F5A623' : '#40444b',
-        transition: 'all 0.3s ease',
-        borderRadius: 2,
-        marginBottom: '1rem',
-        margin: '20px',
-        borderColor: 'transparent',
-        borderWidth: '2px',
-        borderStyle: 'solid',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        color: selectedQube === qube._id ? 'black' : 'white',
-        '&:hover': {
-          transform: 'scale(1.1)',
-          borderColor: '#F5A623',
-        },
-      }}
-    >
+  sx={{
+    position: 'relative',
+    width: 50,
+    height: 50,
+    clipPath: selectedQube === qube._id
+      ? 'none'
+      : 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)',
+    bgcolor: selectedQube === qube._id ? '#F5A623' : '#40444b',
+    transition: 'all 0.3s ease',
+    borderRadius: 2,
+    marginBottom: '1rem',
+    margin: '20px',
+    borderColor: 'transparent',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    color: selectedQube === qube._id ? 'black' : 'white',
+    boxShadow: selectedQube === qube._id ? '0 8px 15px rgba(0, 0, 0, 0.3)' : 'none',
+    transform: selectedQube === qube._id ? 'translateY(-4px)' : 'none',
+    '&:hover': {
+      transform: selectedQube === qube._id ? 'translateY(-4px) scale(1.1)' : 'scale(1.1)',
+      borderColor: '#F5A623',
+    },
+  }}
+>
       {selectedQube === qube._id && (
         <IconButton
         sx={{
@@ -232,6 +265,9 @@ const MobileHubPage = ({
               button
               key={zone._id}
               onClick={() => {
+                if(selectedZone){
+                  exitZone(selectedZone);
+                }
                 setSelectedZoneState(zone);
                 joinZone(zone._id);
                 setDrawerOpen(false);

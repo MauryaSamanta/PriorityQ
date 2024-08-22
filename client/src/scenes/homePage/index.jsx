@@ -63,14 +63,15 @@ const HomePage = () => {
         justifyContent="space-between"
       >
         <FlexBetween>
-          <Typography variant="h1" component="div" padding="2rem">
+         {(!showInput || isNonMobileScreens) && ( <Typography variant="h1" component="div" padding="2rem">
             Welcome Back👋
-          </Typography>
+          </Typography>)}
           <Box display="flex" alignItems="center" ref={joinHubRef}>
            {showInput && (
               <TextField
               variant="outlined"
               placeholder="Enter hub code"
+              padding="2rem"
               value={code}
               onChange={handleInputChange}
               ref={inputRef}
@@ -79,6 +80,7 @@ const HomePage = () => {
                 opacity: showInput ? 1 : 0,
                 transition: 'width 0.5s ease-in-out, opacity 0.5s ease-in-out',
                 overflow: 'hidden',
+                marginBottom:!isNonMobileScreens?'6.5rem':'0rem'
               }}
             />
             )}
@@ -92,7 +94,8 @@ const HomePage = () => {
                 // '&:hover': {
                 //   backgroundColor: '#FFD700',
                 // },
-                marginLeft: '1rem'
+                marginLeft: '1rem',
+                marginBottom:showInput && !isNonMobileScreens?'6.5rem':'0rem'
               }}
             >
               Join Hub

@@ -40,12 +40,15 @@ const UserWidget = ({ _id, avatar_url }) => {
       <Avatar
         src={avatar || defaultAvatar}
         alt={username}
-        sx={{ width: 200, height: 200, mb: 2 }}
+        sx={{ width: 200, height: 200, mb: 2 
+          ,  clipPath: 'polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%)'
+        }}
+      
       />
       <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
         {username}
       </Typography>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" color="textSecondary" sx={{ mb: 2,whiteSpace: 'pre-line' }}>
         {bio || "This user has not provided a bio yet."}
       </Typography>
       <Button
