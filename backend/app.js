@@ -12,6 +12,7 @@ import wallRoute from "./routes/wallpaper.js";
 import qubeRoute from "./routes/qube.js";
 import zoneRoute from "./routes/zone.js";
 import messageRoute from "./routes/message.js";
+import userzoneRoute from "./routes/userzone.js";
 import inviteRoute from "./routes/invites.js";
 import fileRoute from "./routes/file.js";
 import tagRoute from "./routes/tag.js";
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
   });
 app.use("/zone", zoneRoute);
 app.use("/message",messageRoute);
+app.use("/read", userzoneRoute);
 app.use("/invite",inviteRoute);
 app.use("/file",fileRoute);
 app.use("/tag",tagRoute);
@@ -59,8 +61,19 @@ io.on('connection', (socket) => {
   
   socket.on('joinZone', (zone) => {
     socket.join(zone);
-    //console.log(`User ${socket.id} joined zone ${zone}`);
+    console.log(`User ${socket.id} joined zone ${zone}`);
   });
+
+  socket.on('exitZone',(zone)=>{
+    
+    socket.leave(zone);
+    io.in(zone).allSockets().then((clients) => {
+      const socketIds = Array.from(clients);
+      console.log(`Sockets in room ${zone}:`, socketIds);
+    }).catch((err) => {
+      console.error(err);
+    });
+  })
 
   // socket.on('sendMessage', (message) => {
   //   io.emit('receiveMessage', message);

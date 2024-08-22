@@ -10,6 +10,8 @@ import EarbudsIcon from '@mui/icons-material/Earbuds';
 import AccountTreeIcon from '@mui/icons-material/AccountTree'; 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import SettingsIcon from '@mui/icons-material/Settings'
+import EditHubDialog from 'scenes/Dialog/EditHubDialog';
 import HubOverview from 'scenes/widgets/HubOverview';
 import CreateQubeDialog from 'scenes/Dialog/CreateQubeDialog';
 import CreateZoneDialog from 'scenes/Dialog/CreateZoneDialog';
@@ -25,10 +27,12 @@ const socket = io('https://surf-jtn5.onrender.com');
 const HubPage = () => {
   const navigate = useNavigate();
   const { hubId,ownerId,hubname } = useParams();
+  //const {hubName, sethubName}=useState('');
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
   const {_id,username}=useSelector((state)=>state.user);
   const token = useSelector((state) => state.token);
+  const [settings, setSettings]=useState(false);
   const [qubes,setQubes]=useState([]);
   const [selectedQube, setSelectedQube] = useState(null);
   const [editQube, setEditQube]=useState(null);
@@ -36,7 +40,10 @@ const HubPage = () => {
   const [selectedZone, setSelectedZone] = useState(null);
   const [members,setMembers]=useState([]);
   const [messages,setMessages]=useState([]);
+  const [newmessages,setNewMessages]=useState([]);
   const [message,setMessage]=useState('');
+  const [unread, setUnread]=useState('');
+
   const [storeDialog,setStoreDialog]=useState(false);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const [anchorEl, setAnchorEl] = useState(null);
@@ -89,7 +96,7 @@ const HubPage = () => {
 
 
   useEffect(() => {
-    
+   
     const fetchQubes = async () => {
       
       try {
@@ -126,7 +133,9 @@ const HubPage = () => {
     fetchQubes();
     fetchMembers();
     socket.on('receiveMessage', (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      
+      setMessages((prevMessages) => [...prevMessages,...newmessages, message]);
+      setNewMessages([]);
     });
     
     return () => {
@@ -142,20 +151,58 @@ const HubPage = () => {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const joinZone = async(zone) => {
-    //console.log(zone);
+  const joinZone = async (zone) => {
+    const userzone = { userid: _id, zoneid: zone };
     try {
-      const messageChunkjson=await fetch(`https://surf-jtn5.onrender.com/message/${zone}`,{
-        method:"GET"
+      const messageChunkjson = await fetch(`https://surf-jtn5.onrender.com/message/${zone}`, {
+        method: "GET",
       });
-      const messageChunk=await messageChunkjson.json();
-      setMessages(messageChunk);
-    } catch (error) {
+      const messageChunk = await messageChunkjson.json();
       
+      // const unreadMessageIdResponse = await fetch(`https://surf-jtn5.onrender.com/read/getunread`, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(userzone),
+      // });
+      // const unreadmsg = await unreadMessageIdResponse.json();
+      // //console.log(unread.id);
+      // if(unreadmsg.id)
+      // {
+      //   const unreadIndex = messages?.findIndex((message) => message._id === unreadmsg.id);
+      //   setUnread(unreadIndex+1);
+      //   console.log(unreadmsg.id);
+      // }
+        setMessages(messageChunk);
+      
+    } catch (error) {
+      console.error("Error joining zone:", error);
     }
+  
     socket.emit('joinZone', zone);
   };
+  const exitZone = async (zone) => {
+    socket.emit("exitZone", zone._id);
+    // let lastread = '';
   
+    // if (newmessages.length > 0) {
+    //   lastread = newmessages[newmessages.length - 1]._id;
+    // } else {
+    //   lastread = messages[messages.length - 1]._id;
+    // }
+    
+    // const userzone={userid:_id, zoneid:zone, lastmessageid:lastread};
+    // try {
+    //   const response=await fetch(`https://surf-jtn5.onrender.com/read/update`,{
+    //     method:"POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(userzone)
+    //   });
+      
+    // } catch (error) {
+      
+    // }
+    // setNewMessages([]);
+  };
   const [openDialog, setOpenDialog] = useState(false);
 
   const handleOpenDialog = () => {
@@ -187,9 +234,9 @@ const HubPage = () => {
     })
 
     const data=await response.json();
-    console.log(data);
+    
     setQubes(prevQubes => [...prevQubes, data.savedQube]);
-     console.log(qubes);
+     
   }
      catch(error){
            console.log(error);
@@ -226,32 +273,46 @@ const HubPage = () => {
       console.error('Error updating qube:', error);
     }
   };
-
+  const handlesetting=()=>{
+    setSettings(true);
+  }
+  const closesetting=()=>{
+    setSettings(false);
+  }
   return (<>
    {isNonMobileScreens?( <Box height="100vh">
-  <AppBar position="static" sx={{ bgcolor: 'primary.main', color: 'black', boxShadow: '0 4px 20px rgba(0,0,0,0.2)', height: '55px' }}>
-    <Toolbar sx={{ justifyContent: 'center' }}>
-      <Box
-        sx={{
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          borderRadius: '4px',
-          bgcolor: 'white',
-          pl: 2,
-          pr: 1,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-          }
-        }}
-      >
-        
-      </Box>
-    </Toolbar>
-  </AppBar>
-
+    <AppBar position="static" sx={{ bgcolor: 'primary.main', color: 'black', boxShadow: '0 4px 20px rgba(0,0,0,0.2)', height: '55px' }}>
+  <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+    <Box
+      sx={{ flexGrow: 1 }} // Ensures space is taken up on the left, pushing the right content to the edge
+    />
+    <Typography
+      variant="body1"
+      sx={{
+        color: 'white',
+        fontWeight: 'bold',
+        mr: 2, // Margin to the right of the text
+        cursor:'pointer'
+      }}
+    >
+      Hub Settings
+    </Typography>
+    <IconButton
+      sx={{
+        color: 'black',
+        '&:hover': {
+          transform: 'rotate(360deg)',
+          transition: 'transform 0.3s ease',
+        }
+      }}
+      onClick={handlesetting}
+    >
+      <SettingsIcon sx={{color:'white'}} />
+    </IconButton>
+  </Toolbar>
+  <EditHubDialog open={settings} onClose={closesetting} hub={hubname} />
+</AppBar>
+  
   <Box display="flex" height="calc(100% - 55px)">
     {/* Qubes List */}
     <Box
@@ -283,7 +344,8 @@ const HubPage = () => {
     }
   }}
 >
-  <Button color="secondary" onClick={()=>{setSelectedQube(null); setSelectedZone(null);}}>{hubname}</Button>
+  <Button color="secondary" onClick={()=>{if(selectedZone) exitZone(selectedZone); 
+    setSelectedQube(null); setSelectedZone(null);}}>{hubname}</Button>
 </Tooltip>
       <Box sx={{ 
         overflowY: 'auto', 
@@ -447,7 +509,9 @@ const HubPage = () => {
        <ListItem
          button
          key={zone._id}
-         onClick={() => { setSelectedZone(zone); joinZone(zone._id); }}
+         onClick={() => { 
+          exitZone(selectedZone);
+          setSelectedZone(zone); joinZone(zone._id); }}
          sx={{
            display: 'flex',
            alignItems: 'center',
@@ -495,7 +559,7 @@ const HubPage = () => {
 <CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
   </Box>
 ) : (
-  <HubOverview members={members} owner={ownerId} />
+  <HubOverview members={members} owner={ownerId} hubname={hubname} />
 )}
     <Divider orientation="vertical" flexItem />
 
@@ -568,6 +632,8 @@ const HubPage = () => {
         <ChatItem key={index} message={message} isOwnMessage={message.sender_id===_id?true:null} />
       ))}
       <div ref={bottomRef} />
+      
+      
       </Box>
     
     {/* Message Widget Area */}
@@ -591,6 +657,7 @@ const HubPage = () => {
   fetchZones={fetchZones}
   setSelectedZone={setSelectedZone}
   joinZone={joinZone}
+  exitZone={exitZone}
   handleOpenDialog={handleOpenDialog}
   handleCloseDialog={handleCloseDialog}
   handleCreateQube={handleCreateQube}

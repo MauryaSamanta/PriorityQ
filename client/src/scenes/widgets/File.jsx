@@ -184,24 +184,11 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundColor: !wallpaper?'rgba(44, 44, 44, 0.8)':null,
       }}
       borderRadius={3}
     >
-       {!wallpaper && (
-    <Typography
-      variant="h6"
-      sx={{
-        color: '#888',
-        fontStyle: 'italic',
-        fontWeight: 'bold',
-        textShadow: '1px 1px 2px rgba(0,0,0,0.2)',
-        cursor:'pointer'
-      }}
-      
-    >
-      Select a wallpaper
-    </Typography>
-  )}
+       
       {/* Files Overview */}
       <Box 
         width="100%" 

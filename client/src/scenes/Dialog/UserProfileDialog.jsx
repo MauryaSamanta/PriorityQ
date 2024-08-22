@@ -98,7 +98,8 @@ const UserProfileDialog = ({ open, onClose, user }) => {
             </Typography>
             <Typography 
               variant="body1" 
-              sx={{ color: 'text.primary' }}
+              paragraph
+              sx={{ color: 'text.primary',whiteSpace: 'pre-line' }}
             >
               {user.bio}
             </Typography>

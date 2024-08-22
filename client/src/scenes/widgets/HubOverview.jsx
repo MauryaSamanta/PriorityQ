@@ -164,12 +164,18 @@ const HubOverview = ({ members, owner }) => {
 
       {/* Hub Information */}
       <Box sx={{ marginTop: 5, padding: 2, ml: 2, maxWidth: 600 }}>
+        
         <Typography variant="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
           {hubname}
         </Typography>
-        <Typography variant="body1" color="textSecondary" paragraph>
-          {des}
-        </Typography>
+        <Typography
+  variant="body1"
+  color="textSecondary"
+  paragraph
+  sx={{ whiteSpace: 'pre-line' }}
+>
+  {des}
+</Typography>
 
         {/* Hub Owner */}
         {hubOwner && (

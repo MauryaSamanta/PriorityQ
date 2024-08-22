@@ -18,6 +18,7 @@ export const updateAvatar = async (req, res, next) => {
        return res.status(404).json({ error: 'User not found' });
     }
     //console.log(cloudinary);
+    let result='';
     if(file)
     {cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -25,9 +26,9 @@ export const updateAvatar = async (req, res, next) => {
       api_secret: process.env.CLOUDINARY_API_SECRET
     });
     // // Upload to Cloudinary
-     const result = await cloudinary.uploader
+      result = await cloudinary.uploader
      .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
-      console.log(result);
+      
       if (error){
         console.log(error);
         res.status(400).json("Not working");

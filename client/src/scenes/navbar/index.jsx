@@ -21,19 +21,23 @@ import {
   Help,
   Menu,
   Close,
+  MoreVert
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import CreateHubDialog from "../Dialog/CreateHubDialog"; // Adjust path as needed
+import EditProfileDialog from "scenes/Dialog/EditProfileDialog";
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const [isCreateHubDialogOpen, setIsCreateHubDialogOpen] = useState(false);
+  const [editdialog,setEditdialog]=useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+  const [avatar,setAvatar]=useState(user.avatar_url);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
   const theme = useTheme();
@@ -52,7 +56,14 @@ const Navbar = () => {
   const handleCloseCreateHubDialog = () => {
     setIsCreateHubDialogOpen(false);
   };
+  
+  const handleedit=()=>{
+    setEditdialog(true);
+  }
 
+  const handlecloseedit=()=>{
+    setEditdialog(false);
+  }
   return (
     <>
       <FlexBetween padding="1rem 6%" backgroundColor="parent">
@@ -149,6 +160,7 @@ const Navbar = () => {
     <MenuItem mt="100" onClick={() => dispatch(setLogout())}><Typography color="#fc0320">Log Out</Typography></MenuItem>
   </Select>
 </FormControl>
+
           </FlexBetween>
         ) : (
           
@@ -224,16 +236,21 @@ const Navbar = () => {
     renderValue={() => (
       <Box display="flex" alignItems="center">
         <img
-          src={user.avatar_url} // Make sure avatarUrl is defined and contains the URL of the avatar image
+          src={avatar} // Make sure avatarUrl is defined and contains the URL of the avatar image
           alt="avatar"
           style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }}
         />
+        
       </Box>
+      
     )}
   >
+    
+    <MenuItem mt="100" onClick={() => handleedit()}><Typography>Edit Profile</Typography></MenuItem>
     <MenuItem mt="100" onClick={() => dispatch(setLogout())}><Typography color="#fc0320">Log Out</Typography></MenuItem>
   </Select>
 </FormControl>
+<EditProfileDialog open={editdialog} onClose={handlecloseedit} setAvatarMain={setAvatar}/>
               <Button
                 variant="contained"
                 sx={{ border: '2px solid', borderColor: 'primary.main' }}

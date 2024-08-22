@@ -156,6 +156,47 @@ export const listUsersInHub = async (req, res) => {
     }
   }
 
+  export const editHubDetails=async(req,res)=>{
+    const hubid=req.params.hubid;
+    const {hubname, desc}=req.body;
+    const file=req.file;
+   
+    try {
+      let result='';
+    if(file)
+    {cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+    // // Upload to Cloudinary
+      result = await cloudinary.uploader
+     .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
+      
+      if (error){
+        console.log(error);
+        res.status(400).json("Not working");
+      }
+    }
+    
+    );}
+      const hub=await Hub.findById(hubid);
+      
+      if(hub.name!==hubname)
+        hub.name=hubname;
+      if(hub.description!==desc)
+        hub.description=desc;
+      if(file)
+        hub.avatar_url=result.secure_url;
+      const hubsave=await hub.save();
+      res.json(hubsave);
+
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(`Error`);
+    }
+  }
+
   export const deleteHubs=async(req,res)=>{
     const hubid=req.params.hubid;
     try {
@@ -169,4 +210,5 @@ export const listUsersInHub = async (req, res) => {
     }
   }
 
+  
   

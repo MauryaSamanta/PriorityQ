@@ -14,17 +14,22 @@ import { useDropzone } from "react-dropzone";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setLogin } from "state";
-const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
+import { useLocation, useParams } from "react-router-dom";
+const EditHubDialog = ({ open, onClose, onSave, hub, sethubName }) => {
+    const location = useLocation();
+    const {hubId}=useParams();
+    let { des, avatar, banner } = location.state || {};
   const user=useSelector((state)=>state.user);
-  const [username,setUsername]=useState(user.username);
-  const [bio,setBio]=useState(user.bio);
-  const [avatar,setAvatar]=useState(user.avatar_url);
-  const [avatar_show, setAvatar_Show]=useState('');
+  const [hubname,setHubname]=useState(hub);
+  const [desc,setDesc]=useState(des);
+  const [hubavatar,setAvatar]=useState(user.avatar_url);
+   const [avatar_show, setAvatar_Show]=useState('');
   const dispatch=useDispatch();
   const token=useSelector((state)=>state.token);
+  
   const handleDrop = (acceptedFiles) => {
-    setAvatar_Show(URL.createObjectURL(acceptedFiles[0]));
-    setAvatar(acceptedFiles[0]);
+     setAvatar_Show(URL.createObjectURL(acceptedFiles[0]));
+     setAvatar(acceptedFiles[0]);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -41,26 +46,26 @@ const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
     const formData = new FormData();
   
     // Append data to the FormData object
-    formData.append('username', username);
-    formData.append('bio', bio);
+    formData.append('hubname', hubname);
+    formData.append('desc', desc);
     
     // Append avatar if it exists
-    if (avatar) {
-      formData.append("avatar", avatar);
+    if (hubavatar) {
+      formData.append("avatar", hubavatar);
     }
-  
-    const savedUser = await fetch(
-      `https://surf-jtn5.onrender.com/users/${user._id}/avatar`,
+   
+    const savedHub = await fetch(
+      `https://surf-jtn5.onrender.com/hub/${hubId}/settings`,
       {
         method: "PATCH",
         body: formData,
       }
     );
-    const savedUserRes = await savedUser.json();
+    const savedHubRes = await savedHub.json();
     //console.log(savedUserRes);
-    if(savedUserRes)
-      {setAvatarMain(savedUserRes.avatar_url);
-        dispatch(setLogin({user:savedUserRes, token:token}))
+    if(savedHubRes)
+      { 
+        //dispatch(setLogin({user:savedUserRes, token:token}))
         onClose();}
 
     
@@ -68,27 +73,27 @@ const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Edit Profile</DialogTitle>
+      <DialogTitle>Hub Settings</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
           margin="dense"
-          name="username"
-          label="Username"
+          name="hubname"
+          label="Hub Name"
           type="text"
           fullWidth
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={hubname}
+          onChange={(e) => setHubname(e.target.value)}
         />
         <TextField
           margin="dense"
-          name="bio"
-          label="Bio"
+          name="desc"
+          label="Description"
           type="text"
           fullWidth
           multiline
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
+          value={desc}
+          onChange={(e) => setDesc(e.target.value)}
         />
         
           <Box
@@ -117,7 +122,7 @@ const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
         
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button onClick={()=>{onClose();setAvatar_Show('');}} color="primary">
           Cancel
         </Button>
         <Button onClick={handleSubmit} color="primary">
@@ -128,4 +133,4 @@ const EditProfileDialog = ({ open, onClose, onSave, setAvatarMain }) => {
   );
 };
 
-export default EditProfileDialog;
+export default EditHubDialog;
