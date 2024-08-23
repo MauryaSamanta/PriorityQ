@@ -23,6 +23,7 @@ const registerSchema = yup.object().shape({
   password: yup.string().required("required"),
   location: yup.string().required("required"),
   occupation: yup.string().required("required"),
+  dob: yup.string().required("required"),
   picture: yup.string().required("required"),
 });
 
@@ -38,6 +39,7 @@ const initialValuesRegister = {
   password: "",
   location: "",
   occupation: "",
+  dob:"",
   picture: "",
 };
 
@@ -145,25 +147,17 @@ const Form = () => {
                   sx={{ gridColumn: "span 4" }}
                 />
                 <TextField
-                  label="Location"
+                  label="Date of Birth"
+                  type="date"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.location}
-                  name="location"
-                  error={Boolean(touched.location) && Boolean(errors.location)}
-                  helperText={touched.location && errors.location}
-                  sx={{ gridColumn: "span 4" }}
-                />
-                <TextField
-                  label="Occupation"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.occupation}
-                  name="occupation"
-                  error={
-                    Boolean(touched.occupation) && Boolean(errors.occupation)
-                  }
-                  helperText={touched.occupation && errors.occupation}
+                  value={values.dob}
+                  name="dob"
+                  InputLabelProps={{
+                    shrink: true, // Keeps the label above the input
+                  }}
+                  error={Boolean(touched.dob) && Boolean(errors.dob)}
+                  helperText={touched.dob && errors.dob}
                   sx={{ gridColumn: "span 4" }}
                 />
                 
