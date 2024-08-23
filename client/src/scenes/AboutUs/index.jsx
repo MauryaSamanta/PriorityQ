@@ -74,7 +74,7 @@ const AboutUs = () => {
         <ContentContainer>
           <SectionTitle variant="h2">The Project</SectionTitle>
           <Typography variant="body1" sx={{ maxWidth: '800px', margin: 'auto', fontSize: '18px', lineHeight: '1.6' }}>
-            Welcome to Surf! Too many files? Can't find the one you are looking for? Surf is your one-stop solution to all your problems.
+            EloKo is a secure community-building and cloud-based resource sharing platform
           </Typography>
         </ContentContainer>
         
@@ -115,7 +115,7 @@ const AboutUs = () => {
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Rituraj Ray</Typography>
                   <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>
-                    Social Media and Marketing, Probably has a foot fetish
+                    Social Media and Marketing, Crazy about many things
                   </Typography>
                 </CardContent>
               </TeamCard>

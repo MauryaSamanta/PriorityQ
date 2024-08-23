@@ -5,11 +5,23 @@ export const changewall=async(req,res)=>{
     const {id}=req.body;
     const hubid=req.params.hubid;
     const file=req.file;
+    try {
+      const wallpaper=await Wallpaper.findOne({user_id:id,hub_id:hubid})
     cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
         api_secret: process.env.CLOUDINARY_API_SECRET
       });
+      if (wallpaper.wall_url) {
+        const publicId = wallpaper.wall_url.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(publicId, function (error, result) {
+          if (error) {
+            console.log('Error deleting previous avatar:', error);
+          } else {
+            console.log('Previous avatar deleted:', result);
+          }
+        });
+      }
       // // Upload to Cloudinary
         const result = await cloudinary.uploader
        .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
@@ -20,8 +32,7 @@ export const changewall=async(req,res)=>{
         }
       }
       );
-      try {
-        const wallpaper=await Wallpaper.findOne({user_id:id,hub_id:hubid})
+     
         console.log(wallpaper);
         if(wallpaper)
         {
