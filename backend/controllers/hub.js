@@ -135,6 +135,16 @@ export const listUsersInHub = async (req, res) => {
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
+    if (hub.banner_url) {
+      const publicId = hub.banner_url.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(publicId, function (error, result) {
+        if (error) {
+          console.log('Error deleting previous avatar:', error);
+        } else {
+          console.log('Previous avatar deleted:', result);
+        }
+      });
+    }
     try {
       const result = await cloudinary.uploader
        .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
@@ -160,7 +170,8 @@ export const listUsersInHub = async (req, res) => {
     const hubid=req.params.hubid;
     const {hubname, desc}=req.body;
     const file=req.file;
-   
+    const hub=await Hub.findById(hubid);
+      
     try {
       let result='';
     if(file)
@@ -169,6 +180,16 @@ export const listUsersInHub = async (req, res) => {
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET
     });
+    if (hub.avatar_url) {
+      const publicId = hub.avatar_url.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(publicId, function (error, result) {
+        if (error) {
+          console.log('Error deleting previous avatar:', error);
+        } else {
+          console.log('Previous avatar deleted:', result);
+        }
+      });
+    }
     // // Upload to Cloudinary
       result = await cloudinary.uploader
      .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
@@ -180,7 +201,6 @@ export const listUsersInHub = async (req, res) => {
     }
     
     );}
-      const hub=await Hub.findById(hubid);
       
       if(hub.name!==hubname)
         hub.name=hubname;

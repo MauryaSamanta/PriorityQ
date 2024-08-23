@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, ButtonBase, Avatar, List, ListItem, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Box, Typography, Button, ButtonBase, Avatar, List, ListItem, Dialog, DialogTitle, DialogContent, useMediaQuery } from '@mui/material';
 import AddMemberDialog from 'scenes/Dialog/AddMemberDialog';
 import UserProfileDialog from 'scenes/Dialog/UserProfileDialog';
 import { useSelector } from 'react-redux';
@@ -10,6 +10,8 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [code, setCode] = useState(null);
   const { _id } = useSelector((state) => state.user);
+
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   const handleOpenAddMemberDialog = async () => {
     try {
@@ -25,9 +27,11 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
 
     setIsAddMemberDialogOpen(true);
   };
-  const handleaddOwner=async()=>{
 
-  }
+  const handleAddOwner = async () => {
+    // Add your logic to handle adding an owner here
+  };
+
   const handleCloseAddMemberDialog = () => {
     setIsAddMemberDialogOpen(false);
   };
@@ -52,6 +56,9 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
             fontWeight: 'bold',
             fontSize: '1.25rem',
             borderBottom: '1px solid #333',
+            display: 'flex',
+            justifyContent: 'space-between', // Space between the title and button
+            alignItems: 'center',
           }}
         >
           Members
@@ -61,7 +68,6 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
               color="primary"
               size="small"
               sx={{
-                marginLeft: '320px',
                 backgroundColor: '#635acc',
                 color: '#fff',
                 '&:hover': {
@@ -70,6 +76,9 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
                 borderRadius: 20,
                 paddingX: 3,
                 paddingY: 1,
+                ml: isMobile ? 'auto' : 3, // Adjusts margin-left for mobile
+                mt: isMobile ? 1 : 0, // Adds margin-top on mobile for spacing
+                whiteSpace: 'nowrap', // Prevent text overflow on small screens
               }}
               onClick={handleOpenAddMemberDialog}
             >
@@ -138,7 +147,7 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
                             ml: 2,
                             whiteSpace: 'nowrap',
                           }}
-                          onClick={()=>handleaddOwner()}
+                          onClick={handleAddOwner}
                         >
                           + Owner
                         </Button>
