@@ -29,11 +29,12 @@ import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
 import CreateHubDialog from "../Dialog/CreateHubDialog"; // Adjust path as needed
 import EditProfileDialog from "scenes/Dialog/EditProfileDialog";
-
+import UserProfileDialog from "scenes/Dialog/UserProfileDialog";
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const [isCreateHubDialogOpen, setIsCreateHubDialogOpen] = useState(false);
   const [editdialog,setEditdialog]=useState(false);
+  const [userdialog,setUserdialog]=useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
@@ -63,6 +64,14 @@ const Navbar = () => {
 
   const handlecloseedit=()=>{
     setEditdialog(false);
+  }
+
+  const handleopenuser=()=>{
+    setUserdialog(true);
+  }
+
+  const handlecloseuser=()=>{
+    setUserdialog(false);
   }
   return (
     <>
@@ -245,12 +254,13 @@ const Navbar = () => {
       
     )}
   >
-    
+    <MenuItem mt="100" onClick={ handleopenuser}><Typography>EloKo Identity</Typography></MenuItem>
     <MenuItem mt="100" onClick={() => handleedit()}><Typography>Edit Profile</Typography></MenuItem>
     <MenuItem mt="100" onClick={() => dispatch(setLogout())}><Typography color="#fc0320">Log Out</Typography></MenuItem>
   </Select>
 </FormControl>
 <EditProfileDialog open={editdialog} onClose={handlecloseedit} setAvatarMain={setAvatar}/>
+<UserProfileDialog open={userdialog} onClose={handlecloseuser} user={user}/>
               <Button
                 variant="contained"
                 sx={{ border: '2px solid', borderColor: 'primary.main' }}
