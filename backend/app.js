@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
   socket.on('sendMessage',async(message) => {
     //const { zone, message } = data;
     //const file=req.file;
-    io.to(message.zone).emit('receiveMessage', message);
+   
     const hashtagRegex = /#\w+/g;
     const hashtags = message.text.match(hashtagRegex);
     console.log(message.folder);
@@ -105,7 +105,7 @@ io.on('connection', (socket) => {
 
     const newMessage=new Message(messageforDB);
     const savednewMessage=await newMessage.save();
-    
+    io.to(message.zone).emit('receiveMessage', savednewMessage);
    }
     
     //console.log(`Message sent to zone ${message.zone}: ${message}`);

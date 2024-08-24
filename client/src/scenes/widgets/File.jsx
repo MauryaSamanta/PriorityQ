@@ -26,6 +26,7 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
   const [walldiag,setwalldiag]=useState(false);
   const [createfolder, setcreatefolder]=useState(false);
   const handleFileClick = (file) => {
+    setFolderDialogOpen(false)
     setSelectedFile(file);
   };
 

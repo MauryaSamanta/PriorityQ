@@ -24,6 +24,7 @@ const MobileFile = ({ members, owner, wallpaper, setWallpaperMain }) => {
   const isMobile = useMediaQuery('(max-width:600px)');
 
   const handleFileClick = (file) => {
+    setFolderDialogOpen(false);
     setSelectedFile(file);
   };
 

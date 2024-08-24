@@ -68,8 +68,9 @@ export const updateAvatar = async (req, res, next) => {
 export const getUser=async(req,res)=>{
     const userId=req.params.userId;
     try {
-      const user=await User.findById(userId);
-      res.status(200).json({user});
+      const user=await User.findById(userId).select('-password_hash -email');
+      console.log(user);
+      res.status(200).json(user);
     } catch (error) {
       console.lof(error);
       res.status(400).json({message:`Server down`});

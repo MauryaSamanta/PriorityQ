@@ -116,3 +116,15 @@ export const sendMessagewithFolder=async(req,res)=>{
        console.log(err);
       }
 }
+
+export const deleteMessage=async(req,res)=>{
+   const {messageid}=req.params;
+   try {
+    const deletedmessage=await Message.deleteOne({_id:messageid});
+    req.io.emit('deleteMessage',(messageid));
+    res.status(200).json(`Success`);
+   } catch (error) {
+    console.log(error);
+    res.status(400).json(`Error`);
+   }
+}

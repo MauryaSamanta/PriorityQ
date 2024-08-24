@@ -6,6 +6,7 @@ export const getFiles=async(req,res)=>{
     const {hubid}=req.params;
     try {
         const files=await File.find({user_id:userid, hub_id:hubid});
+        //console.log(files);
         res.status(200).json(files);
     } catch (error) {
         console.log(error);
@@ -86,6 +87,41 @@ export const addfiletofolder=async(req,res)=>{
         res.status(400).json(`Error`);
     }
 }
+export const removeFilefromFolder = async (req, res) => {
+    const { userid, hubid, file_name, file_url, folderid } = req.body;
+  
+    try {
+      const folder = await File.findById(folderid);
+  
+      if (!folder) {
+        return res.status(404).json({ message: 'Folder not found' });
+      }
+  
+      const fileIndex = folder.folder.findIndex(file => file.file_url === file_url);
+  
+      if (fileIndex === -1) {
+        return res.status(404).json({ message: 'File not found in folder' });
+      }
+  
+      folder.folder.splice(fileIndex, 1);
+  
+      await folder.save();
+  
+      const newFile = new File({
+        file_name: file_name,
+        file_url: file_url,
+        user_id: userid,
+        hub_id: hubid
+      });
+  
+      const savedFile = await newFile.save();
+  
+      res.status(200).json(savedFile);
+    } catch (error) {
+      console.error('Error removing file from folder:', error);
+      res.status(400).json('Error');
+    }
+  };
 
 export const deleteFiles=async(req,res)=>{
     const {fileid}=req.params;
