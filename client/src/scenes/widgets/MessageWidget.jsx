@@ -21,7 +21,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const [shareOpen, setshareOpen]=useState(false);
   const [filetoshare,setfiletoshare]=useState(null);
   const { _id, username, avatar_url } = useSelector((state) => state.user);
-
+  const [poll, setpoll]=useState(false);
   const handleshareOpen=()=>{
     setshareOpen(true);
   }
@@ -157,7 +157,12 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
       )
     );
   };
-
+  const handleopenpoll=()=>{
+    setpoll(true);
+  }
+  const handleclosepoll=()=>{
+    setpoll(false);
+  }
   return (
     <Box
       alignItems="center"
@@ -208,8 +213,9 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
         color: '#3486eb', // Change this to your desired color
       }}}/>
             </IconButton>
-          
+           
           <FileDialog open={shareOpen} onClose={handleshareClose} handlefileshare={handlefileshare}/>
+          
         </Box>
       ) : (
         <Box display="flex" alignItems="center" justifyContent="center" mt={2}>

@@ -2,10 +2,14 @@ import UserZone from "../models/UserZone.js";
 
 export const getlastread=async(req,res)=>{
     const {userid, zoneid}=req.body;
+    //.log(userid,zoneid);
     try {
         const lastread=await UserZone.findOne({user_id:userid, zone_id:zoneid});
-        console.log(lastread);
-        const unread={id:lastread.lastread};
+        let unread={};
+        if(lastread)
+         unread={id:lastread.lastread};
+        else
+        unread={id:'no'}
         res.status(200).json(unread);
     } catch (error) {
         console.log(error);

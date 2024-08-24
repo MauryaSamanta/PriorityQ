@@ -11,11 +11,14 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 const ChatItem = ({ message, isOwnMessage }) => {
-  const { text, senderAvatar, file, senderName, reactions, name_file, folder, name_folder } = message;
+  const { sender_id,text, senderAvatar, file, senderName, reactions, name_file, folder, name_folder } = message;
   const [anchorEl, setAnchorEl] = useState(null);
+  const [chatanchor, setchatanchor]=useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [showTick, setShowTick] = useState(false);  // New state for tick mark visibility
   const [userprof, setUserprof]=useState(false);
+  const [user,setUser]=useState(null);
+  const [userdialog,setUserdialog]=useState(false);
   const hubId = useParams();
   const token = useSelector((state) => state.token);
 
@@ -26,11 +29,27 @@ const ChatItem = ({ message, isOwnMessage }) => {
   const closeMenu = () => {
     setAnchorEl(null);
   };
+
+  const opentextmenu=(event)=>{
+    setchatanchor(event.currentTarget);
+  }
+  const closetextmenu = () => {
+    setchatanchor(null);
+  };
   const handleuserprof=()=>{
     setUserprof(true);
   }
   const handleuserprofclose=()=>{
     setUserprof(false);
+  }
+
+  const handleopenuser=()=>{
+    getuser();
+    setUserdialog(true);
+  }
+  const handlecloseuser=()=>{
+    setUser(null);
+    setUserdialog(false);
   }
   const saveToMyFiles = async () => {
     const fileData = {
@@ -54,7 +73,33 @@ const ChatItem = ({ message, isOwnMessage }) => {
       console.error('Error saving file:', error);
     }
   };
-
+  
+  const deletemsg=async()=>{
+    let messageid=message._id;
+    try {
+      const response=await fetch(`https://surf-jtn5.onrender.com/message/${message._id}`,{
+        method:"DELETE"
+      })
+        
+        
+        setchatanchor(false);
+        setIsHovered(false);
+    } catch (error) {
+      
+    }
+  }
+  const getuser=async()=>{
+    try {
+      const response=await fetch(`https://surf-jtn5.onrender.com/users/${sender_id}`,{
+        method:"GET"
+      })
+      const userdata=await response.json();
+      setUser(userdata);
+       console.log(user);
+    } catch (error) {
+      
+    }
+  }
   const handleHashtagClick = (hashtag) => {
     
   };
@@ -81,8 +126,12 @@ const ChatItem = ({ message, isOwnMessage }) => {
       flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
       alignItems="flex-start"
       mb={2}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <Avatar src={senderAvatar || '/path/to/random/avatar.jpg'} />
+      <Avatar src={senderAvatar || '/path/to/random/avatar.jpg'} onClick={()=>{
+        if(!isOwnMessage)
+        handleopenuser()}}/>
       <Box
         display="flex"
         flexDirection="column"
@@ -97,7 +146,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
         <Box display="flex" alignItems="center">
           <Typography variant="body1" fontWeight="bold">{senderName}</Typography>
         </Box>
-        
+        <UserProfileDialog open={userdialog} onClose={handlecloseuser} user={user}/>
         {name_folder && (
           <Box
             mt={1}
@@ -106,8 +155,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
             overflow="hidden"
             borderRadius="4px"
             position="relative"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -145,6 +193,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
               onClose={closeMenu}
             >
               <MenuItem onClick={saveToMyFiles}>Save to My Files</MenuItem>
+              {isOwnMessage&& <MenuItem onClick={deletemsg} sx={{color:'#ed0e0e'}}>Delete Message</MenuItem>}
             </Menu>
             {showTick && (
               <CheckCircleIcon
@@ -168,8 +217,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
             overflow="hidden"
             borderRadius="4px"
             position="relative"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+           
             sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             {name_file?.endsWith('.pdf') ? (
@@ -204,7 +252,9 @@ const ChatItem = ({ message, isOwnMessage }) => {
               open={Boolean(anchorEl)}
               onClose={closeMenu}
             >
+              
               <MenuItem onClick={saveToMyFiles}>Save to My Files</MenuItem>
+              {isOwnMessage&& <MenuItem onClick={deletemsg} sx={{color:'#ed0e0e'}}>Delete Message</MenuItem>}
             </Menu>
             {showTick && (
               <CheckCircleIcon
@@ -220,28 +270,41 @@ const ChatItem = ({ message, isOwnMessage }) => {
           </Box>
         )}
 
-        {text && (
-             <Typography variant="body1" >
-             {renderHighlightedMessage(text)}
-           </Typography>
+        { text && (
+          <Box position="relative">
+            <Typography variant="body1" >
+              {renderHighlightedMessage(text)}
+            </Typography>
+            {isHovered && !file && folder.length===0 && isOwnMessage && (
+              <IconButton
+                size="small"
+                onClick={opentextmenu}
+                sx={{
+                  position: 'absolute',
+                  top: 4,
+                  right: 4,
+                  color: 'white',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  zIndex: 1,
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
+                }}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )}
+            <Menu
+              anchorEl={chatanchor}
+              open={Boolean(chatanchor)}
+              onClose={closetextmenu}
+            >
+              <MenuItem onClick={deletemsg} sx={{color:'#ed0e0e'}}>Delete Message</MenuItem>
+            </Menu>
+            
+          </Box>
         )}
 
-        <Box
-          display="flex"
-          alignItems="center"
-          position="absolute"
-          right={isOwnMessage ? 'auto' : 0}
-          left={isOwnMessage ? 0 : 'auto'}
-          top={0}
-          height="100%"
-          sx={{ transform: isOwnMessage ? 'translateX(-100%)' : 'translateX(100%)' }}
-        >
-          {reactions && reactions.map((reaction, index) => (
-            <IconButton key={index} size="small" color="inherit">
-              {reaction.type === 'like' ? <ThumbUpIcon /> : <ThumbDownIcon />}
-            </IconButton>
-          ))}
-        </Box>
+
+        
       </Box>
     </Box>
   );

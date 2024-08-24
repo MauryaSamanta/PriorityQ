@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip, useMediaQuery } from '@mui/material';
+import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip, useMediaQuery, CircularProgress } from '@mui/material';
 import { useParams, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import GroupIcon from '@mui/icons-material/Group';
@@ -22,6 +22,14 @@ const HubOverview = ({ members, owner }) => {
   const [openEditBannerDialog, setOpenEditBannerDialog] = useState(false); // State for EditHubBannerDialog
   const [wallpaper,setWallpaper]=useState(null);
   const isMobile = useMediaQuery('(max-width:600px)');
+  const [currentStep, setCurrentStep] = useState(0);
+  const steps = [
+    { step: 'Setting hub avatar' },
+    { step: 'Setting hub banner' },
+    { step: 'Setting my library wallpaper' },
+    { step: 'Build first qube' }
+  ];
+  const progress = ((currentStep + 1) / steps.length) * 100;
 
   useEffect(()=>{
     const getWall=async()=>{
@@ -77,6 +85,8 @@ const HubOverview = ({ members, owner }) => {
   };
 
   const hubOwner = members.find((member) => member._id === owner);
+
+  
 
   return (
     <Box sx={{ width: '100%', position: 'relative',
@@ -227,7 +237,22 @@ const HubOverview = ({ members, owner }) => {
           </Tooltip>
         </Box>
       </Box>
-
+      {/* <Box sx={{ marginTop: 4, padding: 2, ml: 2 }}>
+    <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+      Setup Steps
+    </Typography>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+    <CircularProgress
+        variant="determinate"
+        value={progress}
+        size={24}
+        sx={{ color: theme.palette.primary.main }}
+      />
+      <Typography variant="body1" sx={{ color: currentStep >= 0 ? theme.palette.primary.main : theme.palette.grey[600] }}>
+        {steps[currentStep].step}
+      </Typography>
+    </Box>
+  </Box> */}
       {/* Button to Show/Hide Files */}
       <Button
         onClick={handleToggleFiles}
@@ -277,7 +302,7 @@ const HubOverview = ({ members, owner }) => {
           )}
         </Box>
       </Slide>
-
+ 
       {/* User Profile Dialog */}
       {hubOwner && (
         <Dialog open={openUserProfileDialog} onClose={handleCloseUserProfileDialog}>

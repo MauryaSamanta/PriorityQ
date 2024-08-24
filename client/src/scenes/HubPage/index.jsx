@@ -137,6 +137,11 @@ const HubPage = () => {
       setMessages((prevMessages) => [...prevMessages,...newmessages, message]);
       setNewMessages([]);
     });
+    socket.on('deleteMessage',(delmessage)=>{
+      setMessages((prevMessages) =>
+        prevMessages.filter((message) => message._id !== delmessage)
+      );
+    })
     
     return () => {
       socket.off('receiveMessage');
@@ -148,7 +153,7 @@ const HubPage = () => {
   }, []);
   useEffect(() => {
     if (bottomRef.current)
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+      bottomRef.current.scrollIntoView();
   }, [messages]);
 
   const joinZone = async (zone) => {
@@ -629,7 +634,7 @@ const HubPage = () => {
       </Box>
       
       {messages?.map((message, index) => (
-        <ChatItem key={index} message={message} isOwnMessage={message.sender_id===_id?true:null} />
+        <ChatItem key={index} message={message} isOwnMessage={message.sender_id===_id?true:null}  />
       ))}
       <div ref={bottomRef} />
       
