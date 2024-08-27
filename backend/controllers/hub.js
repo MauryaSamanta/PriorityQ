@@ -219,8 +219,38 @@ export const listUsersInHub = async (req, res) => {
 
   export const deleteHubs=async(req,res)=>{
     const hubid=req.params.hubid;
+    req.io.emit('deleteHub',hubid);
     try {
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+      });
       const deleteMembers=await Hubmembers.deleteMany({hub_id:hubid});
+      const deleteQubes=await Qube.deleteMany({hub_id:hubid});
+      const hub=await Hub.findById(hubid);
+      if(hub.avatar_url)
+      {
+        const publicId = hub.avatar_url.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(publicId, function (error, result) {
+          if (error) {
+            console.log('Error deleting previous avatar:', error);
+          } else {
+            console.log('Previous avatar deleted:', result);
+          }
+        });
+      }
+      if(hub.banner_url){
+        const publicId = hub.banner_url.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(publicId, function (error, result) {
+          if (error) {
+            console.log('Error deleting previous avatar:', error);
+          } else {
+            console.log('Previous avatar deleted:', result);
+          }
+        });
+      }
+
       const deletedHub = await Hub.findByIdAndDelete(hubid);
       console.log(deletedHub);
       res.status(200).json(deletedHub);

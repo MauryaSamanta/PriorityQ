@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery
   , MenuItem, IconButton,Menu
 } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
 import SearchIcon from '@mui/icons-material/Search';
 import EarbudsIcon from '@mui/icons-material/Earbuds';
@@ -27,7 +27,11 @@ const socket = io('https://surf-jtn5.onrender.com');
 const HubPage = () => {
   const navigate = useNavigate();
   const { hubId,ownerId,hubname } = useParams();
-  //const {hubName, sethubName}=useState('');
+  const location = useLocation();
+  const [des,setdes]=useState(location.state.des);
+  const [avatar,setavatar]=useState(location.state.avatar);
+  const [banner,setbanner]=useState(location.state.banner);
+  //console.log(des);
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
   const {_id,username}=useSelector((state)=>state.user);
@@ -315,7 +319,7 @@ const HubPage = () => {
       <SettingsIcon sx={{color:'white'}} />
     </IconButton>
   </Toolbar>
-  <EditHubDialog open={settings} onClose={closesetting} hub={hubname} />
+  <EditHubDialog open={settings} onClose={closesetting} hub={hubname} setavatar={setavatar} setdes={setdes} />
 </AppBar>
   
   <Box display="flex" height="calc(100% - 55px)">
@@ -564,7 +568,7 @@ const HubPage = () => {
 <CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
   </Box>
 ) : (
-  <HubOverview members={members} owner={ownerId} hubname={hubname} />
+  <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes} />
 )}
     <Divider orientation="vertical" flexItem />
 
@@ -650,6 +654,12 @@ const HubPage = () => {
   </Box>
 </Box>):(<MobileHubPage
   hubname={hubname}
+  des={des}
+  avatar={avatar}
+  banner={banner}
+  setdes={setdes}
+  setavatar={setavatar}
+  setbanner={setbanner}
   qubes={qubes}
   zones={zones}
   members={members}

@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import { useLocation, useParams } from "react-router-dom";
-const EditHubDialog = ({ open, onClose, onSave, hub, sethubName }) => {
+const EditHubDialog = ({ open, onClose, onSave, hub, sethubName, setavatar,setdes }) => {
     const location = useLocation();
     const {hubId}=useParams();
     let { des, avatar, banner } = location.state || {};
@@ -65,7 +65,8 @@ const EditHubDialog = ({ open, onClose, onSave, hub, sethubName }) => {
     //console.log(savedUserRes);
     if(savedHubRes)
       { 
-        //dispatch(setLogin({user:savedUserRes, token:token}))
+        setdes(savedHubRes.description);
+        setavatar(savedHubRes.avatar_url);
         onClose();}
 
     

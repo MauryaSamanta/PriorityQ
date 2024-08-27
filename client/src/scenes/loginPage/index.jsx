@@ -30,17 +30,18 @@ const LoginPage = () => {
           justifyContent="center"
           alignItems="center"
           width={isNonMobileScreens ? "50%" : "100%"}
-          mb={isNonMobileScreens ? "0" : "2rem"}
+          mb="0"
         >
-          <Typography
+          {/* <Typography
             fontWeight="bold"
             fontSize={isNonMobileScreens ? "64px" : "48px"}
             color="primary"
             textAlign="center"
           >
             <ReactTyped strings={["EloKo"]} typeSpeed={100} />
-          </Typography>
-          <Typography
+          </Typography> */}
+          <img src="/assets/EloKo1.png" width={isNonMobileScreens? "500px":"200px"}/>
+          {/* <Typography
             variant="h5"
             color={theme.palette.text.secondary}
             mt={isNonMobileScreens ? "1rem" : "0.5rem"}
@@ -51,7 +52,7 @@ const LoginPage = () => {
               startDelay={1000} // Start after the title has typed
               typeSpeed={50}
             />
-          </Typography>
+          </Typography> */}
         </Box>
 
         {/* Login Form */}

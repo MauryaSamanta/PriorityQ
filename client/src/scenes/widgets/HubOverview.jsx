@@ -1,17 +1,24 @@
 import React, { useState,useEffect } from 'react';
-import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip, useMediaQuery, CircularProgress } from '@mui/material';
+import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip, useMediaQuery, CircularProgress,circularProgressClasses
+  ,SwipeableDrawer
+ } from '@mui/material';
 import { useParams, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import GroupIcon from '@mui/icons-material/Group';
 import EditIcon from '@mui/icons-material/Edit';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import UserProfileDialog from '../Dialog/UserProfileDialog';
 import MembersDialog from '../Dialog/MembersDialog';
 import EditHubBannerDialog from '../Dialog/EditHubBannerDialog'; // Import your EditHubBannerDialog component
 import File from './File';
 import { useTheme } from '@emotion/react';
 import MobileFile from './MobileFile';
+import SetupStepsDrawer from './SetupStepsDrawer';
 
-const HubOverview = ({ members, owner }) => {
+const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes }) => {
+  const location = useLocation();
+  console.log(des);
+  //let {   banner } = location.state || {};
   const { hubId, hubname } = useParams();
   const { _id } = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
@@ -21,16 +28,21 @@ const HubOverview = ({ members, owner }) => {
   const [openMembersDialog, setOpenMembersDialog] = useState(false);
   const [openEditBannerDialog, setOpenEditBannerDialog] = useState(false); // State for EditHubBannerDialog
   const [wallpaper,setWallpaper]=useState(null);
+  
   const isMobile = useMediaQuery('(max-width:600px)');
   const [currentStep, setCurrentStep] = useState(0);
+  const [viewprogress,setviewprogress]=useState(true);
+  const [stepcount,setstepcount]=useState(-1);
+  const [incom,setincom]=useState('');
   const steps = [
-    { step: 'Setting hub avatar' },
-    { step: 'Setting hub banner' },
-    { step: 'Setting my library wallpaper' },
-    { step: 'Build first qube' }
+    { step: 'Upload Hub Icon', complete:'false' },
+    { step: 'Upload Hub Banner', complete:'false' },
+    { step: 'Upload My Library Wallpaper',complete:'false' },
+    { step: 'Build your First Qube',complete:'false' },
+    {step:  'Invite your Friends',complete:'false'}
   ];
   const progress = ((currentStep + 1) / steps.length) * 100;
-
+  const [stepsdrawer,setstepsdrawer]=useState(false);
   useEffect(()=>{
     const getWall=async()=>{
       try {
@@ -40,8 +52,7 @@ const HubOverview = ({ members, owner }) => {
         const wall=await response.json();
         if(wall)
           setWallpaper(wall[0].wall_url);
-        else
-        setWallpaper('https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/coffee.jpg');
+       
 
         console.log(wall);
       } catch (error) {
@@ -51,14 +62,15 @@ const HubOverview = ({ members, owner }) => {
     getWall();
   }
   )
-  const location = useLocation();
-  let { des, avatar, banner } = location.state || {};
-  const setBanner=(banner)=>{
-    banner=banner;
-  }
+ 
+  
   const handleToggleFiles = () => {
     setShowFiles(!showFiles);
   };
+   
+  const handletogglesteps=(open)=>{
+    setstepsdrawer(open);
+  }
 
   const handleOpenUserProfileDialog = () => {
     setOpenUserProfileDialog(true);
@@ -85,7 +97,38 @@ const HubOverview = ({ members, owner }) => {
   };
 
   const hubOwner = members.find((member) => member._id === owner);
-
+  const checksteps=()=>{
+    
+    let count=0;
+    if(avatar)
+      {count++;steps[0].complete='true';}
+    else if(stepcount===-1)
+       setstepcount(0);
+    if(banner)
+      {count++;steps[1].complete='true';}
+    else if(stepcount===-1)
+      setstepcount(1);
+    if(wallpaper)
+      {count++;steps[2].complete='true';}
+    else if(stepcount===-1)
+     { console.log(stepcount); setstepcount(2);}
+    if(qubes.length>0)
+      {count++;steps[3].complete='true';}
+    else if(stepcount===-1)
+     { setstepcount(3);}
+    if(members.length>1)
+      {count++;steps[4].complete='true';}
+    if(count<5)
+    setCurrentStep(count);
+  else
+    setviewprogress(false)
+  console.log(count);
+    //console.log(stepcount)
+    setincom(steps.find(step => step.complete === 'false')?.step);
+  }
+  useEffect(()=>{
+        checksteps();
+  },[avatar,banner,wallpaper,qubes])
   
 
   return (
@@ -237,22 +280,78 @@ const HubOverview = ({ members, owner }) => {
           </Tooltip>
         </Box>
       </Box>
-      {/* <Box sx={{ marginTop: 4, padding: 2, ml: 2 }}>
-    <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-      Setup Steps
+      {viewprogress && owner===_id && (
+  <Box sx={{ 
+    marginTop: 4, 
+    padding: 2, 
+    ml: 2, 
+    mr: 2, 
+    border: `2px solid ${theme.palette.primary.main}`, 
+    borderRadius: 2, 
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1)',
+    backgroundColor: theme.palette.background.paper,
+    transform: 'translateY(-2px)',
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'space-between'
+  }}
+  onClick={()=>isMobile?handletogglesteps(true):null}
+  >
+    <Box>
+    <Typography 
+      variant="h5" 
+      gutterBottom 
+      sx={{ 
+        fontWeight: 'bold', 
+        color: '#f6f6f6', 
+        textShadow: '1px 1px 2px rgba(0, 0, 0, 0.2)' 
+      }}
+    >
+      Setup Progress
     </Typography>
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-    <CircularProgress
+      <CircularProgress
         variant="determinate"
         value={progress}
         size={24}
-        sx={{ color: theme.palette.primary.main }}
+        thickness={8}
+        sx={{
+          color: 'primary',
+          animation: 'pulse 1.5s infinite ease-in-out',
+          [`& .${circularProgressClasses.circle}`]: {
+            strokeLinecap: 'round',
+          },
+          }}
+          
       />
-      <Typography variant="body1" sx={{ color: currentStep >= 0 ? theme.palette.primary.main : theme.palette.grey[600] }}>
-        {steps[currentStep].step}
+      <Typography 
+        variant="body1" 
+        sx={{ 
+          color:'#f6f6f6'
+        }}
+      >
+         {incom}
       </Typography>
+      </Box>
     </Box>
-  </Box> */}
+  </Box>
+)}
+ <SwipeableDrawer
+        anchor="bottom"
+        open={stepsdrawer}
+        onClose={()=>handletogglesteps(false)}
+        sx={{ 
+          '& .MuiDrawer-paper': {
+            borderRadius: '16px 16px 0 0',
+            padding: '16px',
+            backgroundColor: '#0a0909',
+          }
+        }}
+      >
+        <SetupStepsDrawer steps={steps} currentStep={currentStep} avatar={avatar} banner={banner} wallpaper={wallpaper}
+        qubes={qubes} members={members} />
+      </SwipeableDrawer>
+
       {/* Button to Show/Hide Files */}
       <Button
         onClick={handleToggleFiles}
@@ -325,7 +424,7 @@ const HubOverview = ({ members, owner }) => {
         open={openEditBannerDialog}
         onClose={handleCloseEditBannerDialog}
         banner={banner}
-        setBanner={setBanner}
+        setBanner={setbanner}
       />
     </Box>
   );

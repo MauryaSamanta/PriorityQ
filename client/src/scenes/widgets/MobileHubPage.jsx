@@ -23,6 +23,12 @@ import ChatItem from 'scenes/widgets/ChatItem';
 import EditHubDialog from 'scenes/Dialog/EditHubDialog';
 const MobileHubPage = ({
   hubname,
+  des,
+  avatar,
+  banner,
+  setbanner,
+  setavatar,
+  setdes,
   qubes,
   zones,
   members,
@@ -110,12 +116,12 @@ const MobileHubPage = ({
     >
       <SettingsIcon sx={{color:'white'}} />
     </IconButton>
-    <EditHubDialog open={edithub} onClose={closeedithub} hub={hubname} />
+    <EditHubDialog open={edithub} onClose={closeedithub} hub={hubname} setdes={setdes} setavatar={setavatar} />
         </Toolbar>
       </AppBar>
 
-      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}  sx={{ width: '100%' }}>
-  <Box display="flex" height="100%" sx={{ width: '100%' }}>
+      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}  sx={{ width: '100%' }} >
+  <Box display="flex" height="100%" sx={{ width: '100%' }} >
     {/* Qubes Section */}
     <Box
       width={selectedQube ? '60%' : '100%'} // Adjust width based on selection
@@ -129,6 +135,8 @@ const MobileHubPage = ({
         p: 2,
         transition: 'width 0.5s ease',
       }}
+      borderRadius="0px 16px 16px 0px"
+      boxShadow="0px 4px 12px rgba(0, 0, 0, 0.3)" 
     >
       <Button color="secondary" onClick={() => {
         setDrawerOpen(false);
@@ -256,6 +264,8 @@ const MobileHubPage = ({
         flexDirection="column"
         height="100%"
         sx={{ transition: 'width 0.3s ease' }}
+        borderRadius="0px 16px 16px 0px"
+        boxShadow="0px 4px 12px rgba(0, 0, 0, 0.3)" 
       >
         <Typography variant="h6" mb={2}>Zones</Typography>
         <Box sx={{overflowY:'auto'}}>
@@ -392,11 +402,11 @@ const MobileHubPage = ({
         </Box>
       ) : (
         // Show HubOverview if no Zone is selected
-        <HubOverview members={members} owner={ownerId} />
+        <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes} />
       )}
     </Box>
   ) : (
-    <HubOverview members={members} owner={ownerId} />
+    <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes} />
   )}
 </Box>
 

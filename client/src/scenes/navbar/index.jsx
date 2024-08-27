@@ -10,7 +10,8 @@ import {
   useTheme,
   useMediaQuery,
   Button,
-  Tooltip
+  Tooltip,
+  Slide
 } from "@mui/material";
 import {
   Search,
@@ -182,16 +183,20 @@ const Navbar = () => {
 
         {/* MOBILE NAV */}
         {!isNonMobileScreens && isMobileMenuToggled && (
+           <Slide direction="left" in={isMobileMenuToggled} mountOnEnter unmountOnExit>
           <Box
-            position="fixed"
-            right="0"
-            bottom="0"
-            height="100%"
-            zIndex="10"
-            maxWidth="500px"
-            minWidth="300px"
-            backgroundColor={background}
-          >
+  position="fixed"
+  right="0"
+  bottom="0"
+  height="100%"
+  zIndex="10"
+  maxWidth="500px"
+  minWidth="300px"
+  backgroundColor={background}
+  borderRadius="16px 0 0 16px"
+  boxShadow="0px 4px 12px rgba(0, 0, 0, 0.3)"  // Add shadow for raised effect
+>
+
             {/* CLOSE ICON */}
             <Box display="flex" justifyContent="flex-end" p="1rem">
               <IconButton
@@ -279,6 +284,7 @@ const Navbar = () => {
             </FlexBetween>
            
           </Box>
+          </Slide>
         )}
         
       </FlexBetween>

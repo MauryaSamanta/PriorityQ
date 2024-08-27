@@ -31,13 +31,11 @@ const messageSchema = new Schema(
     },
     zone_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Zone",
-      required: true,
+      ref: "Zone"
     },
     qube_id:{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Qube",
-      required: true,
+      ref: "Qube"
     },
     tags:{
       type:String
