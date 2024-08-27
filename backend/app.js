@@ -16,6 +16,8 @@ import userzoneRoute from "./routes/userzone.js";
 import inviteRoute from "./routes/invites.js";
 import fileRoute from "./routes/file.js";
 import tagRoute from "./routes/tag.js";
+import reqRoute from "./routes/request.js";
+import chatRoute from "./routes/chat.js";
 import Message from "./models/Message.js";
 import { v2 as cloudinary } from "cloudinary";
 import { attachmentsMulter } from "./middlewares/multer.js";
@@ -34,21 +36,23 @@ app.use(cookieParser());
 app.use(cors());
 
 //apis
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/hub",hubRoute);
 app.use("/wall",wallRoute);
 app.use("/qube",qubeRoute);
-app.use((req, res, next) => {
-    req.io = io;
-    next();
-  });
 app.use("/zone", zoneRoute);
 app.use("/message",messageRoute);
 app.use("/read", userzoneRoute);
 app.use("/invite",inviteRoute);
 app.use("/file",fileRoute);
 app.use("/tag",tagRoute);
+app.use("/request",reqRoute);
+app.use("/chat",chatRoute);
 // app.use("/api/v1/chat", chatRoute);
 // app.use("/api/v1/admin", adminRoute);
 
@@ -85,8 +89,8 @@ io.on('connection', (socket) => {
    
     const hashtagRegex = /#\w+/g;
     const hashtags = message.text.match(hashtagRegex);
-    console.log(message.folder);
-    
+    //console.log(message.folder);
+    console.log(message.qube);
     let messageforDB={
       text:message.text,
       senderAvatar:message.senderAvatar,
@@ -106,6 +110,7 @@ io.on('connection', (socket) => {
     const newMessage=new Message(messageforDB);
     const savednewMessage=await newMessage.save();
     io.to(message.zone).emit('receiveMessage', savednewMessage);
+    console.log('ok');
    }
     
     //console.log(`Message sent to zone ${message.zone}: ${message}`);

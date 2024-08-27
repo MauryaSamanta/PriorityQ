@@ -6,6 +6,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import JoinHubWidget from './JoinHubWidget';
+import  io  from 'socket.io-client';
+const socket = io('https://surf-jtn5.onrender.com');
 
 const Hubs = ({ userId, setPrincipalHubs }) => {
   const [hubs, setHubs] = useState([]);
@@ -24,13 +26,19 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
         const data = await response.json();
         setHubs(data);
         setPrincipalHubs(data);
-        console.log(data);
+        
       } catch (error) {
         console.error('Error fetching hubs:', error);
       }
     };
 
     fetchHubs();
+    socket.on('deleteHub',(hubid)=>{
+      console.log(hubs);
+      setHubs((prevHubs) => prevHubs.filter(hub => hub._id !== hubid));
+      setPrincipalHubs((prevPrincipalHubs) => prevPrincipalHubs.filter(hub => hub._id !== hubid));
+    })
+    
   }, [userId]);
 
   const handleMenuOpen = (event, hub) => {

@@ -43,8 +43,12 @@ export const sendMessagewithFile=async(req,res)=>{
             file:result.secure_url,
             sender_id:sender_id,
             zone_id:zone,
-            qube_id:qube
+            
         };
+        if(qube && qube!=='null'){
+          console.log(typeof qube);
+          messageforDB={...messageforDB,qube_id:qube};
+        }
         if(hashtags){
           messageforDB={...messageforDB,tags:hashtags[0]};
         }
@@ -101,8 +105,11 @@ export const sendMessagewithFolder=async(req,res)=>{
           folder:results,
           sender_id:sender_id,
           zone_id:zone,
-          qube_id:qube
+          
       };
+      if(qube && qube!=='null'){
+        messageforDB={...messageforDB,qube_id:qube};
+      }
       if(hashtags){
         messageforDB={...messageforDB,tags:hashtags[0]};
       }

@@ -12,7 +12,7 @@ export const changewall=async(req,res)=>{
         api_key: process.env.CLOUDINARY_API_KEY,
         api_secret: process.env.CLOUDINARY_API_SECRET
       });
-      if (wallpaper.wall_url) {
+      if (wallpaper && wallpaper.wall_url) {
         const publicId = wallpaper.wall_url.split('/').pop().split('.')[0];
         await cloudinary.uploader.destroy(publicId, function (error, result) {
           if (error) {
