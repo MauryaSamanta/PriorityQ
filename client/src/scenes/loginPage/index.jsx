@@ -40,7 +40,7 @@ const LoginPage = () => {
           >
             <ReactTyped strings={["EloKo"]} typeSpeed={100} />
           </Typography> */}
-          <img src="/assets/EloKo1.png" width={isNonMobileScreens? "500px":"200px"}/>
+          <img src="/assets/EloKoMainLogo.png" width={isNonMobileScreens? "500px":"200px"}/>
           {/* <Typography
             variant="h5"
             color={theme.palette.text.secondary}
