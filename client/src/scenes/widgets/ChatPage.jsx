@@ -59,7 +59,7 @@ const ChatPage = ({ chat,friendId, friendName, friendAvatar }) => {
       bgcolor="primary"
       display="flex"
       flexDirection="column"
-      height={isNonMobileScreens?"630px":"100vh"}
+      height={isNonMobileScreens?"630px":"90vh"}
       borderRadius="10px"
       padding='6px'
     >
