@@ -58,6 +58,14 @@ const Image = styled('img')({
   borderRadius: '5px',
 });
 
+const Footer = styled('footer')(({ theme }) => ({
+  background: 'linear-gradient(135deg, #1e1e2f 30%, #635acc 100%)',
+  color: '#fff',
+  padding: theme.spacing(3, 2),
+  textAlign: 'center',
+  boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+}));
+
 const AboutUs = () => {
   const navigate = useNavigate();
 
@@ -123,7 +131,14 @@ const AboutUs = () => {
           </Grid>
         </ContentContainer>
       </Container>
+      <Footer>
+        
+        <Typography variant="caption">
+          &copy; 2024 EloKo. All rights reserved.
+        </Typography>
+      </Footer>
     </AboutUsContainer>
+    
   );
 };
 

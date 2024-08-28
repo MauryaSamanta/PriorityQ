@@ -178,7 +178,7 @@ const LandingPage = () => {
                   A space for communication and superpowered resource sharing.
                 </Typography>
                 <Typography variant="h6" sx={{ mb: 3, fontSize: isSmallScreen ? '1.2rem' : '1.5rem' }}>
-                  Join us and revolutionize the way you collaborate and share resources in your community.
+                  Join us and revolutionize the way you chat and share resources in your community.
                 </Typography>
               </Box>
             </Grid>
@@ -191,35 +191,35 @@ const LandingPage = () => {
                 }}
               >
                 <Box
-                  sx={{
-                    width: '80%',
-                    height: '300px',
-                    backgroundColor: '#635acc',
-                    borderRadius: '15px',
-                    boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'transform 0.1s ease-out',
-                    transform: boxStyle.transform,
-                    position: 'relative',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <img
-                    src='https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274805/cld-sample-5.jpg' // Replace with your image source
-                    alt="Description"
-                    style={{
-                      position: 'absolute',
-                      width: '110%',
-                      height: '110%',
-                      objectFit: 'cover',
-                      top: '-5%',
-                      left: '-5%',
-                      zIndex: 1,
-                    }}
-                  />
-                </Box>
+  sx={{
+    width: !isSmallScreen?'100%':'90%',
+    height: !isSmallScreen?'300px':'140px',
+    backgroundColor: '#635acc',
+    borderRadius: '15px',
+    boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'transform 0.1s ease-out',
+    transform: boxStyle.transform,
+    position: 'relative',
+    overflow: 'hidden',
+  }}
+>
+  <img
+    src='/assets/preview.png' // Replace with your image source
+    alt="Description"
+    style={{
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      objectFit: !isSmallScreen?'cover':'contain',
+      objectPosition: 'center', // Adjusts which part of the image is centered
+      zIndex: 1,
+      borderRadius: 'inherit', // Ensures the image follows the parent's border radius
+    }}
+  />
+</Box>
               </Box>
             </Grid>
           </Grid>
