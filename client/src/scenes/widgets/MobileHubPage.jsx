@@ -55,6 +55,7 @@ const MobileHubPage = ({
   handleOpenEditQubeDialog,
   handleCloseEditQubeDialog,
   handleEditQube,
+  handleDelQube,
   OpenEditQubeDialog,
   handleMenuClose,
   anchorEl,
@@ -251,7 +252,7 @@ const MobileHubPage = ({
 
       
       <CreateQubeDialog open={openDialog} onClose={handleCloseDialog} onCreate={handleCreateQube} />
-      <EditQubeDialog qube={editQube} open={OpenEditQubeDialog} onClose={handleCloseEditQubeDialog} onEdit={handleEditQube}/>
+      <EditQubeDialog qube={editQube} open={OpenEditQubeDialog} onClose={handleCloseEditQubeDialog} onEdit={handleEditQube} onDel={handleDelQube}/>
     </Box>
 
     {/* Zones Section */}
