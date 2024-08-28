@@ -92,3 +92,14 @@ export const listZonesInQube=async(req,res)=>{
         res.status(500).json({error:`Internal Server Error`});
     }
 }
+
+export const deleteQube=async(req,res)=>{
+    try {
+        const {qubeid}=req.params;
+        const deleteQube=await Qube.deleteOne({_id:qubeid});
+        res.status(200).json(`Deleted Qube`);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(`Error`);
+    }
+}

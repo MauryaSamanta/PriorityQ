@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from '@mui/material';
 
-const EditQubeDialog = ({ qube, open, onClose, onEdit }) => {
+const EditQubeDialog = ({ qube, open, onClose, onEdit, onDel }) => {
   const [qubeName, setQubeName] = useState('');
   const [nickName,setNickName]=useState('');
   //console.log(qubeName);
@@ -12,7 +12,14 @@ const EditQubeDialog = ({ qube, open, onClose, onEdit }) => {
     setNickName('');
     onClose();
   };
-
+  
+  const handleDelete=()=>{
+      onDel();
+      onClose();
+      setNickName('');
+      setQubeName('');
+      
+  }
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle color="primary.main">{qube?.name} Qube</DialogTitle>
@@ -39,6 +46,9 @@ const EditQubeDialog = ({ qube, open, onClose, onEdit }) => {
         />
       </DialogContent>
       <DialogActions>
+      <Button onClick={handleDelete} sx={{color:"#c92626"}}>
+          Delete Qube
+        </Button>
         <Button onClick={onClose} color="secondary">
           Cancel
         </Button>

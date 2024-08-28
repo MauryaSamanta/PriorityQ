@@ -282,6 +282,19 @@ const HubPage = () => {
       console.error('Error updating qube:', error);
     }
   };
+
+  const handleDelQube=async()=>{
+    try {
+      const response=await fetch(`https://surf-jtn5.onrender.com/qube/${editQube._id}`,{
+        method:"DELETE"
+      });
+      if(response.ok){
+        setQubes(qubes.filter(qube => qube?._id !== editQube._id))
+      }
+    } catch (error) {
+      
+    }
+  }
   const handlesetting=()=>{
     setSettings(true);
   }
@@ -479,7 +492,7 @@ const HubPage = () => {
       </Box>
       <Button color="secondary" size="small" variant="contained" onClick={handleOpenDialog}>Create a Qube</Button>
       <CreateQubeDialog open={openDialog} onClose={handleCloseDialog} onCreate={handleCreateQube} />
-      <EditQubeDialog qube={editQube} open={OpenEditQubeDialog} onClose={handleCloseEditQubeDialog} onEdit={handleEditQube}/>
+      <EditQubeDialog qube={editQube} open={OpenEditQubeDialog} onClose={handleCloseEditQubeDialog} onEdit={handleEditQube} onDel={handleDelQube}/>
     </Box>
     
     <Divider orientation="vertical" flexItem />
@@ -682,6 +695,7 @@ const HubPage = () => {
   handleOpenEditQubeDialog={handleOpenEditQubeDialog}
   handleCloseEditQubeDialog={handleCloseEditQubeDialog}
   handleEditQube={handleEditQube}
+  handleDelQube={handleDelQube}
   handleMenuClose={handleMenuClose}
   anchorEl={anchorEl}
   setAnchorEl={setAnchorEl}
