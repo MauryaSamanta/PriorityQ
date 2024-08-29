@@ -193,7 +193,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
               open={Boolean(anchorEl)}
               onClose={closeMenu}
             >
-              <MenuItem onClick={saveToMyFiles}>Save to My Files</MenuItem>
+              <MenuItem onClick={saveToMyFiles}>Save to My Library</MenuItem>
               {isOwnMessage&& <MenuItem onClick={deletemsg} sx={{color:'#ed0e0e'}}>Delete Message</MenuItem>}
             </Menu>
             {showTick && (
@@ -262,7 +262,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
               onClose={closeMenu}
             >
               
-              <MenuItem onClick={saveToMyFiles}>Save to My Files</MenuItem>
+              <MenuItem onClick={saveToMyFiles}>Save to My Library</MenuItem>
               {isOwnMessage&& <MenuItem onClick={deletemsg} sx={{color:'#ed0e0e'}}>Delete Message</MenuItem>}
             </Menu>
             {showTick && (
