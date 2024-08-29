@@ -14,7 +14,7 @@ import CreateFolderDialog from 'scenes/Dialog/CreateFolderDialog';
 import Draggable from 'react-draggable';
 import EditWallpaperDialog from 'scenes/Dialog/EditWallpaperDialog';
 
-const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
+const File = ({ members, owner, wallpaper,setWallpaperMain, chat }) => {
   const [files, setFiles] = useState([]);
   const [folder, setFolder] = useState(null);
   const { hubId } = useParams();
@@ -59,8 +59,9 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
   }
   useEffect(() => {
     const getFiles = async () => {
+      const hub=hubId || chat;
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/file/${hubId}`, {
+        const response = await fetch(`https://surf-jtn5.onrender.com/file/${hub}`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
         });
@@ -264,7 +265,9 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
                         <img src='/assets/folder.png' width={50} sx={{ color: '#de9210', fontSize: '48px' }} />
                       ) : file.file_url.split('.').pop().toLowerCase() === 'pdf' ? (
                         <img src='/assets/file.png' width={50} sx={{ color: '#de1016', fontSize: '48px' }} />
-                      ) : (
+                      ) : file.file_url.split('.').pop().toLowerCase() === 'docx' || file.file_url.split('.').pop().toLowerCase() === 'doc' ?(
+                        <img src='/assets/doc.png' width={50} sx={{ color: '#1084de', fontSize: '48px' }} />
+                      ):(
                         <img src='/assets/photo.png' width={50} sx={{ color: '#1084de', fontSize: '48px' }} />
                       )}
                       <Typography variant="body2" sx={{ color: 'white', mt: 1 }} noWrap>
@@ -313,7 +316,7 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
           <AddIcon />
         </IconButton>
         <CreateFolderDialog open={createfolder} onClose={handlecreatefolderclose} createFolder={createFolder}/>
-        <Tooltip title="Change Library Wallpaper" arrow>
+        {!chat && (<Tooltip title="Change Library Wallpaper" arrow>
           <IconButton
             sx={{
               position: 'absolute',
@@ -329,7 +332,7 @@ const File = ({ members, owner, wallpaper,setWallpaperMain }) => {
           >
             <EditIcon />
           </IconButton>
-        </Tooltip>
+        </Tooltip>)}
         <EditWallpaperDialog open={walldiag} onClose={handleclosewalldiag} setWallpaperMain={setWallpaperMain}/>
       </Box>
       

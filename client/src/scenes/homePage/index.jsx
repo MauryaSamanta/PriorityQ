@@ -140,7 +140,7 @@ const HomePage = () => {
   >
     <BottomNavigationAction
       label="Inbox"
-      icon={<img src='/assets/mail-box.png' alt="My Hubs" style={{ width: '20px', height: '20px', color:'#f6f6f6' }} />}
+      icon={<img src='/assets/mail.png' alt="My Hubs" style={{ width: '20px', height: '20px', color:'#f6f6f6' }} />}
       sx={{
         color: 'white',
         '&.Mui-selected': {

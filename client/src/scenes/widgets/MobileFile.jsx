@@ -12,7 +12,7 @@ import FolderDialog from '../Dialog/FolderDialog';
 import EditWallpaperDialog from 'scenes/Dialog/EditWallpaperDialog';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const MobileFile = ({ members, owner, wallpaper, setWallpaperMain }) => {
+const MobileFile = ({ members, owner, wallpaper, setWallpaperMain, chat }) => {
   const [files, setFiles] = useState([]);
   const [folder, setFolder] = useState(null);
   const { hubId } = useParams();
@@ -52,8 +52,9 @@ const MobileFile = ({ members, owner, wallpaper, setWallpaperMain }) => {
 
   useEffect(() => {
     const getFiles = async () => {
+      const hub=hubId||chat;
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/file/${hubId}`, {
+        const response = await fetch(`https://surf-jtn5.onrender.com/file/${hub}`, {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         });
@@ -153,7 +154,9 @@ const MobileFile = ({ members, owner, wallpaper, setWallpaperMain }) => {
                 <img src='/assets/folder.png' width={50} sx={{ color: '#de9210', width: '10px' }} />
               ) : file.file_url.split('.').pop().toLowerCase() === 'pdf' ? (
                 <img src='/assets/file.png' width={50} sx={{ color: '#de1016', width: '48px' }} />
-              ) : (
+              ) : file.file_url.split('.').pop().toLowerCase() === 'docx' || file.file_url.split('.').pop().toLowerCase() === 'doc' ?(
+                <img src='/assets/doc.png'width={50} sx={{ color: '#1084de', fontSize: '48px' }} />
+              ):(
                 <img src='/assets/photo.png'width={50} sx={{ color: '#1084de', fontSize: '48px' }} />
               )}
               <Typography variant="body2" sx={{ color: 'white', mt: 1 }} noWrap>
@@ -180,7 +183,7 @@ const MobileFile = ({ members, owner, wallpaper, setWallpaperMain }) => {
             <DeleteIcon />
           </IconButton>
         )}
-        <Tooltip title="Change Library Wallpaper" arrow>
+        {!chat && (<Tooltip title="Change Library Wallpaper" arrow>
           <IconButton
             sx={{
               position: 'fixed', // Make it fixed so it doesn't scroll
@@ -197,7 +200,7 @@ const MobileFile = ({ members, owner, wallpaper, setWallpaperMain }) => {
           >
             <EditIcon />
           </IconButton>
-        </Tooltip>
+        </Tooltip>)}
         <EditWallpaperDialog open={walldiag} onClose={handleclosewalldiag} setWallpaperMain={setWallpaperMain} />
       </Box>
 
