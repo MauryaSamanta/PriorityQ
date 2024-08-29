@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, Button, Avatar,useMediaQuery } from '@mui/material';
+import { Box, Typography, Button, Avatar,useMediaQuery, Slide } from '@mui/material';
 import ChatItem from './ChatItem'; // Assuming ChatItem component is already defined
 import MessageWidget from './MessageWidget'; // Assuming MessageWidget component is already defined
+import File from './File';
+import MobileFile from './MobileFile';
 import  io  from 'socket.io-client';
 import { useSelector } from 'react-redux';
 const socket = io('https://surf-jtn5.onrender.com');
@@ -12,6 +14,24 @@ const ChatPage = ({ chat,friendId, friendName, friendAvatar }) => {
   const bottomRef = useRef(null);
   const containerRef = useRef(null);
   const {_id}=useSelector((state)=>state.user);
+  const [showFiles,setshowfiles]=useState(false);
+  const [wallpaper, setmainwall]=useState(null);
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
+
+const toggleButtonVisibility = () => {
+  setIsButtonVisible(!isButtonVisible);
+  if (!showFiles) {
+    setTimeout(() => {
+      setIsButtonVisible(false);
+    }, 3000); 
+  }
+};
+  const handletogglefiles=()=>{
+    if(showFiles)
+      setIsButtonVisible(false);
+    setshowfiles(!showFiles);
+
+  }
   const joinChat=async()=>{
     socket.emit('joinZone',chat);
     try {
@@ -68,6 +88,59 @@ const ChatPage = ({ chat,friendId, friendName, friendAvatar }) => {
           <Avatar src={friendAvatar} sx={{ marginRight: '1rem' }} />
           <Typography variant="h6">{friendName}</Typography>
         </Box>
+        <Button
+        onClick={() => {
+          if(!isButtonVisible)
+          toggleButtonVisibility();
+          else
+          handletogglefiles();
+          
+        }}
+        sx={{
+          position: 'fixed',
+          right: isButtonVisible ? 16 : -30,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 10,
+          backgroundColor: '#635acc',
+          color: 'white',
+          borderRadius: 2,
+          padding: 1,
+          minWidth: 0,
+          width: 40,
+          height: 80,
+          transition: 'right 0.3s ease-in-out',
+          '&:hover': {
+            backgroundColor: '#4a4b9b',
+          },
+        }}
+      >
+        <Typography variant="body2" sx={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+          {showFiles ? 'Out Of Library' : 'Go To Library'}
+        </Typography>
+      </Button>
+      <Slide direction="left" in={showFiles} mountOnEnter unmountOnExit>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            height: isNonMobileScreens?'100%':'100vh',
+            left: showFiles ? 0 : '-100%',
+            width: '100%',
+            backgroundColor: 'primary',
+            boxShadow: 4,
+            padding: 2,
+           // overflowY: 'auto',
+            zIndex: 5,
+            transition: 'left 1.0s ease',
+          }}
+        >
+          {isNonMobileScreens?(<File wallpaper={wallpaper} setWallpaperMain={setmainwall} chat={chat} />
+          ):(
+            <MobileFile wallpaper={wallpaper} setWallpaperMain={setmainwall} chat={chat}/>
+          )}
+        </Box>
+      </Slide>
       </Box>
 
       <Box
@@ -95,7 +168,7 @@ const ChatPage = ({ chat,friendId, friendName, friendAvatar }) => {
           <Typography variant="h5">Conversation with {friendName}</Typography>
           </Box>
         {messages?.map((message, index) => (
-          <ChatItem key={index} message={message} isOwnMessage={message.sender_id === _id} />
+          <ChatItem key={index} message={message} isOwnMessage={message.sender_id === _id} chat={chat}/>
         ))}
         <div ref={bottomRef} />
       </Box>

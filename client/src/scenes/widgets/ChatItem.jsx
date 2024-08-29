@@ -4,13 +4,14 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import ArticleIcon from '@mui/icons-material/Article';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FolderIcon from '@mui/icons-material/Folder';
 import UserProfileDialog from 'scenes/Dialog/UserProfileDialog';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-const ChatItem = ({ message, isOwnMessage }) => {
+const ChatItem = ({ message, isOwnMessage, chat }) => {
   const { sender_id,text, senderAvatar, file, senderName, reactions, name_file, folder, name_folder } = message;
   const [anchorEl, setAnchorEl] = useState(null);
   const [chatanchor, setchatanchor]=useState(null);
@@ -53,7 +54,7 @@ const ChatItem = ({ message, isOwnMessage }) => {
   }
   const saveToMyFiles = async () => {
     const fileData = {
-      hub_id: hubId.hubId,
+      hub_id: hubId.hubId || chat,
       file_url: file,
       file_name: name_file,
       name_folder: name_folder,
@@ -227,7 +228,15 @@ const ChatItem = ({ message, isOwnMessage }) => {
                   {name_file}
                 </Typography>
               </Box>
-            ) : (
+            ) : name_file?.endsWith('.docx') || name_file?.endsWith('.doc')? (
+              <Box display="flex" alignItems="center">
+                <PictureAsPdfIcon sx={{ fontSize: 40, color: '#d32f2f', mr: 1 }} />
+                <Typography variant="body2" noWrap>
+                  {name_file}
+                </Typography>
+              </Box>
+              
+            ):(
               <img src={file} alt="attachment" style={{ width: '100%', height: 'auto' }} />
             )}
             {isHovered && (

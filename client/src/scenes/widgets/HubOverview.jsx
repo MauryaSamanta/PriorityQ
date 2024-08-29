@@ -15,7 +15,7 @@ import { useTheme } from '@emotion/react';
 import MobileFile from './MobileFile';
 import SetupStepsDrawer from './SetupStepsDrawer';
 
-const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes }) => {
+const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwall }) => {
   const location = useLocation();
   console.log(des);
   //let {   banner } = location.state || {};
@@ -51,7 +51,9 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes }) => 
         })
         const wall=await response.json();
         if(wall)
-          setWallpaper(wall[0].wall_url);
+          {setWallpaper(wall[0].wall_url);
+            setwall(wall[0].wall_url);
+          }
        
 
         console.log(wall);

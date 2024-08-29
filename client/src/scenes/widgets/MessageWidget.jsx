@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, IconButton, Menu, MenuItem, Typography, Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText } from '@mui/material';
+import { Box, TextField, Button, IconButton, Menu, MenuItem, Typography, Dialog, DialogTitle, DialogContent, DialogActions, 
+  List, ListItem, ListItemText, CircularProgress } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import FolderIcon from '@mui/icons-material/Folder'; // Import Folder Icon
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -22,6 +23,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const [filetoshare,setfiletoshare]=useState(null);
   const { _id, username, avatar_url } = useSelector((state) => state.user);
   const [poll, setpoll]=useState(false);
+  const [progress,setprogress]=useState(true);
   const handleshareOpen=()=>{
     setshareOpen(true);
   }
@@ -45,7 +47,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
       setFilePreview(filetoshare.name_folder);
     }
     console.log(filetoshare);
-
+    handleshareClose();
   }
   const handleFileUpload = (event) => {
     const uploadedFile = event.target.files[0];
@@ -55,6 +57,9 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
         setFilePreview(URL.createObjectURL(uploadedFile));
         setIsImage(true);
       } else if (fileType === "application/pdf") {
+        setFilePreview(uploadedFile.name);
+        setIsImage(false);
+      } else {
         setFilePreview(uploadedFile.name);
         setIsImage(false);
       }
@@ -99,6 +104,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
       socket.emit('sendMessage', newMessage);
     } else if (folderFiles.length > 0) {
       const formData = new FormData();
+      setprogress(false);
       formData.append("text",message);
       formData.append("name_folder", folderName);
       folderFiles.forEach((folderFile) => {
@@ -115,6 +121,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
           body: formData,
         });
         const data = await result.json();
+        setprogress(true);
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -128,12 +135,14 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
       formData.append("file", file);
       formData.append("zone", zone);
       formData.append("qube",qube);
+      setprogress(false);
       try {
         const result = await fetch(`https://surf-jtn5.onrender.com/message/file`, {
           method: "POST",
           body: formData,
         });
         const data = await result.json();
+        setprogress(true);
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -219,7 +228,19 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
         </Box>
       ) : (
         <Box display="flex" alignItems="center" justifyContent="center" mt={2}>
-          <Box mt={1}>
+          <Box mt={1} position="relative">
+          {!progress && (
+      <CircularProgress
+        size={45} // Adjust size as needed
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1,
+        }}
+      />
+    )}
             {isImage ? (
               <img
                 src={filePreview}
@@ -231,6 +252,9 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
                 {filePreview}
               </Typography>
             )}
+            {!filePreview && folderFiles.length === 0 && (<Typography variant="body1" sx={{ margin: '0 16px' }}>
+                Folder
+              </Typography>)}
           </Box>
           <IconButton onClick={handleDeleteFile} color="secondary" sx={{ transition: 'transform 0.3s', '&:hover': { transform: 'scale(1.2)' } }}>
             <DeleteIcon sx={{ color: 'error.main' }} />

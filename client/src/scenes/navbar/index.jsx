@@ -11,7 +11,8 @@ import {
   useMediaQuery,
   Button,
   Tooltip,
-  Slide
+  Slide,
+  Avatar
 } from "@mui/material";
 import {
   Search,
@@ -159,7 +160,7 @@ const Navbar = () => {
     input={<InputBase />}
     renderValue={() => (
       <Box display="flex" alignItems="center">
-        <img
+        <Avatar
           src={user.avatar_url} // Make sure avatarUrl is defined and contains the URL of the avatar image
           alt="avatar"
           style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }}
@@ -249,7 +250,7 @@ const Navbar = () => {
     input={<InputBase />}
     renderValue={() => (
       <Box display="flex" alignItems="center">
-        <img
+        <Avatar
           src={avatar} // Make sure avatarUrl is defined and contains the URL of the avatar image
           alt="avatar"
           style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover' }}

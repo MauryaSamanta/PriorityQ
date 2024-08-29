@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery
-  , MenuItem, IconButton,Menu
+  , MenuItem, IconButton,Menu, Slide
 } from '@mui/material';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
@@ -13,6 +13,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SettingsIcon from '@mui/icons-material/Settings'
 import EditHubDialog from 'scenes/Dialog/EditHubDialog';
 import HubOverview from 'scenes/widgets/HubOverview';
+import File from 'scenes/widgets/File';
+import MobileFile from 'scenes/widgets/MobileFile';
 import CreateQubeDialog from 'scenes/Dialog/CreateQubeDialog';
 import CreateZoneDialog from 'scenes/Dialog/CreateZoneDialog';
 import TagStoreDialog from 'scenes/Dialog/TagStoreDialog';
@@ -47,11 +49,27 @@ const HubPage = () => {
   const [newmessages,setNewMessages]=useState([]);
   const [message,setMessage]=useState('');
   const [unread, setUnread]=useState('');
-
+  const [showFiles,setshowfiles]=useState(false);
+  const [wallpaper, setmainwall]=useState(null);
   const [storeDialog,setStoreDialog]=useState(false);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
 
+const toggleButtonVisibility = () => {
+  setIsButtonVisible(!isButtonVisible);
+  if (!showFiles) {
+    setTimeout(() => {
+      setIsButtonVisible(false);
+    }, 3000); 
+  }
+};
+const handletogglefiles=()=>{
+  if(showFiles)
+    setIsButtonVisible(false);
+  setshowfiles(!showFiles);
+
+}
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -581,7 +599,9 @@ const HubPage = () => {
 <CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
   </Box>
 ) : (
-  <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes} />
+  <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes}
+   setwall={setmainwall}
+  />
 )}
     <Divider orientation="vertical" flexItem />
 
@@ -596,6 +616,38 @@ const HubPage = () => {
   >
     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
       <Typography variant="h6">{selectedZone.name}</Typography>
+      
+      <Button
+        onClick={() => {
+          if(!isButtonVisible)
+          toggleButtonVisibility();
+          else
+          handletogglefiles();
+          
+        }}
+        sx={{
+          position: 'fixed',
+          right: isButtonVisible ? 16 : -30,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 10,
+          backgroundColor: '#635acc',
+          color: 'white',
+          borderRadius: 2,
+          padding: 1,
+          minWidth: 0,
+          width: 40,
+          height: 80,
+          transition: 'right 0.3s ease-in-out',
+          '&:hover': {
+            backgroundColor: '#4a4b9b',
+          },
+        }}
+      >
+        <Typography variant="body2" sx={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+          {showFiles ? 'Out Of Library' : 'Go To Library'}
+        </Typography>
+      </Button>
       <Button
     variant="contained"
     color="primary"
@@ -620,6 +672,28 @@ const HubPage = () => {
         onClose={handleCloseStoreDialog}
        
       />
+       <Slide direction="left" in={showFiles} mountOnEnter unmountOnExit>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            height: isNonMobileScreens?'100%':'100vh',
+            left: showFiles ? 0 : '-100%',
+            width: '100%',
+            backgroundColor: 'primary',
+            boxShadow: 4,
+            padding: 2,
+           // overflowY: 'auto',
+            zIndex: 5,
+            transition: 'left 1.0s ease',
+          }}
+        >
+          {isNonMobileScreens?(<File wallpaper={wallpaper} setWallpaperMain={setmainwall} />
+          ):(
+            <MobileFile wallpaper={wallpaper} setWallpaperMain={setmainwall}/>
+          )}
+        </Box>
+      </Slide>
     </Box>
     
     {/* Scrollable Area */}
