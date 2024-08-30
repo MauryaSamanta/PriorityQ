@@ -130,9 +130,11 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Avatar src={senderAvatar || '/path/to/random/avatar.jpg'} onClick={()=>{
-        if(!isOwnMessage)
-        handleopenuser()}}/>
+      {senderName!=='EloKo'&&(<Avatar src={senderAvatar || '/path/to/random/avatar.jpg'} onClick={()=>{
+        if(!isOwnMessage && senderName!=='EloKo')
+        handleopenuser()}}
+        
+        />)}
       <Box
         display="flex"
         flexDirection="column"
@@ -281,7 +283,8 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
 
         { text && (
           <Box position="relative">
-            <Typography variant="body1" >
+            <Typography variant="body1" paragraph
+  sx={{ whiteSpace: 'pre-line' }}>
               {renderHighlightedMessage(text)}
             </Typography>
             {isHovered && !file && folder.length===0 && isOwnMessage && (

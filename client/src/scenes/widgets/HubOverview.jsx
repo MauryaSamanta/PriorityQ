@@ -114,7 +114,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
       {count++;steps[2].complete='true';}
     else if(stepcount===-1)
      { console.log(stepcount); setstepcount(2);}
-    if(qubes.length>0)
+    if(qubes.length>1)
       {count++;steps[3].complete='true';}
     else if(stepcount===-1)
      { setstepcount(3);}

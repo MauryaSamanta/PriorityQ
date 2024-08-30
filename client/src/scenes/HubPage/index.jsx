@@ -308,6 +308,7 @@ const handletogglefiles=()=>{
       });
       if(response.ok){
         setQubes(qubes.filter(qube => qube?._id !== editQube._id))
+        setZones([]);
       }
     } catch (error) {
       
