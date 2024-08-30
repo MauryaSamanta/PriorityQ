@@ -20,10 +20,10 @@ const SetupStepsDrawer= ({ steps, currentStep, avatar,banner,wallpaper,qubes,mem
             padding: 1,
             borderRadius: 2,
             backgroundColor: (index ===0 && avatar) || (index ===1 && banner) || (index ===2 && wallpaper)
-            || (index ===3 && qubes.length>1) || (index ===4 && members.length>1)
+            || (index ===3 && qubes.length>0) || (index ===4 && members.length>1)
             ? 'primary.light' : 'background.paper',
             boxShadow: (index ===0 && avatar) || (index ===1 && banner) || (index ===2 && wallpaper)
-            || (index ===3 && qubes.length>1) || (index ===4 && members.length>1) ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
+            || (index ===3 && qubes.length>0) || (index ===4 && members.length>1) ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
             marginBottom: 2,
             transition: 'background-color 0.3s, box-shadow 0.3s',
           }}
@@ -33,7 +33,7 @@ const SetupStepsDrawer= ({ steps, currentStep, avatar,banner,wallpaper,qubes,mem
               variant="body1"
               sx={{
                 fontWeight: (index ===0 && avatar) || (index ===1 && banner) || (index ===2 && wallpaper)
-                || (index ===3 && qubes.length>1) || (index ===4 && members.length>1) ? 'bold' : 'regular',
+                || (index ===3 && qubes.length>0) || (index ===4 && members.length>1) ? 'bold' : 'regular',
                 color: 'text.secondary',
               }}
             >
@@ -41,7 +41,7 @@ const SetupStepsDrawer= ({ steps, currentStep, avatar,banner,wallpaper,qubes,mem
             </Typography>
           </Box>
           {(index ===0 && avatar) || (index ===1 && banner) || (index ===2 && wallpaper)
-            || (index ===3 && qubes.length>1) || (index ===4 && members.length>1) ? (
+            || (index ===3 && qubes.length>0) || (index ===4 && members.length>1) ? (
             <CheckCircleIcon sx={{ color: 'success.main', fontSize: '24px' }} />
           ) : (
             <RadioButtonUncheckedIcon sx={{ color: 'text.secondary', fontSize: '24px' }} />

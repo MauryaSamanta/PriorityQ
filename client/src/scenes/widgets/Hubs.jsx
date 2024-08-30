@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import JoinHubWidget from './JoinHubWidget';
 import  io  from 'socket.io-client';
-const socket = io('https://surf-jtn5.onrender.com');
+const socket = io('http://localhost:3001');
 
 const Hubs = ({ userId, setPrincipalHubs }) => {
   const [hubs, setHubs] = useState([]);
@@ -19,7 +19,7 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
   useEffect(() => {
     const fetchHubs = async () => {
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/hub`, {
+        const response = await fetch(`http://localhost:3001/hub`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -53,7 +53,7 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
   const handleLeaveHub=async()=>{
     const membershipData={userid:userId};
           try {
-            const reponse=await fetch(`https://surf-jtn5.onrender.com/hub/${selectedHub._id}/member`,{
+            const reponse=await fetch(`http://localhost:3001/hub/${selectedHub._id}/member`,{
               method:"DELETE",
               headers: {"Content-Type": "application/json" },    
               body:JSON.stringify(membershipData)
@@ -67,7 +67,7 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
   }
   const handleDeleteHub = async () => {
     try {
-      const deletion=await fetch(`https://surf-jtn5.onrender.com/hub/${selectedHub._id}`, {
+      const deletion=await fetch(`http://localhost:3001/hub/${selectedHub._id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery
-  , MenuItem, IconButton,Menu, Slide
+  , MenuItem, IconButton,Menu, Slide,
+  CircularProgress
 } from '@mui/material';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
@@ -24,7 +25,7 @@ import ChatItem from 'scenes/widgets/ChatItem';
 import MobileHubPage from 'scenes/widgets/MobileHubPage';
 import  io  from 'socket.io-client';
 import EditQubeDialog from 'scenes/Dialog/EditQubeDialog';
-const socket = io('https://surf-jtn5.onrender.com');
+const socket = io('http://localhost:3001');
 
 const HubPage = () => {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ const handletogglefiles=()=>{
   const fetchZones=async(qube_id)=>{
     setZones([]);
     try {
-      const response=await fetch(`https://surf-jtn5.onrender.com/qube/${qube_id}/zone`,{
+      const response=await fetch(`http://localhost:3001/qube/${qube_id}/zone`,{
         method:"GET",
         headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" }
       })
@@ -103,7 +104,7 @@ const handletogglefiles=()=>{
     //console.log(selectedQube);
     const zoneData={name:zoneName};
     try {
-      const response=await fetch(`https://surf-jtn5.onrender.com/zone/${selectedQube}/new`,{
+      const response=await fetch(`http://localhost:3001/zone/${selectedQube}/new`,{
         method:"POST",
         headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" },    
         body:JSON.stringify(zoneData)
@@ -122,7 +123,7 @@ const handletogglefiles=()=>{
     const fetchQubes = async () => {
       
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}`,{
+        const response = await fetch(`http://localhost:3001/hub/${hubId}`,{
           method:"GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -140,7 +141,7 @@ const handletogglefiles=()=>{
     const fetchMembers=async()=>{
       console.log(hubId);
       try {
-        const response=await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}/members`,{
+        const response=await fetch(`http://localhost:3001/hub/${hubId}/members`,{
           method:"GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -181,12 +182,12 @@ const handletogglefiles=()=>{
   const joinZone = async (zone) => {
     const userzone = { userid: _id, zoneid: zone };
     try {
-      const messageChunkjson = await fetch(`https://surf-jtn5.onrender.com/message/${zone}`, {
+      const messageChunkjson = await fetch(`http://localhost:3001/message/${zone}`, {
         method: "GET",
       });
       const messageChunk = await messageChunkjson.json();
       
-      // const unreadMessageIdResponse = await fetch(`https://surf-jtn5.onrender.com/read/getunread`, {
+      // const unreadMessageIdResponse = await fetch(`http://localhost:3001/read/getunread`, {
       //   method: "POST",
       //   headers: { "Content-Type": "application/json" },
       //   body: JSON.stringify(userzone),
@@ -219,7 +220,7 @@ const handletogglefiles=()=>{
     
     // const userzone={userid:_id, zoneid:zone, lastmessageid:lastread};
     // try {
-    //   const response=await fetch(`https://surf-jtn5.onrender.com/read/update`,{
+    //   const response=await fetch(`http://localhost:3001/read/update`,{
     //     method:"POST",
     //     headers: { "Content-Type": "application/json" },
     //     body: JSON.stringify(userzone)
@@ -253,7 +254,7 @@ const handletogglefiles=()=>{
     //   console.log(key, value);
     // }
     try 
-    {const response=await fetch(`https://surf-jtn5.onrender.com/qube/${hubId}/new`,{
+    {const response=await fetch(`http://localhost:3001/qube/${hubId}/new`,{
     method:"POST",
     headers: { Authorization: `Bearer ${token}`,"Content-Type": "application/json" },    
     body:JSON.stringify(qubeData),
@@ -280,7 +281,7 @@ const handletogglefiles=()=>{
   const handleEditQube = async (name, nickname) => {
     const qubeData = { qubename: name, qubenickname: nickname };
     try {
-      const response = await fetch(`https://surf-jtn5.onrender.com/qube/${editQube._id}`, {
+      const response = await fetch(`http://localhost:3001/qube/${editQube._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(qubeData),
@@ -303,7 +304,7 @@ const handletogglefiles=()=>{
 
   const handleDelQube=async()=>{
     try {
-      const response=await fetch(`https://surf-jtn5.onrender.com/qube/${editQube._id}`,{
+      const response=await fetch(`http://localhost:3001/qube/${editQube._id}`,{
         method:"DELETE"
       });
       if(response.ok){
@@ -327,6 +328,7 @@ const handletogglefiles=()=>{
     <Box
       sx={{ flexGrow: 1 }} // Ensures space is taken up on the left, pushing the right content to the edge
     />
+    
     <Typography
       variant="body1"
       sx={{

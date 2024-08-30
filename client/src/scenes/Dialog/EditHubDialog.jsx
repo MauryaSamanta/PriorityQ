@@ -55,7 +55,7 @@ const EditHubDialog = ({ open, onClose, onSave, hub, sethubName, setavatar,setde
     }
    
     const savedHub = await fetch(
-      `https://surf-jtn5.onrender.com/hub/${hubId}/settings`,
+      `http://localhost:3001/hub/${hubId}/settings`,
       {
         method: "PATCH",
         body: formData,

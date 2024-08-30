@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import io from 'socket.io-client';
 import FileDialog from 'scenes/Dialog/FileDialog';
 
-const socket = io('https://surf-jtn5.onrender.com');
+const socket = io('http://localhost:3001');
 
 const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -116,7 +116,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
       formData.append("zone", zone);
       formData.append("qube",qube);
       try {
-        const result = await fetch(`https://surf-jtn5.onrender.com/message/folder`, {
+        const result = await fetch(`http://localhost:3001/message/folder`, {
           method: "POST",
           body: formData,
         });
@@ -137,7 +137,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
       formData.append("qube",qube);
       setprogress(false);
       try {
-        const result = await fetch(`https://surf-jtn5.onrender.com/message/file`, {
+        const result = await fetch(`http://localhost:3001/message/file`, {
           method: "POST",
           body: formData,
         });

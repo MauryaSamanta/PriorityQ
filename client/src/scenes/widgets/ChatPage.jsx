@@ -6,7 +6,7 @@ import File from './File';
 import MobileFile from './MobileFile';
 import  io  from 'socket.io-client';
 import { useSelector } from 'react-redux';
-const socket = io('https://surf-jtn5.onrender.com');
+const socket = io('http://localhost:3001');
 const ChatPage = ({ chat,friendId, friendName, friendAvatar }) => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const [messages, setMessages] = useState([]);
@@ -35,7 +35,7 @@ const toggleButtonVisibility = () => {
   const joinChat=async()=>{
     socket.emit('joinZone',chat);
     try {
-      const response=await fetch(`https://surf-jtn5.onrender.com/message/${chat}`,{
+      const response=await fetch(`http://localhost:3001/message/${chat}`,{
         method:"GET"
       });
       const data=await response.json();

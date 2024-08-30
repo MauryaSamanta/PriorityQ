@@ -6,8 +6,10 @@ import { useParams, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import GroupIcon from '@mui/icons-material/Group';
 import EditIcon from '@mui/icons-material/Edit';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AddIcon from '@mui/icons-material/Add';
 import UserProfileDialog from '../Dialog/UserProfileDialog';
+import AddMemberDialog from 'scenes/Dialog/AddMemberDialog';
 import MembersDialog from '../Dialog/MembersDialog';
 import EditHubBannerDialog from '../Dialog/EditHubBannerDialog'; // Import your EditHubBannerDialog component
 import File from './File';
@@ -34,6 +36,9 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
   const [viewprogress,setviewprogress]=useState(true);
   const [stepcount,setstepcount]=useState(-1);
   const [incom,setincom]=useState('');
+  const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
+  const [code, setCode] = useState(null);
+  const [loading,setloading]=useState(false);
   const steps = [
     { step: 'Upload Hub Icon', complete:'false' },
     { step: 'Upload Hub Banner', complete:'false' },
@@ -46,7 +51,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
   useEffect(()=>{
     const getWall=async()=>{
       try {
-        const response=await fetch(`https://surf-jtn5.onrender.com/wall/${_id}/${hubId}`,{
+        const response=await fetch(`http://localhost:3001/wall/${_id}/${hubId}`,{
           method:"GET"
         })
         const wall=await response.json();
@@ -114,7 +119,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
       {count++;steps[2].complete='true';}
     else if(stepcount===-1)
      { console.log(stepcount); setstepcount(2);}
-    if(qubes.length>1)
+    if(qubes.length>0)
       {count++;steps[3].complete='true';}
     else if(stepcount===-1)
      { setstepcount(3);}
@@ -132,6 +137,25 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
         checksteps();
   },[avatar,banner,wallpaper,qubes])
   
+  const handleOpenAddMemberDialog = async () => {
+    setloading(true)
+    try {
+      const response = await fetch(`http://localhost:3001/invite/${hubId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setCode(data.code);
+    } catch (error) {
+      console.error(error);
+    }
+    setloading(false);
+    setIsAddMemberDialogOpen(true);
+  };
+
+  const handleCloseAddMemberDialog = () => {
+    setIsAddMemberDialogOpen(false);
+  };
 
   return (
     <Box sx={{ width: '100%', position: 'relative',
@@ -250,37 +274,57 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
 
         {/* Members Count */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
-        <GroupIcon sx={{ color: '#635acc', fontSize: 30 }} />
-          <Tooltip
-            title={
-              <Box>
-                <Typography variant="h5">Explore Members</Typography>
-              </Box>
-            }
-            arrow
-            placement="right"
-            sx={{
-              '& .MuiTooltip-tooltip': {
-                backgroundColor: '#f5f5f5',
-                color: 'black',
-                boxShadow: theme.shadows[1],
-              },
-              '& .MuiTooltip-arrow': {
-                color: '#f5f5f5',
-              },
-            }}
-          >
-            
-         
-          <Typography
-            variant="body1"
-            sx={{ fontWeight: 'bold', color: '#635acc', cursor: 'pointer' }}
-            onClick={handleOpenMembersDialog}
-          >
-            {members.length} {members.length > 1 ? 'Members' : 'Member'}
-          </Typography>
-          </Tooltip>
-        </Box>
+  <GroupIcon sx={{ color: '#635acc', fontSize: 30 }} />
+  <Tooltip
+    title={
+      <Box>
+        <Typography variant="h5">Explore Members</Typography>
+      </Box>
+    }
+    arrow
+    placement="right"
+    sx={{
+      '& .MuiTooltip-tooltip': {
+        backgroundColor: '#f5f5f5',
+        color: 'black',
+        boxShadow: theme.shadows[1],
+      },
+      '& .MuiTooltip-arrow': {
+        color: '#f5f5f5',
+      },
+    }}
+  >
+    <Typography
+      variant="body1"
+      sx={{ fontWeight: 'bold', color: '#635acc', cursor: 'pointer' }}
+      onClick={handleOpenMembersDialog}
+    >
+      {members.length} {members.length > 1 ? 'Members' : 'Member'}
+    </Typography>
+  </Tooltip>
+  {!loading && _id===owner?(<AddIcon 
+    sx={{ 
+      color: '#635acc', 
+      fontSize: 24, 
+      cursor: 'pointer',
+      '&:hover': {
+        color: '#8c80ff', // Slight color change on hover to indicate interactivity
+      } 
+    }} 
+    disabled={loading}
+    onClick={handleOpenAddMemberDialog}
+  />):loading && _id===owner?(
+    <CircularProgress
+        size={85} // Adjust size as needed
+        sx={{
+          position: 'absolute',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1,
+        }}
+      />
+  ):(<></>)}
+  <AddMemberDialog open={isAddMemberDialogOpen} onClose={handleCloseAddMemberDialog} code={code} />
+</Box>
       </Box>
       {viewprogress && owner===_id && (
   <Box sx={{ 

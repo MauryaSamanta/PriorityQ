@@ -16,7 +16,7 @@ const EditHubBannerDialog = ({ open, onClose, onSubmit, banner, setBanner }) => 
       formData.append("avatar", hubBannerDB);
       //setBanner(hubBanner);
       try {
-        const savedHubResponse=await fetch(`https://surf-jtn5.onrender.com/hub/${hubId}`,{
+        const savedHubResponse=await fetch(`http://localhost:3001/hub/${hubId}`,{
           method:"PATCH",
           body:formData
         });
