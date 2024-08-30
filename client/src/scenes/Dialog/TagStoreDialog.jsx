@@ -47,7 +47,7 @@ const TagStoreDialog = ({ open, qubeid, onClose }) => {
   useEffect(() => {
     const getTags = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/tag/${qubeid}`, {
+        const response = await fetch(`https://surf-jtn5.onrender.com/tag/${qubeid}`, {
           method: "GET",
         });
         const data = await response.json();
@@ -66,7 +66,7 @@ const TagStoreDialog = ({ open, qubeid, onClose }) => {
   const fetchTexts = async (tag) => {
     let tagData = { tag: tag };
     try {
-      const response = await fetch(`http://localhost:3001/tag/message/${qubeid}`, {
+      const response = await fetch(`https://surf-jtn5.onrender.com/tag/message/${qubeid}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tagData),

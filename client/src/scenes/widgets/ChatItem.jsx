@@ -61,7 +61,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
       folder: folder
     };
     try {
-      const response = await fetch(`http://localhost:3001/file/new`, {
+      const response = await fetch(`https://surf-jtn5.onrender.com/file/new`, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         method: "POST",
         body: JSON.stringify(fileData),
@@ -78,7 +78,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
   const deletemsg=async()=>{
     let messageid=message._id;
     try {
-      const response=await fetch(`http://localhost:3001/message/${message._id}`,{
+      const response=await fetch(`https://surf-jtn5.onrender.com/message/${message._id}`,{
         method:"DELETE"
       })
         
@@ -91,7 +91,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
   }
   const getuser=async()=>{
     try {
-      const response=await fetch(`http://localhost:3001/users/${sender_id}`,{
+      const response=await fetch(`https://surf-jtn5.onrender.com/users/${sender_id}`,{
         method:"GET"
       })
       const userdata=await response.json();

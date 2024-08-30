@@ -51,7 +51,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
   useEffect(()=>{
     const getWall=async()=>{
       try {
-        const response=await fetch(`http://localhost:3001/wall/${_id}/${hubId}`,{
+        const response=await fetch(`https://surf-jtn5.onrender.com/wall/${_id}/${hubId}`,{
           method:"GET"
         })
         const wall=await response.json();
@@ -140,7 +140,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
   const handleOpenAddMemberDialog = async () => {
     setloading(true)
     try {
-      const response = await fetch(`http://localhost:3001/invite/${hubId}`, {
+      const response = await fetch(`https://surf-jtn5.onrender.com/invite/${hubId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });

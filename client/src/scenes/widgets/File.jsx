@@ -61,7 +61,7 @@ const File = ({ members, owner, wallpaper,setWallpaperMain, chat }) => {
     const getFiles = async () => {
       const hub=hubId || chat;
       try {
-        const response = await fetch(`http://localhost:3001/file/${hub}`, {
+        const response = await fetch(`https://surf-jtn5.onrender.com/file/${hub}`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
         });
@@ -109,7 +109,7 @@ const File = ({ members, owner, wallpaper,setWallpaperMain, chat }) => {
 
   const handleDeleteFile = async (fileId) => {
      try {
-       const response=await fetch(`http://localhost:3001/file/${fileId}`,{
+       const response=await fetch(`https://surf-jtn5.onrender.com/file/${fileId}`,{
         method:"DELETE"
        });
        console.log('SUCCESS');
@@ -122,7 +122,7 @@ const File = ({ members, owner, wallpaper,setWallpaperMain, chat }) => {
   };
   const handleAddFile=async(fileId,folder)=>{
     try {
-      const response=await fetch(`http://localhost:3001/file/${fileId}/${folder._id}`,{
+      const response=await fetch(`https://surf-jtn5.onrender.com/file/${fileId}/${folder._id}`,{
         method:"PATCH"
       });
       const file=await response.json();
@@ -140,7 +140,7 @@ const File = ({ members, owner, wallpaper,setWallpaperMain, chat }) => {
     //console.log(folderdata);
     //console.log(foldername);
     try {
-      const response=await fetch(`http://localhost:3001/file/${hubId}/${foldername}/${_id}`,{
+      const response=await fetch(`https://surf-jtn5.onrender.com/file/${hubId}/${foldername}/${_id}`,{
         method:"POST",
         header:{"Content-Type": "application/json"},
         body:JSON.stringify(folderdata)
