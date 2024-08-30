@@ -23,6 +23,7 @@ import QubeOverview from 'scenes/widgets/QubeOverview';
 import MessageWidget from 'scenes/widgets/MessageWidget';
 import ChatItem from 'scenes/widgets/ChatItem';
 import EditHubDialog from 'scenes/Dialog/EditHubDialog';
+import { Add } from '@mui/icons-material';
 const MobileHubPage = ({
   hubname,
   des,
@@ -167,8 +168,15 @@ const toggleButtonVisibility = () => {
         setSelectedQubeState(null);
         
         setSelectedZoneState(null);
-      }} sx={{ mb: 2 }}>
+      }} sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {hubname}
+        <IconButton 
+    color="secondary" 
+    onClick={(e)=>{e.stopPropagation(); handleOpenDialog();}} 
+    sx={{ marginLeft: 'auto', ml: 1 }}
+  >
+    <Add/>
+  </IconButton>
       </Button>
       <Box sx={{overflowY:'auto'}}>
       <List height="100%">
@@ -263,13 +271,7 @@ const toggleButtonVisibility = () => {
         ))}
         </List>
         </Box>
-        <Button color="secondary" size="small" variant="contained" onClick={handleOpenDialog} sx={{ mt: 'auto' }}>
-        Create a Qube
-      </Button>
-      
-
-      
-      <CreateQubeDialog open={openDialog} onClose={handleCloseDialog} onCreate={handleCreateQube} />
+       <CreateQubeDialog open={openDialog} onClose={handleCloseDialog} onCreate={handleCreateQube} />
       <EditQubeDialog qube={editQube} open={OpenEditQubeDialog} onClose={handleCloseEditQubeDialog} onEdit={handleEditQube} onDel={handleDelQube}/>
     </Box>
 
@@ -285,8 +287,18 @@ const toggleButtonVisibility = () => {
         sx={{ transition: 'width 0.3s ease' }}
         borderRadius="0px 16px 16px 0px"
         boxShadow="0px 4px 12px rgba(0, 0, 0, 0.3)" 
+        alignItems="center"
       >
-        <Typography variant="h6" mb={2}>Zones</Typography>
+       <Typography variant="h6" mb={2} mt={2} sx={{ display: 'flex', alignItems: 'center' }}>
+  Zones
+  <IconButton 
+    color="secondary" 
+    onClick={handleZoneOpenDialog} 
+    sx={{ marginLeft: 'auto', ml: 1 }}
+  >
+    <Add />
+  </IconButton>
+</Typography>
         <Box sx={{overflowY:'auto'}}>
         <List component="nav">
           {zones.map((zone) => (
@@ -323,20 +335,7 @@ const toggleButtonVisibility = () => {
           ))}
         </List>
         </Box>
-        <Button 
-  variant="contained" 
-  color="primary" 
-  size="small"
-  sx={{
-    fontSize: '0.75rem',
-    padding: '4px 8px',
-    borderRadius: '4px',
-    textTransform: 'none',
-  }}
-  onClick={handleZoneOpenDialog}
->
-  Create a Zone
-</Button>
+        
 <CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
       </Box>
     )}

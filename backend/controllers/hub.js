@@ -1,6 +1,8 @@
 import Hub from "../models/Hub.js";
 import Hubmembers from "../models/Hubmembers.js";
 import Qube from "../models/Qube.js";
+import Zone from "../models/Zone.js";
+import Message from "../models/Message.js";
 import Qubemembers from "../models/Qubemembers.js";
 import { v2 as cloudinary } from "cloudinary";
 export const createHub=async(req,res)=>{
@@ -42,6 +44,35 @@ export const createHub=async(req,res)=>{
             user_id:req.user.id
         });
         const savednewMember=await newMember.save();
+        const newQube=new Qube({
+          hub_id:savedHub._id,
+          name:'Welcome Qube',
+          nickname:'Hello'
+        });
+        const savednewQube=await newQube.save();
+        const newzone=new Zone({
+          qube_id:savednewQube._id,
+          name:'Starter'
+        });
+        const savednewZone=await newzone.save();
+        let message=new Message({
+            text:`Welcome to the Hub experience of EloKo. We are glad that you created your first hub.😀\n \n
+           In EloKo, hubs are your primary spaces 🛖 where you can create qubes and zones to organize your activities and chats.🤠\n 
+           Each qube represents a specific area within your hub, and zones within qubes allow for messaging and resource sharing.\n
+           In the zones, you can send pdfs and images(upto 10MB) and also folders containing upto 10 pdfs and images. \n \n
+           The files you receive are stored in our secure cloud spaces and will not hamper your devide storage.\n
+           For each Hub you get your own personal cloud Library😊 where you save your files and folders and view them just like its your desktop😁 \n \n
+           You can share files and folders directly from your Library and also add tags to messages in the zones and more features yet to come 😉 \n \n
+           Invite your friends to the Hub and enjoy the experience \n \n
+           With Love,\n
+           From EloKo`,
+            senderAvatar:'https://res.cloudinary.com/df9fz5s3o/image/upload/v1724992556/EloKoMain_hwnwyn.png',
+            senderName:'EloKo',
+            qube_id:savednewQube._id,
+            zone_id:savednewZone._id
+        });
+        const savednewMessage=await message.save();
+
         res.status(201).json({savedHub, savednewMember});
     } catch (error) {
         console.log(error);

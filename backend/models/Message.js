@@ -26,8 +26,7 @@ const messageSchema = new Schema(
     },
     sender_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+      ref: "User"
     },
     zone_id: {
       type: mongoose.Schema.Types.ObjectId,

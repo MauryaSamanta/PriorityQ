@@ -267,6 +267,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
           placeholder="Type a message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          multiline
           fullWidth
           sx={{ ml: 2, mr: 2 }}
           
