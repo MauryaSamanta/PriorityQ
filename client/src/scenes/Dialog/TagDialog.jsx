@@ -12,7 +12,7 @@ const TagDialog = ({ open, onClose, qubeId }) => {
       // Fetch tags based on qubeId
       const fetchTags = async () => {
         try {
-          const response = await fetch(`http://localhost:3001/tags/${qubeId}`, {
+          const response = await fetch(`https://surf-jtn5.onrender.com/tags/${qubeId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           const data = await response.json();

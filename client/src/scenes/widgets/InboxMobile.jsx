@@ -21,7 +21,7 @@ const InboxMobile = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const response = await fetch(`http://localhost:3001/chat/${userId}`, {
+        const response = await fetch(`https://surf-jtn5.onrender.com/chat/${userId}`, {
           method: "GET"
         });
         const data = await response.json();

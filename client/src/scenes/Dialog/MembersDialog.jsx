@@ -15,7 +15,7 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
 
   const handleOpenAddMemberDialog = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/invite/${hubId}`, {
+      const response = await fetch(`https://surf-jtn5.onrender.com/invite/${hubId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });

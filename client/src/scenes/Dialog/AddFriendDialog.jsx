@@ -12,7 +12,7 @@ const AddFriendDialog = ({ open, onClose }) => {
   const handleSendRequest = async() => {
     const data={senderid:_id, recname:username};
     try {
-        const response=await fetch(`http://localhost:3001/request/create`,{
+        const response=await fetch(`https://surf-jtn5.onrender.com/request/create`,{
             method:"POST",
             headers:{"Content-Type": "application/json"},
             body:JSON.stringify(data)
