@@ -44,7 +44,7 @@ const AddMemberDialog = ({ open, onClose, code }) => {
           variant="contained"
           color="primary"
           startIcon={<WhatsApp />}
-          href={`https://api.whatsapp.com/send?text=Please join our hub using this link: ${code}`}
+          href={`https://api.whatsapp.com/send?text= ${code}`}
           target="_blank"
           sx={{ mb: 2 }}
         >

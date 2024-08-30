@@ -35,7 +35,7 @@ const FolderDialog = ({ open, folder, onClose, handleFileClick, files, setFiles 
   const addFileToFolder = async (file) => {
     const data = { fileid: file._id, folderid:folder._id };
     try {
-      const response = await fetch(`https://surf-jtn5.onrender.com/file/${file._id}/${folder._id}`, {
+      const response = await fetch(`http://localhost:3001/file/${file._id}/${folder._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -55,7 +55,7 @@ const FolderDialog = ({ open, folder, onClose, handleFileClick, files, setFiles 
     folder.folder.splice(fileIndex, 1);
 
     try {
-      const response=await fetch(`https://surf-jtn5.onrender.com/file/remove`,{
+      const response=await fetch(`http://localhost:3001/file/remove`,{
         method:"PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)

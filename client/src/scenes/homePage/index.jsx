@@ -26,7 +26,7 @@ const HomePage = () => {
     else if (code.trim()) {
       const codeData = { code: code };
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/invite/${_id}/add`, {
+        const response = await fetch(`http://localhost:3001/invite/${_id}/add`, {
           method: "POST",
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
           body: JSON.stringify(codeData)

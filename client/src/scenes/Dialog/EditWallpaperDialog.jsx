@@ -18,7 +18,7 @@ const EditWallpaperDialog = ({ open, onClose, onSubmit, setWallpaperMain }) => {
       formData.append("id",_id);
       formData.append("avatar", wallpaperDB);
       try {
-        const savedwall=await fetch(`https://surf-jtn5.onrender.com/wall/${hubId}`,{
+        const savedwall=await fetch(`http://localhost:3001/wall/${hubId}`,{
           method:"PATCH",
           body:formData
         });

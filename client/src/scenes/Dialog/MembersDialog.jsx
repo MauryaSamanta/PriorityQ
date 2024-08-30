@@ -15,7 +15,7 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
 
   const handleOpenAddMemberDialog = async () => {
     try {
-      const response = await fetch(`https://surf-jtn5.onrender.com/invite/${hubId}`, {
+      const response = await fetch(`http://localhost:3001/invite/${hubId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -62,29 +62,7 @@ const MembersDialog = ({ open, onClose, members, owner, hubId, token }) => {
           }}
         >
           Members
-          {_id === owner && (
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              sx={{
-                backgroundColor: '#635acc',
-                color: '#fff',
-                '&:hover': {
-                  backgroundColor: '#4a4b9b',
-                },
-                borderRadius: 20,
-                paddingX: 3,
-                paddingY: 1,
-                ml: isMobile ? 'auto' : 3, // Adjusts margin-left for mobile
-                mt: isMobile ? 1 : 0, // Adds margin-top on mobile for spacing
-                whiteSpace: 'nowrap', // Prevent text overflow on small screens
-              }}
-              onClick={handleOpenAddMemberDialog}
-            >
-              Add Member
-            </Button>
-          )}
+          
         </DialogTitle>
         <DialogContent
           sx={{

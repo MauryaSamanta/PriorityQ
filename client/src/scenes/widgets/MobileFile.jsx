@@ -54,7 +54,7 @@ const MobileFile = ({ members, owner, wallpaper, setWallpaperMain, chat }) => {
     const getFiles = async () => {
       const hub=hubId||chat;
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/file/${hub}`, {
+        const response = await fetch(`http://localhost:3001/file/${hub}`, {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         });

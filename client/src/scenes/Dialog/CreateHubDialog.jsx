@@ -11,6 +11,7 @@ import {
   Typography,
   IconButton,
   Avatar,
+  CircularProgress
 } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import { useDropzone } from "react-dropzone";
@@ -21,6 +22,7 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
   const [hubDescription, setHubDescription] = useState("");
   const [hubAvatar, setHubAvatar] = useState(null);
   const [hubAvatarDB, setHubAvatarDB]=useState(null);
+  const [started,setstarted]=useState(false);
   const token = useSelector((state) => state.token);
   const handleDrop = (acceptedFiles) => {
     setHubAvatar(URL.createObjectURL(acceptedFiles[0]));
@@ -52,7 +54,7 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
   const handleStart = async() => {
     // Create a new FormData instance
     const formData = new FormData();
-  
+    setstarted(true);
     // Append data to the FormData object
     formData.append('name', hubName);
     formData.append('description', hubDescription);
@@ -68,7 +70,7 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
     const savedHubRes = await fetch(
-        "https://surf-jtn5.onrender.com/hub",
+        "http://localhost:3001/hub",
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
@@ -76,7 +78,7 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
         }
       );
       const savedHub = await savedHubRes.json();
-      
+      setstarted(false);
       if(savedHub)
       {  window.location.reload();
          onClose();
@@ -188,6 +190,16 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
          </Typography>
          <Typography variant="h4"> {hubName}</Typography>
          <Typography>{hubDescription}</Typography>
+         {started && (
+      <CircularProgress
+        size={45} // Adjust size as needed
+        sx={{
+          position: 'absolute',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1,
+        }}
+      />
+    )}
        </Box>
        
         )}
@@ -200,7 +212,7 @@ const CreateHubDialog = ({ open, onClose, userId, setHubs }) => {
           
         )}
         {step === 4 && (
-          <Button onClick={handleStart} variant="contained" color="primary">
+          <Button onClick={handleStart} variant="contained" color="primary" disabled={started}>
             Start
           </Button>
         )}

@@ -11,7 +11,7 @@ const RequestsDialog = ({ open, onClose, userid }) => {
   const handleAccept = async(requestid, senderid) => {
     const data={reqid:requestid,userid:userid, senderid:senderid};
     try {
-        const response=await fetch(`https://surf-jtn5.onrender.com/chat/new`,{
+        const response=await fetch(`http://localhost:3001/chat/new`,{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify(data)
@@ -38,7 +38,7 @@ const RequestsDialog = ({ open, onClose, userid }) => {
   useEffect(() => {
     const getReqs = async () => {
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/request/${userid}`, {
+        const response = await fetch(`http://localhost:3001/request/${userid}`, {
           method: "GET",
         });
         const reqs = await response.json();

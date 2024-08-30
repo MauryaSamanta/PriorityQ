@@ -62,7 +62,7 @@ const FileDialog = ({ open, onClose, handlefileshare }) => {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const response = await fetch(`https://surf-jtn5.onrender.com/file/${_id}`, {
+        const response = await fetch(`http://localhost:3001/file/${_id}`, {
           method: 'POST'
         });
         const data = await response.json();
