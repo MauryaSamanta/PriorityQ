@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 const AddFriendDialog = ({ open, onClose }) => {
   const [username, setUsername] = useState('');
   const [success,setsuccess]=useState(false);
+  const [friend, setfriend]=useState(false);
   const {_id}=useSelector((state)=>state.user);
   const theme = useTheme();
 
@@ -17,8 +18,12 @@ const AddFriendDialog = ({ open, onClose }) => {
             headers:{"Content-Type": "application/json"},
             body:JSON.stringify(data)
         })
-        if(response.ok)
+        const message=await response.json();
+        console.log(message);
+        if(message==='Success')
             setsuccess(true);
+          else
+            setfriend(true);
 
     } catch (error) {
         
@@ -65,6 +70,7 @@ const AddFriendDialog = ({ open, onClose }) => {
             }}
           />
           {success && <Typography>Friend Request Sent</Typography>}
+          {friend && <Typography>Already your friend</Typography>}
         </Box>
       </DialogContent>
       <DialogActions sx={{ padding: '1rem', backgroundColor: theme.palette.background.paper }}>

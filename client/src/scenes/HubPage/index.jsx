@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery
   , MenuItem, IconButton,Menu, Slide,
-  CircularProgress
+  CircularProgress, SwipeableDrawer
 } from '@mui/material';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
@@ -56,7 +56,12 @@ const HubPage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const [anchorEl, setAnchorEl] = useState(null);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
-
+  const [lib,setlib]=useState(false);
+  const [userTyping,setuserTyping]=useState('');
+  const [type,settype]=useState(false);
+  const openlib=()=>{
+    setlib(!lib);
+  }
 const toggleButtonVisibility = () => {
   setIsButtonVisible(!isButtonVisible);
   if (!showFiles) {
@@ -165,6 +170,20 @@ const handletogglefiles=()=>{
         prevMessages.filter((message) => message._id !== delmessage)
       );
     })
+
+    socket.on('UserTyping', (data) => {
+      const { user, typing } = data;
+      console.log(user);
+      if (typing) {
+        // Show "user is typing" indicator
+        setuserTyping(user);
+        settype(true);
+      } else {
+        // Hide "user is typing" indicator
+        setuserTyping('');
+        settype(false);
+      }
+    });
     
     return () => {
       socket.off('receiveMessage');
@@ -328,7 +347,19 @@ const handletogglefiles=()=>{
     <Box
       sx={{ flexGrow: 1 }} // Ensures space is taken up on the left, pushing the right content to the edge
     />
-    
+     <Button varient="contained" sx={{
+          
+          //transform: 'translateY(-50%)',
+          zIndex: 10,
+          backgroundColor: '#635acc',
+          color: 'white',
+          borderRadius: 2,
+          padding: 1,
+          mr:4,
+          '&:hover': {
+            backgroundColor: '#4a4b9b',
+          },
+        }} onClick={openlib}>{!lib? "Open Library":"Close Library"}</Button>
     <Typography
       variant="body1"
       sx={{
@@ -355,7 +386,7 @@ const handletogglefiles=()=>{
   </Toolbar>
   <EditHubDialog open={settings} onClose={closesetting} hub={hubname} setavatar={setavatar} setdes={setdes} />
 </AppBar>
-  
+
   <Box display="flex" height="calc(100% - 55px)">
     {/* Qubes List */}
     <Box
@@ -601,10 +632,20 @@ const handletogglefiles=()=>{
 </Button>
 <CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
   </Box>
-) : (
+) : !lib?(
   <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes}
    setwall={setmainwall}
   />
+):(
+  <Box width="100%">
+    
+
+    {isNonMobileScreens ? (
+      <File wallpaper={wallpaper} setWallpaperMain={setmainwall} />
+    ) : (
+      <MobileFile wallpaper={wallpaper} setWallpaperMain={setmainwall} />
+    )}
+  </Box>
 )}
     <Divider orientation="vertical" flexItem />
 
@@ -620,37 +661,6 @@ const handletogglefiles=()=>{
     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
       <Typography variant="h6">{selectedZone.name}</Typography>
       
-      <Button
-        onClick={() => {
-          if(!isButtonVisible)
-          toggleButtonVisibility();
-          else
-          handletogglefiles();
-          
-        }}
-        sx={{
-          position: 'fixed',
-          right: isButtonVisible ? 16 : -30,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 10,
-          backgroundColor: '#635acc',
-          color: 'white',
-          borderRadius: 2,
-          padding: 1,
-          minWidth: 0,
-          width: 40,
-          height: 80,
-          transition: 'right 0.3s ease-in-out',
-          '&:hover': {
-            backgroundColor: '#4a4b9b',
-          },
-        }}
-      >
-        <Typography variant="body2" sx={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-          {showFiles ? 'Out Of Library' : 'Go To Library'}
-        </Typography>
-      </Button>
       <Button
     variant="contained"
     color="primary"
@@ -731,8 +741,52 @@ const handletogglefiles=()=>{
         <ChatItem key={index} message={message} isOwnMessage={message.sender_id===_id?true:null}  />
       ))}
       <div ref={bottomRef} />
-      
-      
+      {userTyping !== username && userTyping !== '' && (
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Typography sx={{ fontWeight: 'bold', color: '#635acc' }}>
+      {userTyping} is typing
+    </Typography>
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <Box
+        sx={{
+          width: '8px',
+          height: '8px',
+          bgcolor: '#635acc',
+          borderRadius: '50%',
+          animation: 'typing 1.5s infinite',
+        }}
+      />
+      <Box
+        sx={{
+          width: '8px',
+          height: '8px',
+          bgcolor: '#635acc',
+          borderRadius: '50%',
+          animation: 'typing 1.5s infinite 0.2s',
+        }}
+      />
+      <Box
+        sx={{
+          width: '8px',
+          height: '8px',
+          bgcolor: '#635acc',
+          borderRadius: '50%',
+          animation: 'typing 1.5s infinite 0.4s',
+        }}
+      />
+    </Box>
+  </Box>
+)}
+
+<style>
+  {`
+    @keyframes typing {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+  `}
+</style>
       </Box>
     
     {/* Message Widget Area */}
@@ -758,6 +812,8 @@ const handletogglefiles=()=>{
   _id={_id} // Assuming this is the ID for the logged-in user
   setMessage={setMessage}
   message={message}
+  userTyping={userTyping}
+  type={type}
   setSelectedQube={setSelectedQube}
   fetchZones={fetchZones}
   setSelectedZone={setSelectedZone}

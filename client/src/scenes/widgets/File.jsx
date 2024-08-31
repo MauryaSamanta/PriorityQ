@@ -25,6 +25,8 @@ const File = ({ members, owner, wallpaper,setWallpaperMain, chat }) => {
   const [selectedFolder, setSelectedFolder] = useState(null); // State to hold the selected folder
   const [walldiag,setwalldiag]=useState(false);
   const [createfolder, setcreatefolder]=useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
   const handleFileClick = (file) => {
     setFolderDialogOpen(false)
     setSelectedFile(file);
@@ -178,10 +180,12 @@ const File = ({ members, owner, wallpaper,setWallpaperMain, chat }) => {
   return (
     <Box 
       display="flex" 
-      width="100%" 
-      height="100%" 
+      height="100%"
+      
       p={2} 
       sx={{
+        //height:200,
+        width:"100%" ,
         backgroundImage: wallpaper?`url(${wallpaper})`:'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -282,22 +286,45 @@ const File = ({ members, owner, wallpaper,setWallpaperMain, chat }) => {
         </Box>
 
         {/* Delete Icon */}
-        <IconButton
-          sx={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            backgroundColor: 'red',
-            color: 'white',
-            '&:hover': {
-              backgroundColor: 'darkred',
-            },
-          }}
-          onDragOver={handleDragOver}
-          onDrop={handleDropDelete}
-        >
-          <DeleteIcon />
-        </IconButton>
+        <Tooltip
+    title="Drag and drop here to delete"
+    open={tooltipOpen}
+    onClick={() => setTooltipOpen(true)}
+    onClose={() => setTooltipOpen(false)}
+    onClickOutside={() => setTooltipOpen(false)}
+    arrow
+    sx={{
+      '& .MuiTooltip-arrow': {
+        color: 'red', // Arrow color
+      },
+      '& .MuiTooltip-tooltip': {
+        backgroundColor: 'darkred', // Tooltip background color
+        color: 'white', // Tooltip text color
+        fontSize: '25px', // Tooltip font size
+        padding: '8px 12px', // Padding for tooltip
+        borderRadius: '4px', // Border radius for rounded corners
+      },
+    }}
+  >
+    <IconButton
+      sx={{
+        position: 'absolute',
+        top: 16,
+        right: 16,
+        backgroundColor: 'red',
+        color: 'white',
+        '&:hover': {
+          backgroundColor: 'darkred',
+        },
+      }}
+      onDragOver={handleDragOver}
+      onDrop={handleDropDelete}
+      onClick={() => setTooltipOpen(!tooltipOpen)} // Toggle tooltip on click
+    >
+      <DeleteIcon />
+    </IconButton>
+  </Tooltip>
+        
         <IconButton
           sx={{
             position: 'absolute',

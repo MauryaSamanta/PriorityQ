@@ -89,6 +89,7 @@ const MobileFile = ({ members, owner, wallpaper, setWallpaperMain, chat }) => {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backgroundColor: !wallpaper?'rgba(44, 44, 44, 0.8)':null,
+        
       }}
       borderRadius={3}
     >

@@ -399,7 +399,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
       </SwipeableDrawer>
 
       {/* Button to Show/Hide Files */}
-      <Button
+      {/* <Button
         onClick={handleToggleFiles}
         sx={{
           position: 'fixed',
@@ -422,7 +422,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
         <Typography variant="body2" sx={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
           {showFiles ? 'Out Of Library' : 'Go To Library'}
         </Typography>
-      </Button>
+      </Button> */}
 
       {/* Full Width File Component */}
       <Slide direction="left" in={showFiles} mountOnEnter unmountOnExit>

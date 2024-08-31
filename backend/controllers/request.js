@@ -1,5 +1,6 @@
 import Request from "../models/Request.js";
 import User from "../models/User.js";
+import Chat from "../models/Chat.js";
 export const sendreq=async(req,res)=>{
     const {senderid, recname}=req.body;
    try{ const rec=await User.findOne({username:recname});
@@ -7,6 +8,12 @@ export const sendreq=async(req,res)=>{
         res.status(200).json(`User doesnot exist`);
 
     const recid=rec._id;
+    const chat = await Chat.findOne({
+        members: { $all: [senderid, recid] }
+    });
+    console.log(chat);
+    if(chat)
+        return res.status(200).json(`Friend`);
     const newreq=new Request({sender_id:senderid,
                               receiver_id:recid
     });

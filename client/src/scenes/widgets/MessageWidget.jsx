@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef, useEffect } from 'react';
 import { Box, TextField, Button, IconButton, Menu, MenuItem, Typography, Dialog, DialogTitle, DialogContent, DialogActions, 
   List, ListItem, ListItemText, CircularProgress } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -24,6 +24,9 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const { _id, username, avatar_url } = useSelector((state) => state.user);
   const [poll, setpoll]=useState(false);
   const [progress,setprogress]=useState(true);
+  const typingTimeoutRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+
   const handleshareOpen=()=>{
     setshareOpen(true);
   }
@@ -172,6 +175,30 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const handleclosepoll=()=>{
     setpoll(false);
   }
+
+  const handleTyping = (e) => {
+    setMessage(e.target.value);
+
+    if (!isTyping) {
+      setIsTyping(true);
+      socket.emit('StartType', { sender_name: username, qube, zone });
+    }
+
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+      socket.emit('StopType', { sender_name: username, qube, zone });
+    }, 2000); // 3 seconds of inactivity
+  };
+  
+  useEffect(()=>{
+   
+  },[])
+  
+
   return (
     <Box
       alignItems="center"
@@ -266,7 +293,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
           variant="outlined"
           placeholder="Type a message..."
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={handleTyping}
           multiline
           fullWidth
           sx={{ ml: 2, mr: 2 }}

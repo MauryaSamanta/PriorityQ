@@ -112,9 +112,32 @@ io.on('connection', (socket) => {
     io.to(message.zone).emit('receiveMessage', savednewMessage);
     console.log('ok');
    }
-    
-    //console.log(`Message sent to zone ${message.zone}: ${message}`);
   );
+  socket.on('StartType', (data) => {
+    const { sender_name, qube, zone } = data;
+    console.log(zone);
+    // Broadcast to other clients in the same qube and zone that this user has started typing
+    io.to(zone).emit('UserTyping', {
+      user: sender_name,
+      typing: true,
+    });
+
+    console.log(`User ${sender_name} started typing in Qube: ${qube}, Zone: ${zone}`);
+  });
+
+  // Listen for StopType event
+  socket.on('StopType', (data) => {
+    const { sender_name, qube, zone } = data;
+    
+    // Broadcast to other clients in the same qube and zone that this user has stopped typing
+    io.to(zone).emit('UserTyping', {
+      user: sender_name,
+      typing: false,
+    });
+
+    console.log(`User ${sender_name} stopped typing in Qube: ${qube}, Zone: ${zone}`);
+  });
+
 
 });
 

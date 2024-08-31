@@ -143,9 +143,43 @@ const TagStoreDialog = ({ open, qubeid, onClose }) => {
               ))}
             </TagContainer>
           ) : (
-            <EmptyMessage variant="h6">
-              Welcome to your Tag Store. Keep your tags clean.
-            </EmptyMessage>
+            <Box alignItems="center">
+             <Typography variant="h6">This is where you will find tags in this zone</Typography>
+             <Typography variant="body1"> Tag your messages using '#' like</Typography>
+            <Box
+  sx={{
+    position: 'relative',
+    display: 'inline-block',
+    maxWidth: '90%',
+    padding: '12px 16px',
+    backgroundColor: '#f5f5f5',
+    borderRadius: '12px',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+    fontSize: '16px',
+    lineHeight: '1.5',
+    color: '#333',
+    '&:before': {
+      content: '""',
+      position: 'absolute',
+      bottom: '0',
+      left: '20px', // Adjust to position the tail
+      width: 0,
+      height: 0,
+      border: '12px solid transparent',
+      borderTopColor: '#f5f5f5',
+      borderBottom: 0,
+      borderLeft: 0,
+      marginLeft: '-6px',
+      marginBottom: '-12px',
+    },
+  }}
+>
+ 
+  <Typography variant="body1">
+    <span style={{ fontWeight: 'bold', color: '#635acc' }}>#shopping</span> check this shirt.
+  </Typography>
+</Box>
+</Box>
           )
         )}
       </DialogContent>

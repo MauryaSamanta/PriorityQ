@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, List, ListItem, Divider, TextField, Button, AppBar, Toolbar, InputBase, Tooltip, useMediaQuery,Drawer
-    , IconButton, Menu, MenuItem, Slide
+    , IconButton, Menu, MenuItem, Slide,
+    SwipeableDrawer
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTheme } from '@emotion/react';
@@ -40,6 +41,8 @@ const MobileHubPage = ({
   _id,
   setMessage,
   message,
+  userTyping,
+  type,
   setSelectedQube,
   fetchZones,
   setSelectedZone,
@@ -67,6 +70,7 @@ const MobileHubPage = ({
   storeDialog,
   handleCloseStoreDialog
 }) => {
+  const {username}=useSelector((state)=>state.user);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedQube, setSelectedQubeState] = useState(null);
   const [selectedZone, setSelectedZoneState] = useState(null);
@@ -78,6 +82,7 @@ const MobileHubPage = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [isButtonVisible, setIsButtonVisible] = useState(false);
+const [lib, setlib]=useState(false);
 
 const toggleButtonVisibility = () => {
   setIsButtonVisible(!isButtonVisible);
@@ -103,10 +108,18 @@ const toggleButtonVisibility = () => {
   const closeedithub=()=>{
     setedithub(false);
   }
+
+  const openlib=(open)=>{
+    setlib(open);
+  }
+  const closelib=()=>{
+    setlib(false);
+  }
   useEffect(() => {
     if (bottomRef.current)
       bottomRef.current.scrollIntoView();
   }, [messages]);
+  
   return (
     <Box height="100vh">
       <AppBar position="static" sx={{ bgcolor: 'primary.main', color: 'black', boxShadow: '0 4px 20px rgba(0,0,0,0.2)', height: '55px' }}>
@@ -124,6 +137,21 @@ const toggleButtonVisibility = () => {
           <Box
       sx={{ flexGrow: 1 }} // Ensures space is taken up on the left, pushing the right content to the edge
     />
+    
+    <Button varient="contained" sx={{
+          
+          //transform: 'translateY(-50%)',
+          zIndex: 10,
+          backgroundColor: '#635acc',
+          color: 'white',
+          borderRadius: 2,
+          padding: 1,
+         
+          '&:hover': {
+            backgroundColor: '#4a4b9b',
+          },
+        }} onClick={openlib}>{!lib? "Open Library":"Close Library"}</Button>
+    
     <IconButton
       sx={{
         color: 'black',
@@ -139,7 +167,7 @@ const toggleButtonVisibility = () => {
     <EditHubDialog open={edithub} onClose={closeedithub} hub={hubname} setdes={setdes} setavatar={setavatar} />
         </Toolbar>
       </AppBar>
-
+      
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}  sx={{ width: '100%' }} >
   <Box display="flex" height="100%" sx={{ width: '100%' }} >
     {/* Qubes Section */}
@@ -169,15 +197,16 @@ const toggleButtonVisibility = () => {
         
         setSelectedZoneState(null);
       }} sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {hubname}
-        <IconButton 
+        Back to Hub Home
+        
+      </Button>
+      <Typography textAlign="center">Qubes<IconButton 
     color="secondary" 
     onClick={(e)=>{e.stopPropagation(); handleOpenDialog();}} 
     sx={{ marginLeft: 'auto', ml: 1 }}
   >
     <Add/>
-  </IconButton>
-      </Button>
+  </IconButton></Typography>
       <Box sx={{overflowY:'auto'}}>
       <List height="100%">
         {qubes.map((qube) => (
@@ -342,7 +371,51 @@ const toggleButtonVisibility = () => {
   </Box>
 </Drawer>
 
+{lib && (
+  
+  <SwipeableDrawer
+    anchor="right"
+    open={lib}
+    onClose={() => setlib(false)}
+    onOpen={() => setlib(true)}
+    disableSwipeToOpen={!isMobile}
+    sx={{
+      '& .MuiDrawer-paper': {
+        position: 'absolute',
+        top: 0,
+        height: !isMobile ? '100%' : '100vh',
+        width: '100%',
+        backgroundColor: 'primary',
+        boxShadow: 4,
+        //padding: 2,
+        zIndex: 5,
+      },
+    }}
+  >
+    <Button
+    variant="contained"
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: -55, // Adjust this value as needed to move the text further left
+      transform: 'translateY(-50%) rotate(-90deg)',
+      color: 'white',
+      fontSize: '14px',
+      cursor: 'pointer',
+      userSelect: 'none',
+    }}
+    onClick={() => setlib(false)} // Optional: allow clicking the text to close the drawer
+  >
+    SWipe to Close 
+  </Button>
 
+    {!isMobile ? (
+      <File wallpaper={wallpaper} setWallpaperMain={setmainwall} />
+    ) : (
+      <MobileFile wallpaper={wallpaper} setWallpaperMain={setmainwall} />
+    )}
+  </SwipeableDrawer>
+)}
 <Box display="flex" flexDirection="column" height="calc(100% - 55px)">
   {/* Main Content Area */}
   {selectedQube ? (
@@ -360,7 +433,7 @@ const toggleButtonVisibility = () => {
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h6">{selectedZone.name}</Typography>
             
-            <Button
+            {/* <Button
         onClick={() => {
           if(!isButtonVisible)
           toggleButtonVisibility();
@@ -390,7 +463,8 @@ const toggleButtonVisibility = () => {
         <Typography variant="body2" sx={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
           {showFiles ? 'Out Of Library' : 'Go To Library'}
         </Typography>
-      </Button>
+      </Button> */}
+       
             <Button
               variant="contained"
               color="primary"
@@ -468,6 +542,52 @@ const toggleButtonVisibility = () => {
               <ChatItem key={index} message={message} isOwnMessage={message.sender_id === _id ? true : null} />
             ))}
             <div ref={bottomRef} />
+            {userTyping !== username && userTyping !== '' && (
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Typography sx={{ fontWeight: 'bold', color: '#635acc' }}>
+      {userTyping} is typing
+    </Typography>
+    <Box sx={{ display: 'flex', gap: 1 }}>
+      <Box
+        sx={{
+          width: '8px',
+          height: '8px',
+          bgcolor: '#635acc',
+          borderRadius: '50%',
+          animation: 'typing 1.5s infinite',
+        }}
+      />
+      <Box
+        sx={{
+          width: '8px',
+          height: '8px',
+          bgcolor: '#635acc',
+          borderRadius: '50%',
+          animation: 'typing 1.5s infinite 0.2s',
+        }}
+      />
+      <Box
+        sx={{
+          width: '8px',
+          height: '8px',
+          bgcolor: '#635acc',
+          borderRadius: '50%',
+          animation: 'typing 1.5s infinite 0.4s',
+        }}
+      />
+    </Box>
+  </Box>
+)}
+
+<style>
+  {`
+    @keyframes typing {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+  `}
+</style>
           </Box>
           <Box sx={{ mt: 2 }}>
             <MessageWidget qube={selectedQube} zone={selectedZone._id} message={message} setMessage={setMessage} />
@@ -484,6 +604,7 @@ const toggleButtonVisibility = () => {
     <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes}
     setwall={setmainwall}
     />
+ 
   )}
 </Box>
 
