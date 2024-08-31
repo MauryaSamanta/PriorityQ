@@ -649,7 +649,7 @@ const handletogglefiles=()=>{
 )}
     <Divider orientation="vertical" flexItem />
 
-    {selectedZone &&  (
+    {selectedZone && !lib ?  (
   <Box
     width="80%"
     bgcolor="#36393f"
@@ -793,6 +793,16 @@ const handletogglefiles=()=>{
     <Box sx={{ mt: 2 }}>
       <MessageWidget qube={selectedQube} zone={selectedZone._id} message={message} setMessage={setMessage} />
     </Box>
+  </Box>
+):(
+  <Box width="100%">
+    
+
+    {isNonMobileScreens ? (
+      <File wallpaper={wallpaper} setWallpaperMain={setmainwall} />
+    ) : (
+      <MobileFile wallpaper={wallpaper} setWallpaperMain={setmainwall} />
+    )}
   </Box>
 )}
   </Box>
