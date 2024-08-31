@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, IconButton, Avatar, Menu, MenuItem } from '@mui/material';
+import { Box, Typography, IconButton, Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
@@ -22,7 +22,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
   const [userdialog,setUserdialog]=useState(false);
   const hubId = useParams();
   const token = useSelector((state) => state.token);
-
+  const [isClicked,setclicked]=useState(false);
   const openMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -151,68 +151,110 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
         </Box>
         <UserProfileDialog open={userdialog} onClose={handlecloseuser} user={user}/>
         {name_folder && (
-          <Box
-            mt={1}
-            maxWidth="200px"
-            maxHeight="200px"
-            overflow="hidden"
-            borderRadius="4px"
-            position="relative"
-            
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: 'parent',
-              borderRadius: '8px',
-            }}
-          >
-            <Box display="flex" alignItems="center">
-              <FolderIcon sx={{ fontSize: 40, color: '#ff9800', mr: 1 }} />
-              <Typography variant="body2" noWrap>
-                {name_folder}
-              </Typography>
-            </Box>
-            {isHovered && (
-              <IconButton
-                size="small"
-                onClick={openMenu}
-                sx={{
-                  position: 'absolute',
-                  top: 4,
-                  right: 4,
-                  color: 'white',
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  zIndex: 1,
-                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
-                }}
-              >
-                <MoreVertIcon />
-              </IconButton>
-            )}
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={closeMenu}
-            >
-              <MenuItem onClick={saveToMyFiles}>Save to My Library</MenuItem>
-              {isOwnMessage&& <MenuItem onClick={deletemsg} sx={{color:'#ed0e0e'}}>Delete Message</MenuItem>}
-            </Menu>
-            {showTick && (
-              <CheckCircleIcon
-                sx={{
-                  position: 'absolute',
-                  color: '#4caf50',
-                  fontSize: 40,
-                  opacity: 10,
-                  animation: 'fadeInOut 2s ease-in-out',
-                }}
-              />
-            )}
-          </Box>
+  <Tooltip
+    title="Save to My Library to view it"
+    arrow
+    open={isClicked}
+    onClick={()=>setclicked(true)}
+    onClose={()=>setclicked(false)}
+    onClickOutside={() => setclicked(false)}
+    sx={{
+      fontSize: '12px',
+      bgcolor: 'rgba(0, 0, 0, 0.8)',
+      color: 'white',
+      padding: '4px 8px',
+      borderRadius: '4px',
+      
+    }}
+  >
+    <Box
+      mt={1}
+      maxWidth="200px"
+      maxHeight="200px"
+      overflow="hidden"
+      borderRadius="4px"
+      position="relative"
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'parent',
+        borderRadius: '8px',
+        outline: 'none',
+        cursor: 'pointer', // Add pointer cursor to indicate it's clickable
+        '&:focus': {
+      outline: 'none', // Ensure the focus outline is removed
+       },
+       '&:focus-visible': {
+      outline: 'none', // For cases where focus-visible applies
+    },
+      }}
+    >
+      <Box display="flex" alignItems="center">
+        <FolderIcon sx={{ fontSize: 40, color: '#ff9800', mr: 1 }} />
+        <Typography variant="body2" noWrap>
+          {name_folder}
+        </Typography>
+      </Box>
+      {isHovered && (
+        <IconButton
+          size="small"
+          onClick={openMenu}
+          sx={{
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            color: 'white',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1,
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
+          }}
+        >
+          <MoreVertIcon />
+        </IconButton>
+      )}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={closeMenu}
+      >
+        <MenuItem onClick={saveToMyFiles}>Save to My Library</MenuItem>
+        {isOwnMessage && (
+          <MenuItem onClick={deletemsg} sx={{ color: '#ed0e0e' }}>Delete Message</MenuItem>
         )}
+      </Menu>
+      {showTick && (
+        <CheckCircleIcon
+          sx={{
+            position: 'absolute',
+            color: '#4caf50',
+            fontSize: 40,
+            opacity: 10,
+            animation: 'fadeInOut 2s ease-in-out',
+          }}
+        />
+      )}
+    </Box>
+  </Tooltip>
+)}
 
         {file && (
+          <Tooltip
+          title="Save to My Library to view it"
+          arrow
+          open={isClicked}
+          onClick={()=>setclicked(true)}
+          onClose={()=>setclicked(false)}
+          onClickOutside={() => setclicked(false)}
+          sx={{
+            fontSize: '12px',
+            bgcolor: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            
+          }}
+        >
           <Box
             mt={1}
             maxWidth="200px"
@@ -279,6 +321,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
               />
             )}
           </Box>
+          </Tooltip>
         )}
 
         { text && (

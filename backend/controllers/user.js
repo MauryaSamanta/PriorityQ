@@ -53,9 +53,9 @@ export const updateAvatar = async (req, res, next) => {
     if (user.username !== username) user.username = username;
     if (user.bio !== bio) user.bio = bio;
     if (file) user.avatar_url = result.secure_url;
-
+    
     const updatedUser = await user.save();
-
+    console.log(updatedUser);
     res.json(updatedUser);
     next();
   } catch (error) {
