@@ -122,6 +122,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
   };
 
   return (
+    
     <Box
       display="flex"
       flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
@@ -130,6 +131,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      
       {senderName!=='EloKo'&&(<Avatar src={senderAvatar || '/path/to/random/avatar.jpg'} onClick={()=>{
         if(!isOwnMessage && senderName!=='EloKo')
         handleopenuser()}}
@@ -362,6 +364,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
         
       </Box>
     </Box>
+    
   );
 };
 
