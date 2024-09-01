@@ -10,9 +10,14 @@ import FolderIcon from '@mui/icons-material/Folder';
 import UserProfileDialog from 'scenes/Dialog/UserProfileDialog';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import ChatAudioPlayer from './ChatAudioPlayer';
+import RecordingComponent from './RecordingComponent';
+import CustomAudioPlayer from './CustomAudioPlayer';
 
 const ChatItem = ({ message, isOwnMessage, chat }) => {
-  const { sender_id,text, senderAvatar, file, senderName, reactions, name_file, folder, name_folder } = message;
+  const { sender_id,text,voice, senderAvatar, file, senderName, reactions, name_file, folder, name_folder } = message;
+  if(voice)
+    console.log(voice);
   const [anchorEl, setAnchorEl] = useState(null);
   const [chatanchor, setchatanchor]=useState(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -326,12 +331,12 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
           </Tooltip>
         )}
 
-        { text && (
+        {( text || voice )&& (
           <Box position="relative">
-            <Typography variant="body1" paragraph fontSize="15px"
-  sx={{ whiteSpace: 'pre-line' }}>
+            {text && <Typography variant="body1" paragraph fontSize="15px" sx={{ whiteSpace: 'pre-line' }}>
               {renderHighlightedMessage(text)}
-            </Typography>
+            </Typography>}
+            {voice && (<CustomAudioPlayer audioURL={voice}/>)}
             {isHovered && !file && folder.length===0 && isOwnMessage && (
               <IconButton
                 size="small"
@@ -342,7 +347,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
                   right: 4,
                   color: 'white',
                   backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  zIndex: 1,
+                  zIndex: 10,
                   '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
                 }}
               >

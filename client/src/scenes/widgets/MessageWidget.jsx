@@ -5,10 +5,12 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import FolderIcon from '@mui/icons-material/Folder'; // Import Folder Icon
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudCircleIcon from '@mui/icons-material/CloudCircle';
+import GraphicEqIcon from '@mui/icons-material/GraphicEq';
 import { useSelector } from 'react-redux';
 import io from 'socket.io-client';
 import FileDialog from 'scenes/Dialog/FileDialog';
-
+import CustomAudioPlayer from './CustomAudioPlayer';
+import RecordingComponent from './RecordingComponent';
 const socket = io('https://surf-jtn5.onrender.com');
 
 const MessageWidget = ({ qube, zone, message, setMessage }) => {
@@ -26,6 +28,12 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const [progress,setprogress]=useState(true);
   const typingTimeoutRef = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioURL, setAudioURL] = useState('');
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [audio,setaudio]=useState(null);
+  const timerRef = useRef(null);
 
   const handleshareOpen=()=>{
     setshareOpen(true);
@@ -89,7 +97,7 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
   };
 
   const sendMessage = async () => {
-    if (!file && folderFiles.length === 0) {
+    if (!file && folderFiles.length === 0 && !audio) {
       const newMessage = {
         text: message,
         senderName: username,
@@ -129,7 +137,31 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
         console.error("Error sending message:", error);
       }
       handleDialogClose();
-    } else {
+    } else if(audio){
+      console.log("hello");
+       const formData=new FormData();
+       formData.append("senderName", username);
+      formData.append("senderAvatar", avatar_url);
+      formData.append("sender_id", _id);
+      formData.append("audio", audio);
+      formData.append("zone", zone);
+      formData.append("qube",qube);
+      setprogress(false);
+      try {
+        const result=await fetch(`https://surf-jtn5.onrender.com/message/audio`,{
+          method:"POST",
+          body:formData
+        });
+        const data=await result.json();
+        setprogress(true);
+        setAudioURL('');
+        setaudio(null);
+      } catch (error) {
+        
+      }
+    } 
+    else {
+      //console.log("hello");
       const formData = new FormData();
       formData.append("text", message);
       formData.append("senderName", username);
@@ -193,10 +225,62 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
       socket.emit('StopType', { sender_name: username, qube, zone });
     }, 2000); // 3 seconds of inactivity
   };
+
+     
+  const startRecording = async () => {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        setMediaRecorder(recorder);
+        recorder.start();
+        setIsRecording(true);
+        setRecordingTime(0);
+
+        recorder.ondataavailable = (e) => {
+          const audioBlob = new Blob([e.data], { type: 'audio/mp3' });
+          const url = URL.createObjectURL(audioBlob);
+          setAudioURL(url);
+          setaudio(audioBlob);
+          // /console.log(audio);
+          // Handle uploading the audioBlob if needed
+        };
+
+        timerRef.current = setInterval(() => {
+          setRecordingTime((prev) => prev + 1);
+        }, 1000);
+      } catch (err) {
+        console.error("Error accessing microphone:", err);
+      }
+    } else {
+      console.error("getUserMedia not supported on your browser!");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+      clearInterval(timerRef.current);
+      mediaRecorder.stream.getTracks().forEach(track => track.stop());
+    }
+  };
   
-  useEffect(()=>{
-   
-  },[])
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    };
+  }, [mediaRecorder]);
+  useEffect(() => {
+    if (audio) {
+      console.log(audio); // This will log the audioBlob when it's set
+    }
+  }, [audio]);
   
 
   return (
@@ -249,6 +333,22 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
         color: '#3486eb', // Change this to your desired color
       }}}/>
             </IconButton>
+            <IconButton 
+            component="span" 
+            onClick={() => {
+              if (!isRecording) {
+                startRecording();
+              } else {
+                stopRecording();
+              }
+            }}
+          >
+            <GraphicEqIcon sx={{
+              '&:hover': {
+                color: '#3486eb',
+              }
+            }}/>
+          </IconButton>
            
           <FileDialog open={shareOpen} onClose={handleshareClose} handlefileshare={handlefileshare}/>
           
@@ -289,43 +389,55 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
         </Box>
       )}
       <Box display="flex">
-        <TextField
-          variant="outlined"
-          placeholder="Type a message..."
-          value={message}
-          onChange={handleTyping}
-          multiline
-          fullWidth
-          sx={{ ml: 2, mr: 2 }}
-          
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={sendMessage}
-          disabled={!message.trim() && !file && folderFiles.length === 0 && !filetoshare}
-          sx={{
-            position: 'relative',
-            overflow: 'hidden',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              right: '0',
-              bottom: '0',
-              background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-              transition: 'opacity 0.5s',
-              opacity: 0,
-            },
-            '&:hover::before': {
-              opacity: 0.2,
-            },
-          }}
-        >
-          Send
-        </Button>
-      </Box>
+      {isRecording ? (
+        <Box display="flex" alignItems="center" ml={2} mr={2}>
+          <RecordingComponent stopRecording={stopRecording}/>
+        </Box>
+      ) : audioURL ? (
+        <Box display="flex" alignItems="center" ml={2} mr={2}>
+         <CustomAudioPlayer audioURL={audioURL}/>
+          <IconButton onClick={()=>{setaudio(null); setAudioURL('');}}><DeleteIcon/></IconButton>
+        </Box>
+      ) : (
+        
+          <TextField
+            variant="outlined"
+            placeholder="Type a message..."
+            value={message}
+            onChange={handleTyping}
+            multiline
+            fullWidth
+            sx={{ ml: 2, mr: 2 }}
+          />
+      )}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={sendMessage}
+            disabled={!message.trim() && !file && folderFiles.length === 0 && !filetoshare && !audio}
+            sx={{
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                right: '0',
+                bottom: '0',
+                background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+                transition: 'opacity 0.5s',
+                opacity: 0,
+              },
+              '&:hover::before': {
+                opacity: 0.2,
+              },
+            }}
+          >
+            Send
+          </Button>
+        </Box>
+      
       
 
       <Dialog open={openDialog} onClose={handleDialogClose}>
