@@ -10,7 +10,7 @@ const LoginPage = () => {
   return (
     <Box
       position="relative"
-      height="100vh"
+      height="100%"
       bgcolor={theme.palette.background.default}
     >
       {/* Content Container */}
@@ -72,7 +72,7 @@ const LoginPage = () => {
 
       {/* Bottom Left Wave */}
       <Box
-        position="absolute"
+        position="fixed"
         bottom={0}
         left={0}
         width="100%"

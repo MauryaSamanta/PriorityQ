@@ -328,7 +328,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
 
         { text && (
           <Box position="relative">
-            <Typography variant="body1" paragraph
+            <Typography variant="body1" paragraph fontSize="15px"
   sx={{ whiteSpace: 'pre-line' }}>
               {renderHighlightedMessage(text)}
             </Typography>
