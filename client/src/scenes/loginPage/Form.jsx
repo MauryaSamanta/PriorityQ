@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -56,13 +56,19 @@ const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
+  const [username,setusername]=useState('');
+  const [email,setemail]=useState('');
+  const [pass,setpass]=useState('');
+  const [dob,setdob]=useState('');
+  const [taken,settaken]=useState(false);
+  const [wrong, setwrong]=useState(false);
+  const [exist,setexist]=useState(true);
+  
+  const register = async (onSubmitProps) => {
+   if(username==='' || pass===''||email===''||dob==='')
+    return;
 
-  const register = async (values, onSubmitProps) => {
-    // this allows us to send form info with image
-    const formData = new FormData();
-    for (let value in values) {
-      formData.append(value, values[value]);
-    }
+    const values={username:username,email:email, dob:dob, password:pass};
     //formData.append("picturePath", values.picture.name);
      console.log(values);
     const savedUserResponse = await fetch(
@@ -74,21 +80,39 @@ const Form = () => {
       }
     );
     const savedUser = await savedUserResponse.json();
-    onSubmitProps.resetForm();
-
-    if (savedUser) {
-      setPageType("login");
-    }
+   // onSubmitProps.resetForm();
+   if(savedUser==='Present')
+    setexist(true);
+   else
+   {setusername('');
+   setemail('');
+   setpass('');
+   setdob('');
+   setPageType("login");}
+      
+      
+    
   };
 
-  const login = async (values, onSubmitProps) => {
+  const login = async ( onSubmitProps) => {
+    if(email===''||pass==='')
+      return;
+    const values={email:email,password:pass};
     const loggedInResponse = await fetch("https://surf-jtn5.onrender.com/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
     const loggedIn = await loggedInResponse.json();
-    onSubmitProps.resetForm();
+    if(loggedIn==='Invalid')
+      {setwrong(true);return;}
+    if(loggedIn==='no exist')
+    {
+      setexist(false);return;
+    }
+   // onSubmitProps.resetForm();
+   setemail('');
+   setpass('');
     if (loggedIn) {
       dispatch(
         setLogin({
@@ -99,6 +123,34 @@ const Form = () => {
       navigate("/home");
     }
   };
+  let typingTimer;
+const debounceDelay = 1000;
+  const check=async(username)=>{
+    settaken(false);
+    setusername(username);
+    if (typingTimer) clearTimeout(typingTimer);
+
+    typingTimer = setTimeout(async () => {
+      try {
+        const response = await fetch("https://surf-jtn5.onrender.com/auth/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username:username }),
+        });
+  
+        const result = await response.json();
+        if(result==='Taken')
+          settaken(true);
+        else
+          settaken(false);
+        console.log(result);
+        
+      } catch (error) {
+        console.error("Error checking username:", error);
+      }
+    }, debounceDelay);
+
+  }
 
   const handleFormSubmit = async (values, onSubmitProps) => {
     console.log(isRegister);
@@ -139,19 +191,21 @@ const Form = () => {
                 <TextField
                   label="Username"
                   onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.username}
+                  onChange={(e)=>check(e.target.value)}
+                  value={username}
                   name="username"
                   error={Boolean(touched.username) && Boolean(errors.username)}
                   helperText={touched.username && errors.username}
                   sx={{ gridColumn: "span 4" }}
                 />
+                {taken && username? <Typography mt={0} sx={{gridColumn:"span 4", color:"#e62e31"}}>{username} is taken ☹️</Typography>:
+                 !taken && username && <Typography mt={0} sx={{gridColumn:"span 4", color:"#2ee659"}}>{username} is available 😀</Typography>}
                 <TextField
                   label="Date of Birth"
                   type="date"
                   onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.dob}
+                  onChange={(e)=>setdob(e.target.value)}
+                  value={dob}
                   name="dob"
                   InputLabelProps={{
                     shrink: true, // Keeps the label above the input
@@ -167,38 +221,44 @@ const Form = () => {
             <TextField
               label="Email"
               onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.email}
+              onChange={(e)=>setemail(e.target.value)}
+              value={email}
               name="email"
               error={Boolean(touched.email) && Boolean(errors.email)}
               helperText={touched.email && errors.email}
               sx={{ gridColumn: "span 4" }}
             /> 
+             
              <TextField
               label="Password"
               type="password"
               onBlur={handleBlur}
-              onChange={handleChange}
-              value={values.password}
+              onChange={(e)=>setpass(e.target.value)}
+              value={pass}
               name="password"
               error={Boolean(touched.password) && Boolean(errors.password)}
               helperText={touched.password && errors.password}
               sx={{ gridColumn: "span 4" }}
             />
+            {wrong && <Typography mt={0} sx={{gridColumn:"span 4", color:"#e62e31"}}>Wrong Credentials</Typography>}
+            {!exist && <Typography mt={0} sx={{gridColumn:"span 4", color:"#e62e31"}}>You need to create an account</Typography>}
           </Box>
-
+           
           {/* BUTTONS */}
-          <Box>
+          <Box >
             <Button
               fullWidth
               type="submit"
+              disabled={!isLogin? taken:false}
               sx={{
                 m: "2rem 0",
-                p: "1rem",
+               // p: "1rem",
                 backgroundColor: palette.primary.main,
                 color: palette.background.alt,
                 "&:hover": { color: palette.primary.main },
+                borderRadius:"30px"
               }}
+              
             >
               {isLogin ? "LOGIN" : "REGISTER"}
             </Button>
@@ -206,6 +266,12 @@ const Form = () => {
               onClick={() => {
                 setPageType(isLogin ? "register" : "login");
                 resetForm();
+                setusername('');
+                setemail('');
+                setdob('');
+                setpass('');
+                setexist(true);
+                settaken(false);
               }}
               sx={{
                 //textDecoration: "underline",
