@@ -124,6 +124,74 @@ export const sendMessagewithFolder=async(req,res)=>{
       }
 }
 
+
+
+export const messagewithaudio = async (req, res) => {
+  const file = req.file;
+  const { senderAvatar, senderName, sender_id, zone, qube } = req.body;
+
+  if (!file) {
+    return res.status(400).json('No file uploaded');
+  }
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
+
+  try {
+    // Upload the file to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { resource_type: 'auto', format: 'mp3' },
+        (error, result) => {
+          if (error) {
+            console.log(error);
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+      uploadStream.end(file.buffer);
+    });
+
+    // const hashtagRegex = /#\w+/g;
+    // const hashtags = text ? text.match(hashtagRegex) : null;
+
+    let messageforDB = {
+      voice: result.secure_url,
+      senderAvatar: senderAvatar,
+      senderName: senderName,
+      folder:[],
+      sender_id: sender_id,
+      zone_id: zone,
+    };
+
+    if (qube && qube !== 'null') {
+      messageforDB = { ...messageforDB, qube_id: qube };
+    }
+    console.log(messageforDB);
+
+    
+
+    
+
+    const newMessage = new Message(messageforDB);
+    req.io.to(zone).emit('receiveMessage', newMessage);
+    await newMessage.save();
+
+    res.status(200).json('Success');
+  } catch (error) {
+    console.log(error);
+    // Ensure headers are not already sent
+    if (!res.headersSent) {
+      res.status(400).json('Error');
+    }
+  }
+};
+
 export const deleteMessage=async(req,res)=>{
    const {messageid}=req.params;
    try {

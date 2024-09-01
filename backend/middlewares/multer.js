@@ -11,4 +11,6 @@ const attachmentsMulter = multerUpload.single("file");
 
 const folderMulter=multerUpload.array("files",10);
 
-export { avatarupload, attachmentsMulter, folderMulter };
+const audioMulter=multerUpload.single("audio");
+
+export { avatarupload, attachmentsMulter, folderMulter, audioMulter };

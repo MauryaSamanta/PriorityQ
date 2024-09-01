@@ -3,6 +3,7 @@ import mongoose, { Schema, model, Types } from "mongoose";
 const messageSchema = new Schema(
   {
     text: String,
+    voice:String,
     senderAvatar:String,
     senderName:String,
     name_file:String,
