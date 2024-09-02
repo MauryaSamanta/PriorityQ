@@ -43,6 +43,8 @@ const MobileHubPage = ({
   message,
   userTyping,
   type,
+  demonym,
+  setdemonym,
   setSelectedQube,
   fetchZones,
   setSelectedZone,
@@ -164,7 +166,7 @@ const toggleButtonVisibility = () => {
     >
       <SettingsIcon sx={{color:'white'}} />
     </IconButton>
-    <EditHubDialog open={edithub} onClose={closeedithub} hub={hubname} setdes={setdes} setavatar={setavatar} />
+    <EditHubDialog open={edithub} onClose={closeedithub} hub={hubname} setdes={setdes} setavatar={setavatar} setdemonym={setdemonym} />
         </Toolbar>
       </AppBar>
       
@@ -596,13 +598,13 @@ const toggleButtonVisibility = () => {
       ) : (
         // Show HubOverview if no Zone is selected
         <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes}
-          setwall={setmainwall}
+          setwall={setmainwall} demonym={demonym}
         />
       )}
     </Box>
   ) : (
     <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes}
-    setwall={setmainwall}
+    setwall={setmainwall} demonym={demonym}
     />
  
   )}

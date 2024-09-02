@@ -2,52 +2,67 @@ import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { keyframes } from '@emotion/react';
 
-// Keyframes for the jumping and bouncing dot animation
-const dotJumping = keyframes`
-  0%, 80%, 100% { 
-    transform: translateY(0); 
-  }
-  40% { 
-    transform: translateY(-10px); 
-  }
+// Keyframes for the wave animation
+const waveAnimation = keyframes`
+  0% { transform: scaleY(1); }
+  50% { transform: scaleY(1.5); }
+  100% { transform: scaleY(1); }
 `;
 
-// Dot component with jumping animation
-const AnimatedDots = () => (
+// Wave component with wave animation
+const AnimatedWaves = () => (
   <Typography variant="body1" color="white" mr={2} display="flex" alignItems="center">
     <span style={{ 
       display: 'inline-block', 
-      width: '8px', 
-      height: '8px', 
+      width: '4px', 
+      height: '20px', 
       backgroundColor: 'white', 
-      borderRadius: '50%', 
+      borderRadius: '2px', 
       marginRight: '4px', 
-      animation: `${dotJumping} 1.2s infinite ease-in-out` 
+      animation: `${waveAnimation} 1.2s infinite ease-in-out` 
     }} />
     <span style={{ 
       display: 'inline-block', 
-      width: '8px', 
-      height: '8px', 
+      width: '4px', 
+      height: '20px', 
       backgroundColor: 'white', 
-      borderRadius: '50%', 
+      borderRadius: '2px', 
       marginRight: '4px', 
-      animation: `${dotJumping} 1.2s infinite ease-in-out 0.2s` 
+      animation: `${waveAnimation} 1.2s infinite ease-in-out 0.1s` 
     }} />
     <span style={{ 
       display: 'inline-block', 
-      width: '8px', 
-      height: '8px', 
+      width: '4px', 
+      height: '20px', 
       backgroundColor: 'white', 
-      borderRadius: '50%', 
+      borderRadius: '2px', 
       marginRight: '4px', 
-      animation: `${dotJumping} 1.2s infinite ease-in-out 0.4s` 
+      animation: `${waveAnimation} 1.2s infinite ease-in-out 0.2s` 
+    }} />
+    <span style={{ 
+      display: 'inline-block', 
+      width: '4px', 
+      height: '20px', 
+      backgroundColor: 'white', 
+      borderRadius: '2px', 
+      marginRight: '4px', 
+      animation: `${waveAnimation} 1.2s infinite ease-in-out 0.3s` 
+    }} />
+    <span style={{ 
+      display: 'inline-block', 
+      width: '4px', 
+      height: '20px', 
+      backgroundColor: 'white', 
+      borderRadius: '2px', 
+      marginRight: '4px', 
+      animation: `${waveAnimation} 1.2s infinite ease-in-out 0.4s` 
     }} />
   </Typography>
 );
 
 const RecordingComponent = ({ stopRecording }) => (
   <Box display="flex" alignItems="center" ml={2} mr={2}>
-    <AnimatedDots />
+    <AnimatedWaves />
     <Button variant="contained" color="secondary" onClick={stopRecording}>
       Stop
     </Button>

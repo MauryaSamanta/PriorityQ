@@ -15,15 +15,16 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import { useLocation, useParams } from "react-router-dom";
-const EditHubDialog = ({ open, onClose, onSave, hub, sethubName, setavatar,setdes }) => {
+const EditHubDialog = ({ open, onClose, onSave, hub, sethubName, setavatar,setdes, setdemonym }) => {
     const location = useLocation();
     const {hubId}=useParams();
-    let { des, avatar, banner } = location.state || {};
+    let { des, avatar, banner,demonym } = location.state || {};
   const user=useSelector((state)=>state.user);
   const [hubname,setHubname]=useState(hub);
   const [desc,setDesc]=useState(des);
   const [hubavatar,setAvatar]=useState(user.avatar_url);
    const [avatar_show, setAvatar_Show]=useState('');
+   const [demo,setdemo]=useState(demonym);
   const dispatch=useDispatch();
   const token=useSelector((state)=>state.token);
   
@@ -48,6 +49,7 @@ const EditHubDialog = ({ open, onClose, onSave, hub, sethubName, setavatar,setde
     // Append data to the FormData object
     formData.append('hubname', hubname);
     formData.append('desc', desc);
+    formData.append('demonym',demo);
     
     // Append avatar if it exists
     if (hubavatar) {
@@ -64,9 +66,12 @@ const EditHubDialog = ({ open, onClose, onSave, hub, sethubName, setavatar,setde
     const savedHubRes = await savedHub.json();
     //console.log(savedUserRes);
     if(savedHubRes)
-      { 
+      { //sethubName(savedHubRes.name);
         setdes(savedHubRes.description);
         setavatar(savedHubRes.avatar_url);
+        if(savedHubRes.demonym)
+        setdemonym(savedHubRes.demonym)
+
         onClose();}
 
     
@@ -89,12 +94,22 @@ const EditHubDialog = ({ open, onClose, onSave, hub, sethubName, setavatar,setde
         <TextField
           margin="dense"
           name="desc"
-          label="Description"
+          label="Hub Description"
           type="text"
           fullWidth
           multiline
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
+        />
+        <TextField
+          margin="dense"
+          name="demo"
+          label="Hub Demonym"
+          type="text"
+          fullWidth
+          multiline
+          value={demo}
+          onChange={(e) => setdemo(e.target.value)}
         />
         
           <Box

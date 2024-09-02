@@ -22,6 +22,9 @@ const hubSchema = new mongoose.Schema({
   status:{
     type:String
   },
+  demonym:{
+   type:String
+  },
   created_at: {
     type: Date,
     default: Date.now

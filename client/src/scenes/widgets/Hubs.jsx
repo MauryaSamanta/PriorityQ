@@ -131,9 +131,10 @@ const Hubs = ({ userId, setPrincipalHubs }) => {
                     const des=hub?.description;
                     const avatar=hub?.avatar_url;
                     const banner=hub?.banner_url;
-                    
+                    const demonym=hub?.demonym;
+                    //console.log(demonym);
                     navigate(`/hub/${hub?._id}/${hub?.owner_id}/${hub?.name}`,{
-                      state:{des,avatar,banner}
+                      state:{des,avatar,banner,demonym}
                     })}} style={{ alignSelf: 'flex-end', marginTop: '16px' }}>
                     ENTER HUB
                   </Button>
