@@ -77,23 +77,22 @@ const Navbar = () => {
   }
   return (
     <>
-      <FlexBetween padding="1rem 6%" backgroundColor="parent">
-        <FlexBetween gap="1.75rem">
-          <Typography
-            fontWeight="bold"
-            fontSize="clamp(1rem, 2rem, 2.25rem)"
-            color="primary"
-            onClick={() => navigate("/home")}
-            sx={{
-              "&:hover": {
-                color: primaryLight,
-                cursor: "pointer",
-              },
-            }}
-          >
-            EloKo
-          </Typography>
-        </FlexBetween>
+      <FlexBetween padding={isNonMobileScreens?"0rem 2rem 0 2rem":"0 4% 0 2%"} backgroundColor="parent">
+        <FlexBetween gap="1.75rem" sx={{ height: 'clamp(7rem, 7rem, 7rem)' }}>
+  <img
+    src="/assets/EloKoMainLogo.png"
+    alt="EloKo"
+    onClick={() => navigate("/home")}
+    style={{
+      width: 'auto',
+      height: 'clamp(10rem, 10rem, 10rem)',// Same height as the Typography font size
+      cursor: 'pointer',
+    }}
+    onMouseOver={(e) => e.currentTarget.style.filter = 'brightness(1.2)'}
+    onMouseOut={(e) => e.currentTarget.style.filter = 'brightness(1)'}
+  />
+</FlexBetween>
+
 
         {/* DESKTOP NAV */}
         {isNonMobileScreens ? (
