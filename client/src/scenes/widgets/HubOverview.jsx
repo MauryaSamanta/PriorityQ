@@ -17,7 +17,7 @@ import { useTheme } from '@emotion/react';
 import MobileFile from './MobileFile';
 import SetupStepsDrawer from './SetupStepsDrawer';
 
-const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwall }) => {
+const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwall, demonym }) => {
   const location = useLocation();
   console.log(des);
   //let {   banner } = location.state || {};
@@ -39,6 +39,8 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
   const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
   const [code, setCode] = useState(null);
   const [loading,setloading]=useState(false);
+  const demo=demonym? demonym:'Member';
+  console.log(demonym);
   const steps = [
     { step: 'Upload Hub Icon', complete:'false' },
     { step: 'Upload Hub Banner', complete:'false' },
@@ -299,7 +301,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
       sx={{ fontWeight: 'bold', color: '#635acc', cursor: 'pointer' }}
       onClick={handleOpenMembersDialog}
     >
-      {members.length} {members.length > 1 ? 'Members' : 'Member'}
+      {members.length} {members.length > 1 ? `${demo}`+'s' : `${demo}`}
     </Typography>
   </Tooltip>
   {!loading && _id===owner?(<AddIcon 

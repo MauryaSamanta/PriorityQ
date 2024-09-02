@@ -172,7 +172,7 @@ export const listUsersInHub = async (req, res) => {
 
   export const editHubDetails=async(req,res)=>{
     const hubid=req.params.hubid;
-    const {hubname, desc}=req.body;
+    const {hubname, desc, demonym}=req.body;
     const file=req.file;
     const hub=await Hub.findById(hubid);
       
@@ -212,6 +212,8 @@ export const listUsersInHub = async (req, res) => {
         hub.description=desc;
       if(file)
         hub.avatar_url=result.secure_url;
+      if(hub.demonym!==demonym)
+        hub.demonym=demonym;
       const hubsave=await hub.save();
       res.json(hubsave);
 

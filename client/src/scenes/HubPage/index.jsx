@@ -34,7 +34,8 @@ const HubPage = () => {
   const [des,setdes]=useState(location.state.des);
   const [avatar,setavatar]=useState(location.state.avatar);
   const [banner,setbanner]=useState(location.state.banner);
-  //console.log(des);
+  const [demonym,setdemonym]=useState(location.state.demonym);
+  //console.log(demonym);
   const containerRef = useRef(null);
   const bottomRef = useRef(null);
   const {_id,username}=useSelector((state)=>state.user);
@@ -384,7 +385,7 @@ const handletogglefiles=()=>{
       <SettingsIcon sx={{color:'white'}} />
     </IconButton>
   </Toolbar>
-  <EditHubDialog open={settings} onClose={closesetting} hub={hubname} setavatar={setavatar} setdes={setdes} />
+  <EditHubDialog open={settings} onClose={closesetting} hub={hubname} setavatar={setavatar} setdes={setdes} setdemonym={setdemonym} />
 </AppBar>
 
   <Box display="flex" height="calc(100% - 55px)">
@@ -633,8 +634,8 @@ const handletogglefiles=()=>{
 <CreateZoneDialog open={openZoneDialog} onClose={handleZoneCloseDialog} onCreate={handleCreateZone}></CreateZoneDialog>
   </Box>
 ) : !lib?(
-  <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes}
-   setwall={setmainwall}
+  <HubOverview members={members} owner={ownerId} des={des} avatar={avatar} banner={banner} setbanner={setbanner} qubes={qubes} 
+   setwall={setmainwall} demonym={demonym}
   />
 ):(
   <Box width="100%">
@@ -816,6 +817,8 @@ const handletogglefiles=()=>{
   message={message}
   userTyping={userTyping}
   type={type}
+  demonym={demonym}
+  setdemonym={setdemonym}
   setSelectedQube={setSelectedQube}
   fetchZones={fetchZones}
   setSelectedZone={setSelectedZone}
