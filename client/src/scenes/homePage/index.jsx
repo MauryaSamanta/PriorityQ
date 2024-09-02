@@ -5,7 +5,7 @@ import Navbar from 'scenes/navbar';
 import Hubs from 'scenes/widgets/Hubs';
 import UserWidget from 'scenes/widgets/UserWidget';
 import FlexBetween from 'components/FlexBetween';
-
+import Badge from '@mui/material/Badge';
 import ExploreIcon from '@mui/icons-material/Explore';
 import InboxIcon from '@mui/icons-material/Inbox';
 import InboxMobile from 'scenes/widgets/InboxMobile';
@@ -20,7 +20,7 @@ const HomePage = () => {
   const inputRef = useRef(null);
   const [hubs, setPrincipalHubs] = useState([]);
   const [value, setValue] = useState(1); // State for BottomNavigation
-
+  const [requests,setrequests]=useState(0);
   const handleJoinHubClick = async () => {
     if (!showInput) setShowInput(!showInput);
     else if (code.trim()) {
@@ -59,19 +59,36 @@ const HomePage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const getReqs = async () => {
+      try {
+        const response = await fetch(`https://surf-jtn5.onrender.com/request/${_id}`, {
+          method: "GET",
+        });
+        const reqs = await response.json();
+        const noreq=reqs.length;
+        setrequests(noreq);
+
+      } catch (error) {
+        console.error('Error fetching requests:', error);
+      }
+    };
+    getReqs();
+  }, []);
+
   return (
     <Box sx={{display:'flex', flexDirection:'column'}}>
       <Navbar />
       {value===1?(<Box>
       <Box
         width="100%"
-        padding="2rem 6%"
+        padding="0rem 6% 6% 6%"
         gap="0.5rem"
         justifyContent="space-between"
       >
         <FlexBetween>
           {(!showInput || isNonMobileScreens) && (
-            <Typography variant="h1" component="div" padding="2rem">
+            <Typography variant="h1" component="div" padding="0 2rem 2rem 2rem"   >
               Welcome Back👋
             </Typography>
           )}
@@ -119,7 +136,7 @@ const HomePage = () => {
           </Box>
         </Box>
       </Box>
-      </Box>):(!isNonMobileScreens?<InboxMobile/>:<InboxPC/>)}
+      </Box>):(!isNonMobileScreens?<InboxMobile setreqs={setrequests}/>:<InboxPC setreqs={setrequests}/>)}
       {/* Bottom Navigation Bar */}
        <Box position="fixed" bottom="0px" left="0" width="100%" zIndex="1000"   sx={{
     margin: 0,  // Ensure no margin is added
@@ -139,30 +156,50 @@ const HomePage = () => {
     }}
   >
     <BottomNavigationAction
-      label="Inbox"
-      icon={<img src='/assets/mail.png' alt="My Hubs" style={{ width: '20px', height: '20px', color:'#f6f6f6' }} />}
+  label="Inbox"
+  icon={
+    <Badge
+      badgeContent={requests > 0 ? requests : 0}
+      color="error"
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      overlap="circular"
       sx={{
-        color: 'white',
-        '&.Mui-selected': {
-          color: 'secondary.main',
-          textShadow: '0px 0px 8px rgba(255, 255, 255, 0.8)',
-          background: 'linear-gradient(145deg, #6a5acd, #483d8b)',
-          borderRadius: '8px',
-          boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.3)',
-        },
-        '&:hover': {
-          background: 'linear-gradient(145deg, #483d8b, #6a5acd)',
-          boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.5)',
-          transform: 'scale(1.05)',
-          transition: 'transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
-        },
-        '& .MuiBottomNavigationAction-label': {
-          fontWeight: 'bold',
-          letterSpacing: '0.5px',
-          fontSize: '0.875rem',
+        '& .MuiBadge-badge': {
+          fontSize: '0.75rem',
+          minWidth: '16px',
+          height: '16px',
+          padding: '0 4px',
         },
       }}
-    />
+    >
+      <img src='/assets/mail.png' alt="My Hubs" style={{ width: '20px', height: '20px', color:'#f6f6f6' }} />
+    </Badge>
+  }
+  sx={{
+    color: 'white',
+    '&.Mui-selected': {
+      color: 'secondary.main',
+      textShadow: '0px 0px 8px rgba(255, 255, 255, 0.8)',
+      background: 'linear-gradient(145deg, #6a5acd, #483d8b)',
+      borderRadius: '8px',
+      boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.3)',
+    },
+    '&:hover': {
+      background: 'linear-gradient(145deg, #483d8b, #6a5acd)',
+      boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.5)',
+      transform: 'scale(1.05)',
+      transition: 'transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease',
+    },
+    '& .MuiBottomNavigationAction-label': {
+      fontWeight: 'bold',
+      letterSpacing: '0.5px',
+      fontSize: '0.875rem',
+    },
+  }}
+/>
     <BottomNavigationAction
       label="My Hubs"
       icon={<img src='/assets/smarthome.png' alt="My Hubs" style={{ width: '20px', height: '20px', color:'#f6f6f6' }} />}

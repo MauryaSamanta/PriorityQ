@@ -173,12 +173,7 @@ export const messagewithaudio = async (req, res) => {
       messageforDB = { ...messageforDB, qube_id: qube };
     }
     console.log(messageforDB);
-
-    
-
-    
-
-    const newMessage = new Message(messageforDB);
+     const newMessage = new Message(messageforDB);
     req.io.to(zone).emit('receiveMessage', newMessage);
     await newMessage.save();
 

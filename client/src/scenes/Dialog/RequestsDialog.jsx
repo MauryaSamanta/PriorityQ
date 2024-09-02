@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-const RequestsDialog = ({ open, onClose, userid }) => {
+const RequestsDialog = ({ open, onClose, userid, setreqs }) => {
   const theme = useTheme();
   const [requests, setRequests] = useState([]);
 
@@ -22,6 +22,7 @@ const RequestsDialog = ({ open, onClose, userid }) => {
           setRequests((prevRequests) =>
               prevRequests.filter((request) => request._id !== requestid)
           );
+          setreqs((prevreqs)=>prevreqs-1);
       }
         //console.log(chat);
     } catch (error) {

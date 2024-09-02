@@ -8,7 +8,7 @@ import AddFriendDialog from 'scenes/Dialog/AddFriendDialog';
 import RequestsDialog from 'scenes/Dialog/RequestsDialog';
 import ChatPage from './ChatPage';
 
-const InboxMobile = () => {
+const InboxMobile = (setreqs) => {
   const [chats, setChats] = useState([]);
   const [filteredChats, setFilteredChats] = useState([]);
   const userId = useSelector((state) => state.user._id);
@@ -117,7 +117,7 @@ const InboxMobile = () => {
             Friend Requests
           </Button>
           <AddFriendDialog open={showFriend} onClose={handleCloseFriend} />
-          <RequestsDialog open={showReq} onClose={handleCloseReq} userid={userId} />
+          <RequestsDialog open={showReq} onClose={handleCloseReq} userid={userId} setreqs={setreqs} />
         </Box>
 
         {/* Search Bar */}
