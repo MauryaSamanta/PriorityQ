@@ -63,7 +63,7 @@ const InboxPC = (setreqs) => {
         display: 'flex',
         height: '100vh',
         backgroundColor: 'primary',
-        cursor:'pointer'
+        cursor:'pointer',
       }}
     >
       {/* Left Side - 30% */}

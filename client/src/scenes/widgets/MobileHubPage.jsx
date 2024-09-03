@@ -541,7 +541,7 @@ const toggleButtonVisibility = () => {
               <Typography variant="h6" sx={{ color: '#9e9e9e' }}>Talk with your Qube members here. We organise your files for you !</Typography>
             </Box>
             {messages?.map((message, index) => (
-              <ChatItem key={index} message={message} isOwnMessage={message.sender_id === _id ? true : null} />
+              <ChatItem key={index} message={message} isOwnMessage={message.sender_id === _id ? true : null} setMessage={setMessage}/>
             ))}
             <div ref={bottomRef} />
             {userTyping !== username && userTyping !== '' && (

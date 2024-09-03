@@ -10,6 +10,7 @@ import ExploreIcon from '@mui/icons-material/Explore';
 import InboxIcon from '@mui/icons-material/Inbox';
 import InboxMobile from 'scenes/widgets/InboxMobile';
 import InboxPC from 'scenes/widgets/InboxPC';
+import { useSwipeable } from 'react-swipeable';
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const { _id, avatar_url } = useSelector((state) => state.user);
@@ -75,9 +76,19 @@ const HomePage = () => {
     };
     getReqs();
   }, []);
-
+  
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (value === 2) setValue(1); // Switch to Inbox when swiping left on My Hubs
+    },
+    onSwipedRight: () => {
+      if (value === 1) setValue(2); // Switch to My Hubs when swiping right on Inbox
+    },
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true, // Optional: Enable mouse swiping for testing on desktops
+  });
   return (
-    <Box sx={{display:'flex', flexDirection:'column'}}>
+    <Box  sx={{display:'flex', flexDirection:'column'}}>
       <Navbar />
       {value===1?(<Box>
       <Box
@@ -163,7 +174,7 @@ const HomePage = () => {
       color="error"
       anchorOrigin={{
         vertical: 'top',
-        horizontal: 'left',
+        horizontal: 'right',
       }}
       overlap="circular"
       sx={{
