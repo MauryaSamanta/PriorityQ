@@ -11,7 +11,8 @@ import EarbudsIcon from '@mui/icons-material/Earbuds';
 import AccountTreeIcon from '@mui/icons-material/AccountTree'; 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import SettingsIcon from '@mui/icons-material/Settings'
+import SettingsIcon from '@mui/icons-material/Settings';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import EditHubDialog from 'scenes/Dialog/EditHubDialog';
 import HubOverview from 'scenes/widgets/HubOverview';
 import File from 'scenes/widgets/File';
@@ -345,6 +346,33 @@ const handletogglefiles=()=>{
    {isNonMobileScreens?( <Box height="100vh">
     <AppBar position="static" sx={{ bgcolor: 'primary.main', color: 'black', boxShadow: '0 4px 20px rgba(0,0,0,0.2)', height: '55px' }}>
   <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+  <Button
+  startIcon={
+    <ArrowBackIosIcon
+      sx={{
+        transition: 'transform 0.3s ease',
+      }}
+    />
+  }
+  sx={{
+    color: 'white',
+    textTransform: 'bold',
+    fontWeight: 'bold',
+    letterSpacing: '0.02em', // Default letter spacing
+    transition: 'letter-spacing 0.3s ease, background-color 0.3s ease', // Smooth transition for letter spacing and background color
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)', // Slightly transparent background on hover
+      letterSpacing: '0.1em', // Increase letter spacing on hover
+      '& .MuiSvgIcon-root': {
+        transform: 'translateX(-5px)', // Move the icon to the left on hover
+      },
+    },
+  }}
+  onClick={() => navigate('/home')} // Add your back navigation logic here
+>
+  Back
+</Button>
+
     <Box
       sx={{ flexGrow: 1 }} // Ensures space is taken up on the left, pushing the right content to the edge
     />

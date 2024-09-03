@@ -2,11 +2,12 @@ import React, { useState,useEffect } from 'react';
 import { Box, Typography, IconButton, Avatar, Button, Dialog, Slide, Tooltip, useMediaQuery, CircularProgress,circularProgressClasses
   ,SwipeableDrawer
  } from '@mui/material';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import GroupIcon from '@mui/icons-material/Group';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import AddIcon from '@mui/icons-material/Add';
 import UserProfileDialog from '../Dialog/UserProfileDialog';
 import AddMemberDialog from 'scenes/Dialog/AddMemberDialog';
@@ -30,7 +31,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
   const [openMembersDialog, setOpenMembersDialog] = useState(false);
   const [openEditBannerDialog, setOpenEditBannerDialog] = useState(false); // State for EditHubBannerDialog
   const [wallpaper,setWallpaper]=useState(null);
-  
+  const navigate=useNavigate();
   const isMobile = useMediaQuery('(max-width:600px)');
   const [currentStep, setCurrentStep] = useState(0);
   const [viewprogress,setviewprogress]=useState(true);
@@ -197,6 +198,26 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
       Select a hub banner
     </Typography>
   )}
+    {isMobile && <IconButton
+  className="edit-icon"
+  sx={{
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Black with 70% opacity
+    borderRadius: '50%',
+    boxShadow: 3,
+    opacity: 1,
+    // transition: 'opacity 0.3s ease-in-out',
+    // '&:hover': {
+    //   backgroundColor: 'black',
+    // },
+  }}
+  onClick={()=>navigate('/home')} // Open EditHubBannerDialog on click
+>
+  <ArrowBackIosIcon />
+</IconButton>}
+
        {owner===_id && banner?( <IconButton
           className="edit-icon"
           sx={{

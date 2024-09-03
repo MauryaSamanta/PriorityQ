@@ -14,7 +14,7 @@ import ChatAudioPlayer from './ChatAudioPlayer';
 import RecordingComponent from './RecordingComponent';
 import CustomAudioPlayer from './CustomAudioPlayer';
 
-const ChatItem = ({ message, isOwnMessage, chat }) => {
+const ChatItem = ({ message, isOwnMessage, chat, setMessage }) => {
   const { sender_id,text,voice, senderAvatar, file, senderName, reactions, name_file, folder, name_folder } = message;
   if(voice)
     console.log(voice);
@@ -107,7 +107,7 @@ const ChatItem = ({ message, isOwnMessage, chat }) => {
     }
   }
   const handleHashtagClick = (hashtag) => {
-    
+    setMessage(hashtag);
   };
 
   const renderHighlightedMessage = (text) => {
