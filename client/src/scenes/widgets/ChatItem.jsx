@@ -128,6 +128,7 @@ const ChatItem = ({ message, isOwnMessage, chat, setMessage }) => {
   };
 
   const formatMessageTime = (createdAt) => {
+    console.log(createdAt);
     const messageDate = parseISO(createdAt);
     const now = new Date();
   
