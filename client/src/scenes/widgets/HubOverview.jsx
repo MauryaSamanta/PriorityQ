@@ -292,11 +292,7 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
                 sx={{ width: 40, height: 40 }}
               />
             </IconButton>
-          </Box>
-        )}
-
-        {/* Members Count */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
   <GroupIcon sx={{ color: '#635acc', fontSize: 30 }} />
   <Tooltip
     title={
@@ -348,6 +344,10 @@ const HubOverview = ({ members, owner,des,avatar,banner, setbanner, qubes, setwa
   ):(<></>)}
   <AddMemberDialog open={isAddMemberDialogOpen} onClose={handleCloseAddMemberDialog} code={code} />
 </Box>
+          </Box>
+        )}
+
+       
       </Box>
       {viewprogress && owner===_id && (
   <Box sx={{ 
