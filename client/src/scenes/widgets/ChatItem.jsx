@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { Box, Typography, IconButton, Avatar, Menu, MenuItem, Tooltip } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -16,8 +17,8 @@ import CustomAudioPlayer from './CustomAudioPlayer';
 
 const ChatItem = ({ message, isOwnMessage, chat, setMessage }) => {
   const { sender_id,text,voice, senderAvatar, file, senderName, reactions, name_file, folder, name_folder } = message;
-  if(voice)
-    console.log(voice);
+  // if(voice)
+  //   console.log(voice);
   const [anchorEl, setAnchorEl] = useState(null);
   const [chatanchor, setchatanchor]=useState(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -126,6 +127,19 @@ const ChatItem = ({ message, isOwnMessage, chat, setMessage }) => {
     );
   };
 
+  const formatMessageTime = (createdAt) => {
+    const messageDate = parseISO(createdAt);
+    const now = new Date();
+  
+    if (isToday(messageDate)) {
+      return format(messageDate, 'hh:mm a'); // Format for today: 01:30 pm
+    } else if (isYesterday(messageDate)) {
+      return `Yesterday ${format(messageDate, 'hh:mm a')}`; // If message was sent yesterday
+    } else {
+      return format(messageDate, 'MMM dd hh:mm a'); // Format for other dates: Aug 07 01:30 pm
+    }
+  };
+
   return (
     
     <Box
@@ -133,10 +147,13 @@ const ChatItem = ({ message, isOwnMessage, chat, setMessage }) => {
       flexDirection={isOwnMessage ? 'row-reverse' : 'row'}
       alignItems="flex-start"
       mb={2}
+      sx={{
+        cursor:'default'
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      
+       
       {senderName!=='EloKo'&&(<Avatar src={senderAvatar || '/path/to/random/avatar.jpg'} onClick={()=>{
         if(!isOwnMessage && senderName!=='EloKo')
         handleopenuser()}}
@@ -153,10 +170,21 @@ const ChatItem = ({ message, isOwnMessage, chat, setMessage }) => {
         maxWidth="60%"
         position="relative"
       >
-        <Box display="flex" alignItems="center">
+        {isOwnMessage?(<Box display="flex" alignItems="center">
+        
+        <Typography variant="caption" mr={1}>
+            {formatMessageTime(message.createdAt)}
+          </Typography>
           <Typography variant="body1" fontWeight="bold">{senderName}</Typography>
-        </Box>
+          
+        </Box>):(<Box display="flex" alignItems="center">
+          <Typography variant="body1" fontWeight="bold">{senderName}</Typography>
+          <Typography variant="caption" ml={1}>
+            {formatMessageTime(message.createdAt)}
+          </Typography>
+        </Box>)}
         <UserProfileDialog open={userdialog} onClose={handlecloseuser} user={user}/>
+        
         {name_folder && (
   <Tooltip
     title="Save to My Library to view it"
@@ -334,7 +362,7 @@ const ChatItem = ({ message, isOwnMessage, chat, setMessage }) => {
         {( text || voice )&& (
           <Box position="relative">
             {text && <Typography variant="body1" paragraph fontSize="15px" sx={{ whiteSpace: 'pre-line' }}>
-              {renderHighlightedMessage(text)}
+              {renderHighlightedMessage(text)} 
             </Typography>}
             {voice && (<CustomAudioPlayer audioURL={voice}/>)}
             {isHovered && !file && folder.length===0 && isOwnMessage && (
@@ -364,6 +392,7 @@ const ChatItem = ({ message, isOwnMessage, chat, setMessage }) => {
             
           </Box>
         )}
+        
 
 
         

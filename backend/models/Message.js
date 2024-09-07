@@ -39,8 +39,10 @@ const messageSchema = new Schema(
     },
     tags:{
       type:String
-    }
+    },
+    
   },
+ 
   {
     timestamps: true,
   }
