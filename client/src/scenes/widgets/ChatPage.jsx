@@ -102,20 +102,24 @@ const toggleButtonVisibility = () => {
       padding='6px'
     >
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Box display="flex" alignItems="center">
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+        
           <Avatar src={friendAvatar} sx={{ marginRight: '1rem' }} />
           <Typography variant="h6">{friendName}</Typography>
+          
+          
           <Button varient="contained" sx={{
           zIndex: 10,
           backgroundColor: '#635acc',
           color: 'white',
           borderRadius: 2,
           padding: 1,
-          ml:13,
+      
           '&:hover': {
             backgroundColor: '#4a4b9b',
           },
         }} onClick={openlib}>{!lib? "Open Library":"Close Library"}</Button>
+       
         </Box>
         
       

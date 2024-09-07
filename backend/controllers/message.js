@@ -52,10 +52,11 @@ export const sendMessagewithFile=async(req,res)=>{
         if(hashtags){
           messageforDB={...messageforDB,tags:hashtags[0]};
         }
-        req.io.to(zone).emit('receiveMessage', messageforDB);
+        
         const newMessage=new Message(messageforDB);
+       // req.io.to(zone).emit('receiveMessage', newMessage);
         const savednewMessage=await newMessage.save();
-    
+        req.io.to(zone).emit('receiveMessage', savednewMessage);
         res.status(200).json('Success');
       } catch (error) {
         console.log(error);
@@ -113,9 +114,11 @@ export const sendMessagewithFolder=async(req,res)=>{
       if(hashtags){
         messageforDB={...messageforDB,tags:hashtags[0]};
       }
-      req.io.to(zone).emit('receiveMessage', messageforDB);
+     
       const newMessage=new Message(messageforDB);
+     
       const savednewMessage=await newMessage.save();
+      req.io.to(zone).emit('receiveMessage', savednewMessage);
       console.log(savednewMessage);
       res.status(200).json('Success');
         
