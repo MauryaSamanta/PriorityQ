@@ -1,16 +1,18 @@
 import React, { useState,useRef, useEffect } from 'react';
 import { Box, TextField, Button, IconButton, Menu, MenuItem, Typography, Dialog, DialogTitle, DialogContent, DialogActions, 
-  List, ListItem, ListItemText, CircularProgress } from '@mui/material';
+  List, ListItem, ListItemText, CircularProgress, SwipeableDrawer } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import FolderIcon from '@mui/icons-material/Folder'; // Import Folder Icon
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudCircleIcon from '@mui/icons-material/CloudCircle';
 import GraphicEqIcon from '@mui/icons-material/GraphicEq';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import { useSelector } from 'react-redux';
 import io from 'socket.io-client';
 import FileDialog from 'scenes/Dialog/FileDialog';
 import CustomAudioPlayer from './CustomAudioPlayer';
 import RecordingComponent from './RecordingComponent';
+import ScheduleMessageDialog from 'scenes/Dialog/ScheduleMessageDialog';
 const socket = io('https://surf-jtn5.onrender.com');
 
 const MessageWidget = ({ qube, zone, message, setMessage }) => {
@@ -33,8 +35,13 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
   const [audioURL, setAudioURL] = useState('');
   const [recordingTime, setRecordingTime] = useState(0);
   const [audio,setaudio]=useState(null);
+  const [sched,setsched]=useState(false);
+  const [tagsuggestions,settagsuggestions]=useState(false);
   const timerRef = useRef(null);
-
+  const allNames = ["John", "Doe", "Alice", "Bob"];
+  const handleschedmsg=()=>{
+    setsched(true);
+  }
   const handleshareOpen=()=>{
     setshareOpen(true);
   }
@@ -210,7 +217,11 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
 
   const handleTyping = (e) => {
     setMessage(e.target.value);
-
+    if(e.target.value==='#')
+    {
+      settagsuggestions(true);
+      console.log(tagsuggestions);
+    }
     if (!isTyping) {
       setIsTyping(true);
       socket.emit('StartType', { sender_name: username, qube, zone });
@@ -349,7 +360,17 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
               }
             }}/>
           </IconButton>
-           
+          <IconButton 
+            component="span" 
+            onClick={handleschedmsg}
+          >
+            <ScheduleIcon sx={{
+              '&:hover': {
+                color: '#3486eb',
+              }
+            }}/>
+          </IconButton>
+          <ScheduleMessageDialog open={sched} handleClose={()=>setsched(false)} qube={qube} zone={zone} message={message} setMessage={setMessage}/>
           <FileDialog open={shareOpen} onClose={handleshareClose} handlefileshare={handlefileshare}/>
           
         </Box>
@@ -395,10 +416,11 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
         </Box>
       ) : audioURL ? (
         <Box display="flex" alignItems="center" ml={2} mr={2}>
-         <CustomAudioPlayer audioURL={audioURL}/>
+         <CustomAudioPlayer audioURL={audioURL} recording={true}/>
           <IconButton onClick={()=>{setaudio(null); setAudioURL('');}}><DeleteIcon/></IconButton>
         </Box>
       ) : (
+        
         
           <TextField
             variant="outlined"
@@ -408,7 +430,10 @@ const MessageWidget = ({ qube, zone, message, setMessage }) => {
             multiline
             fullWidth
             sx={{ ml: 2, mr: 2 }}
-          />
+          /> 
+         
+          
+          
       )}
           <Button
             variant="contained"

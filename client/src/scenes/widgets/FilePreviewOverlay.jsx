@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
-import { useState } from 'react';
 import { Document, Page } from 'react-pdf';
 import { pdfjs } from 'react-pdf';
 import { saveAs } from 'file-saver';
@@ -14,7 +13,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 const FilePreviewOverlay = ({ file, onClose }) => {
   const [numPages, setNumPages] = useState();
   const [pageNumber, setPageNumber] = useState(1);
-
+ 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
   };
@@ -25,6 +24,8 @@ const FilePreviewOverlay = ({ file, onClose }) => {
     saveAs(file.file_url, file.file_name);
   };
 
+  
+
   const renderFilePreview = () => {
     const fileType = file.file_url.split('.').pop().toLowerCase();
 
@@ -33,16 +34,44 @@ const FilePreviewOverlay = ({ file, onClose }) => {
       case 'jpeg':
       case 'png':
       case 'gif':
-        return <img src={file.file_url} alt={file.file_name} style={{ maxWidth: '100%', maxHeight: '100%' }} />;
+        return (
+          <Box
+            sx={{
+              //transform: `scale(${zoom})`,
+              transformOrigin: 'center',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            <img src={file.file_url} alt={file.file_name} style={{ maxWidth: '100%', maxHeight: '100%' }} />
+          </Box>
+        );
 
       case 'mp4':
       case 'webm':
       case 'ogg':
         return (
-          <video controls style={{ maxWidth: '100%', maxHeight: '100%' }}>
-            <source src={file.file_url} type={`video/${fileType}`} />
-            Your browser does not support the video tag.
-          </video>
+          <Box
+            sx={{
+              //transform: `scale(${zoom})`,
+              transformOrigin: 'center',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            <video controls style={{ maxWidth: '100%', maxHeight: '100%' }}>
+              <source src={file.file_url} type={`video/${fileType}`} />
+              Your browser does not support the video tag.
+            </video>
+          </Box>
         );
 
       case 'pdf':
@@ -72,6 +101,8 @@ const FilePreviewOverlay = ({ file, onClose }) => {
               '&::-webkit-scrollbar-track': {
                 background: 'transparent',
               },
+              //transform: `scale(${zoom})`,
+              transformOrigin: 'center',
             }}
           >
             <Document
@@ -88,7 +119,7 @@ const FilePreviewOverlay = ({ file, onClose }) => {
                     renderMode="canvas"
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
-                    width={Math.min(window.innerWidth - 40, 600)} // Adjust width for better mobile view
+                    width={Math.min(window.innerWidth - 13, 600)} // Adjust width for better mobile view
                     style={{ margin: "0 auto", padding: 0 }}
                   />
                 </Box>
@@ -127,18 +158,18 @@ const FilePreviewOverlay = ({ file, onClose }) => {
           gap: '10px',
         }}
       >
-        <IconButton onClick={onClose} color="inherit">
-          <CloseIcon />
-        </IconButton>
         <IconButton onClick={handleDownload} color="inherit">
           <DownloadIcon />
+        </IconButton>
+        <IconButton onClick={onClose} color="inherit">
+          <CloseIcon />
         </IconButton>
       </Box>
 
       <Box
         sx={{
-          width: '80%',
-          height: '80%',
+          width: '100%',
+          height: '100%',
           borderRadius: '8px',
           overflow: 'auto',
           padding: 2,
@@ -151,6 +182,16 @@ const FilePreviewOverlay = ({ file, onClose }) => {
           {file.file_name}
         </Typography>
         {renderFilePreview()}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 2,
+            marginTop: 2,
+          }}
+        >
+          
+        </Box>
       </Box>
     </Box>
   );

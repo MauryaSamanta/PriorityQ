@@ -124,6 +124,16 @@ const handletogglefiles=()=>{
     }
   };
 
+  const handleescape=(event)=>{
+    if(event.key==='Escape')
+      {navigate('/home');
+        setSelectedQube(null);
+        if(selectedZone)
+          exitZone(selectedZone);
+        setSelectedZone(null);
+      }
+  }
+
 
   useEffect(() => {
    
@@ -342,10 +352,36 @@ const handletogglefiles=()=>{
   const closesetting=()=>{
     setSettings(false);
   }
+
+  useEffect(()=>{
+    document.addEventListener('keydown', handleescape);
+    return ()=>{
+      document.removeEventListener('keydown', handleescape);
+    }
+  })
   return (<>
    {isNonMobileScreens?( <Box height="100vh">
     <AppBar position="static" sx={{ bgcolor: 'primary.main', color: 'black', boxShadow: '0 4px 20px rgba(0,0,0,0.2)', height: '55px' }}>
   <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+  <Tooltip
+  title={
+    <Box >
+      <Typography variant="h5">Or press Esc</Typography>
+    </Box>
+  }
+  arrow
+  placement="right"
+  sx={{
+    '& .MuiTooltip-tooltip': {
+      backgroundColor: '#f5f5f5', // Slightly white background
+      color: 'black', // Text color
+      boxShadow: theme.shadows[1], // Optional: Add some shadow for depth
+    },
+    '& .MuiTooltip-arrow': {
+      color: '#f5f5f5', // Match the background color for the arrow
+    }
+  }}
+>
   <Button
   startIcon={
     <ArrowBackIosIcon
@@ -372,6 +408,7 @@ const handletogglefiles=()=>{
 >
   Back
 </Button>
+</Tooltip>
 
     <Box
       sx={{ flexGrow: 1 }} // Ensures space is taken up on the left, pushing the right content to the edge

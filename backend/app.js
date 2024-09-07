@@ -12,6 +12,7 @@ import wallRoute from "./routes/wallpaper.js";
 import qubeRoute from "./routes/qube.js";
 import zoneRoute from "./routes/zone.js";
 import messageRoute from "./routes/message.js";
+import schedmsgRoute from "./routes/schedmsg.js"
 import userzoneRoute from "./routes/userzone.js";
 import inviteRoute from "./routes/invites.js";
 import fileRoute from "./routes/file.js";
@@ -21,6 +22,11 @@ import chatRoute from "./routes/chat.js";
 import Message from "./models/Message.js";
 import { v2 as cloudinary } from "cloudinary";
 import { attachmentsMulter } from "./middlewares/multer.js";
+//import {messagecron} from "./workers/SchedMsg.js";
+import cron from "node-cron";
+import moment from "moment";
+import SchedMsg from "./models/SchedMsg.js";
+
 const app=express();
 const server = http.createServer(app);
 const io = socketConfig(server);
@@ -47,6 +53,7 @@ app.use("/wall",wallRoute);
 app.use("/qube",qubeRoute);
 app.use("/zone", zoneRoute);
 app.use("/message",messageRoute);
+app.use("/schedmsg", schedmsgRoute);
 app.use("/read", userzoneRoute);
 app.use("/invite",inviteRoute);
 app.use("/file",fileRoute);
@@ -90,7 +97,7 @@ io.on('connection', (socket) => {
     const hashtagRegex = /#\w+/g;
     const hashtags = message.text.match(hashtagRegex);
     //console.log(message.folder);
-    console.log(message.qube);
+    console.log("hello");
     let messageforDB={
       text:message.text,
       senderAvatar:message.senderAvatar,
@@ -106,7 +113,7 @@ io.on('connection', (socket) => {
     if(hashtags){
       messageforDB={...messageforDB,tags:hashtags[0]};
     }
-
+    console.log(message.zone);
     const newMessage=new Message(messageforDB);
     const savednewMessage=await newMessage.save();
     io.to(message.zone).emit('receiveMessage', savednewMessage);
@@ -124,7 +131,7 @@ io.on('connection', (socket) => {
 
     console.log(`User ${sender_name} started typing in Qube: ${qube}, Zone: ${zone}`);
   });
-
+   
   // Listen for StopType event
   socket.on('StopType', (data) => {
     const { sender_name, qube, zone } = data;
@@ -137,9 +144,41 @@ io.on('connection', (socket) => {
 
     console.log(`User ${sender_name} stopped typing in Qube: ${qube}, Zone: ${zone}`);
   });
-
-
 });
+
+cron.schedule('* * * * *', async () => {
+  const now = moment().local().format('YYYY-MM-DDTHH:mm:ss.SSS');
+  console.log(now);
+  // Find messages where the scheduled_time is less than or equal to now
+  const messagesToSend = await SchedMsg.find({ 
+    scheduled_time: { $lte: now },
+    status: 'Pending'
+  });
+  console.log(messagesToSend);
+  for (const message of messagesToSend) {
+    // Send message to the recipient (use your message sending logic)
+    console.log(message.zone);
+    let messageforDB={
+      text:message.text,
+      senderAvatar:message.senderAvatar,
+      senderName:message.senderName,
+      name_file:message.name_file,
+      file:message.file,
+      folder:message.folder,
+      name_folder:message.name_folder,
+      sender_id:message.sender_id,
+      zone_id:message.zone.toString(),
+      qube_id:message.qube.toString()
+    }
+    const newMessage =new Message(messageforDB);
+    const savedMsg=await newMessage.save();
+    io.to(message.zone.toString()).emit('receiveMessage', newMessage);
+    // Update message status to 'Sent'
+    message.status = 'Sent';
+    await message.save();
+  }
+});
+
 
 
 server.listen(3001,()=>{//started node server
