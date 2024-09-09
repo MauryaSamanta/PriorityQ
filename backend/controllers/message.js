@@ -177,9 +177,9 @@ export const messagewithaudio = async (req, res) => {
     }
     console.log(messageforDB);
      const newMessage = new Message(messageforDB);
-    req.io.to(zone).emit('receiveMessage', newMessage);
-    await newMessage.save();
-
+    
+    const msg=await newMessage.save();
+    req.io.to(zone).emit('receiveMessage', msg);
     res.status(200).json('Success');
   } catch (error) {
     console.log(error);
