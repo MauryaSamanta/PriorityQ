@@ -117,16 +117,16 @@ function HelpCenterSection() {
 
 function AnnouncementsSection() {
   return (
-    <section style={{ padding: '3rem 0' }}>
+    <section style={{ padding: '3rem 0' ,backgroundColor:"black"}}>
       <Container>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
+          <Typography variant="caption" color="white" display="block" gutterBottom>
             Announcements
           </Typography>
-          <Typography variant="h2" gutterBottom>
+          <Typography variant="h2"  color="white" gutterBottom>
             Stay Up to Date
           </Typography>
-          <Typography variant="body1" color="textSecondary">
+          <Typography variant="body1" color="white">
             Check out our latest news, updates, and important announcements.
           </Typography>
         </div>
@@ -287,16 +287,16 @@ function ServerSettingsSection() {
 
 function DeveloperSupportSection() {
   return (
-    <section style={{ padding: '3rem 0' }}>
+    <section style={{ padding: '3rem 0' ,backgroundColor:"black"}}>
       <Container>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
+          <Typography variant="caption" color="white" display="block" gutterBottom>
             Developer Support
           </Typography>
-          <Typography variant="h2" gutterBottom>
+          <Typography variant="h2" color="white" gutterBottom >
             Get Help with Development
           </Typography>
-          <Typography variant="body1" color="textSecondary">
+          <Typography variant="body1" color="white">
             Access resources, tools, and support for your development projects.
           </Typography>
         </div>
