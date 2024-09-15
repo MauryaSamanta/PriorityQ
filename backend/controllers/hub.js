@@ -6,9 +6,9 @@ import Message from "../models/Message.js";
 import Qubemembers from "../models/Qubemembers.js";
 import { v2 as cloudinary } from "cloudinary";
 export const createHub=async(req,res)=>{
-    const {name, description}=req.body;
+    const {name, description,filedata}=req.body;
     const file=req.file;
-    console.log(file);
+   // console.log(file);
     let avatar_url='';
     cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -27,6 +27,19 @@ export const createHub=async(req,res)=>{
       }
       );
       avatar_url=result.secure_url;
+    }
+    if(filedata)
+    {const result = await cloudinary.uploader
+      .upload(filedata,function (error, result){
+       //console.log(result);
+       if (error){
+         console.log(error);
+         res.status(400).json("Not working");
+       }
+     }
+     );
+     avatar_url=result.secure_url;
+
     }
     //console.log(req.user.id);
     try {
@@ -52,6 +65,55 @@ export const createHub=async(req,res)=>{
         res.status(400).json({message:`Server Error`});
     }
 }
+
+export const createHubApp=async(req,res)=>{
+  const {name, description,filedata}=req.body;
+  const file=req.file;
+ // console.log(file);
+  let avatar_url='';
+  cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+    // // Upload to Cloudinary
+      if(filedata)
+     {const result = await cloudinary.uploader
+     .upload(filedata,function (error, result){
+      //console.log(result);
+      if (error){
+        console.log(error);
+        res.status(400).json("Not working");
+      }
+    }
+    );
+    avatar_url=result.secure_url;
+  }
+  //console.log(req.user.id);
+  try {
+
+      const newHub=new Hub({
+          name,
+          description,
+          owner_id:req.user.id,
+          avatar_url:avatar_url
+      });
+      const savedHub=await newHub.save();
+      console.log(req.user.id);
+      const newMember=new Hubmembers({
+          hub_id: savedHub._id.toString(),
+          user_id:req.user.id
+      });
+      const savednewMember=await newMember.save();
+      
+
+      res.status(201).json({savedHub, savednewMember});
+  } catch (error) {
+      console.log(error);
+      res.status(400).json({message:`Server Error`});
+  }
+}
+
 
 export const addMembertoHub=async(req,res)=>{
     const hubId=req.params.hubid;
