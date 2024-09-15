@@ -181,6 +181,6 @@ cron.schedule('* * * * *', async () => {
 
 
 
-server.listen(3001,()=>{//started node server
+server.listen(3001,'0.0.0.0',()=>{//started node server
     console.log("Server is up");
 })
