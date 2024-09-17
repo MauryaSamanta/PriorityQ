@@ -50,20 +50,20 @@ function HelpCenterSection() {
             <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>
-                  FAQs
+                  FAQszss
                 </Typography>
                 <Typography color="textSecondary">
                   Answers to common questions.
                 </Typography>
                 <Button
-                  component={Link}
-                  href="#"
-                  variant="contained"
-                  color="primary"
-                  style={{ marginTop: '1rem' }}
-                >
-                  View FAQs
-                </Button>
+  variant="contained"
+  color="primary"
+  style={{ marginTop: '1rem' }}
+>
+  <Link href="/faq" passHref>
+    <a style={{ color: 'inherit', textDecoration: 'none' }}>Go to FAQ</a>
+  </Link>
+</Button>
               </CardContent>
             </Card>
           </Grid>
