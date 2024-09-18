@@ -1,9 +1,4 @@
 import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Users, Clock, HardDrive, Zap, AlertTriangle, Ban } from "lucide-react"
 
 // Mock data
 const mockUsers = [
@@ -31,108 +26,80 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">User Monitoring Dashboard</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalUsers}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Time Spent</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{averageTime.toFixed(2)} hours</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Storage Used</CardTitle>
-            <HardDrive className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalStorage} GB</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average API Response Time</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{averageApiTime.toFixed(2)} ms</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Reported Users</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{reportedUsers}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Banned Users</CardTitle>
-            <Ban className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{bannedUsers}</div>
-          </CardContent>
-        </Card>
+    <div style={{ padding: '32px' ,}}>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '24px' }}>User Monitoring Dashboard</h1>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }}>
+        <div style={{ padding: '16px', border: '1px solid #e2e2e2', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '14px', marginBottom: '8px' }}>Total Users</h2>
+          <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{totalUsers}</p>
+        </div>
+        <div style={{ padding: '16px', border: '1px solid #e2e2e2', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '14px', marginBottom: '8px' }}>Average Time Spent</h2>
+          <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{averageTime.toFixed(2)} hours</p>
+        </div>
+        <div style={{ padding: '16px', border: '1px solid #e2e2e2', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '14px', marginBottom: '8px' }}>Total Storage Used</h2>
+          <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{totalStorage} GB</p>
+        </div>
+        <div style={{ padding: '16px', border: '1px solid #e2e2e2', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '14px', marginBottom: '8px' }}>Average API Response Time</h2>
+          <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{averageApiTime.toFixed(2)} ms</p>
+        </div>
+        <div style={{ padding: '16px', border: '1px solid #e2e2e2', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '14px', marginBottom: '8px' }}>Reported Users</h2>
+          <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{reportedUsers}</p>
+        </div>
+        <div style={{ padding: '16px', border: '1px solid #e2e2e2', borderRadius: '8px' }}>
+          <h2 style={{ fontSize: '14px', marginBottom: '8px' }}>Banned Users</h2>
+          <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{bannedUsers}</p>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>User Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Time Spent</TableHead>
-                <TableHead>Storage</TableHead>
-                <TableHead>API Requests</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.timeSpent}</TableCell>
-                  <TableCell>{user.storage}</TableCell>
-                  <TableCell>{user.apiRequests}</TableCell>
-                  <TableCell>
-                    {user.reported && <Badge className="mr-2 bg-yellow-500">Reported</Badge>}
-                    {user.banned && <Badge className="bg-red-500">Banned</Badge>}
-                  </TableCell>
-                  <TableCell>
-                    <Button 
-                      variant={user.banned ? "outline" : "destructive"} 
-                      size="sm"
-                      onClick={() => toggleBan(user.id)}
-                    >
-                      {user.banned ? "Unban" : "Ban"}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div style={{ border: '1px solid #e2e2e2', borderRadius: '8px', padding: '16px' }}>
+        <h2 style={{ fontSize: '18px', marginBottom: '16px' }}>User Details</h2>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th style={{ borderBottom: '2px solid #e2e2e2', padding: '8px' }}>Name</th>
+              <th style={{ borderBottom: '2px solid #e2e2e2', padding: '8px' }}>Time Spent</th>
+              <th style={{ borderBottom: '2px solid #e2e2e2', padding: '8px' }}>Storage</th>
+              <th style={{ borderBottom: '2px solid #e2e2e2', padding: '8px' }}>API Requests</th>
+              <th style={{ borderBottom: '2px solid #e2e2e2', padding: '8px' }}>Status</th>
+              <th style={{ borderBottom: '2px solid #e2e2e2', padding: '8px' }}>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user.id}>
+                <td style={{ borderBottom: '1px solid #e2e2e2', padding: '8px' }}>{user.name}</td>
+                <td style={{ borderBottom: '1px solid #e2e2e2', padding: '8px' }}>{user.timeSpent}</td>
+                <td style={{ borderBottom: '1px solid #e2e2e2', padding: '8px' }}>{user.storage}</td>
+                <td style={{ borderBottom: '1px solid #e2e2e2', padding: '8px' }}>{user.apiRequests}</td>
+                <td style={{ borderBottom: '1px solid #e2e2e2', padding: '8px' }}>
+                  {user.reported && <span style={{ backgroundColor: '#fbbf24', padding: '4px 8px', borderRadius: '4px', marginRight: '8px' }}>Reported</span>}
+                  {user.banned && <span style={{ backgroundColor: '#f87171', padding: '4px 8px', borderRadius: '4px' }}>Banned</span>}
+                </td>
+                <td style={{ borderBottom: '1px solid #e2e2e2', padding: '8px' }}>
+                  <button
+                    style={{
+                      backgroundColor: user.banned ? '#ffffff' : '#ef4444',
+                      color: user.banned ? '#ef4444' : '#ffffff',
+                      border: `1px solid ${user.banned ? '#ef4444' : 'transparent'}`,
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => toggleBan(user.id)}
+                  >
+                    {user.banned ? 'Unban' : 'Ban'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
