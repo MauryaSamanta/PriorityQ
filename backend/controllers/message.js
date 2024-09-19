@@ -14,14 +14,16 @@ export const getMessages=async(req,res)=>{
 
 export const sendMessagewithFile=async(req,res)=>{
     const file=req.file;
-    const {text,senderAvatar,senderName,sender_id, zone,qube}=req.body;
-    cloudinary.config({
+    const {text,senderAvatar,senderName,sender_id, zone,qube, filedata, filename, uuid}=req.body;
+    let result;
+    if(file)
+    {cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
         api_secret: process.env.CLOUDINARY_API_SECRET
       });
       // // Upload to Cloudinary
-       const result = await cloudinary.uploader
+        result = await cloudinary.uploader
        .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
         //console.log(result);
         if (error){
@@ -30,7 +32,23 @@ export const sendMessagewithFile=async(req,res)=>{
         }
       }
       
-      );
+      );}
+
+      if(filedata){cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+      });
+         result = await cloudinary.uploader
+      .upload(filedata,function (error, result){
+       //console.log(result);
+       if (error){
+         console.log(error);
+         res.status(400).json("Not working");
+       }
+     }
+     );
+      }
       const hashtagRegex = /#\w+/g;
       const hashtags = text.match(hashtagRegex);
 
@@ -39,12 +57,21 @@ export const sendMessagewithFile=async(req,res)=>{
             text:text,
             senderAvatar:senderAvatar,
             senderName:senderName,
-            name_file:file.originalname,
+           // name_file:file.originalname || filename,
             file:result.secure_url,
             sender_id:sender_id,
             zone_id:zone,
             
         };
+        if(file)
+        {
+          messageforDB={...messageforDB,name_file:file.originalname};
+
+        }
+        else
+        {
+          messageforDB={...messageforDB,name_file:filename};
+        }
         if(qube && qube!=='null'){
           console.log(typeof qube);
           messageforDB={...messageforDB,qube_id:qube};
@@ -55,7 +82,9 @@ export const sendMessagewithFile=async(req,res)=>{
         
         const newMessage=new Message(messageforDB);
        // req.io.to(zone).emit('receiveMessage', newMessage);
-        const savednewMessage=await newMessage.save();
+        let savednewMessage=await newMessage.save();
+         savednewMessage={...savednewMessage.toObject(),uuid:uuid};
+        // console.log(savednewMessage);
         req.io.to(zone).emit('receiveMessage', savednewMessage);
         res.status(200).json('Success');
       } catch (error) {
