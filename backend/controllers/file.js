@@ -42,7 +42,7 @@ export const saveFile=async(req,res)=>{
             folder:folder
         });
         const savedFile=await newfile.save();
-        res.status(200).json(`Success`);
+        res.status(200).json('Success');
 
     } catch (error) {
         console.log(error);
