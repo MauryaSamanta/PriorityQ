@@ -175,13 +175,19 @@ const debounceDelay = 1000;
       }) => (
         <form onSubmit={handleSubmit}>
           <Box
-            display="grid"
-            gap="20px"
-            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-            sx={{
-              "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-            }}
-          >
+  display="grid"
+  gap="20px"
+  
+  gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+  sx={{
+    "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+    
+    color: "red", 
+    padding: "1rem", 
+    borderRadius: "10px", 
+    borderColor: "black", 
+  }}
+>
             <Typography fontWeight="500" variant="h5"  sx={{ gridColumn: "span 4" }} textAlign={"center"}>
               {isRegister?"Create an Account":""}
             </Typography>
@@ -196,10 +202,10 @@ const debounceDelay = 1000;
                   name="username"
                   error={Boolean(touched.username) && Boolean(errors.username)}
                   helperText={touched.username && errors.username}
-                  sx={{ gridColumn: "span 4" }}
+                  sx={{ gridColumn: "span 4", input: { color: 'white' }, label: { color: 'white' }, borderColor: 'green', borderWidth: '1px' }}
                 />
                 {taken && username? <Typography mt={0} sx={{gridColumn:"span 4", color:"#e62e31"}}>{username} is taken ☹️</Typography>:
-                 !taken && username && <Typography mt={0} sx={{gridColumn:"span 4", color:"#2ee659"}}>{username} is available 😀</Typography>}
+                 !taken && username && <Typography mt={0} sx={{ gridColumn: "span 4", color: "#2ee659"}}>{username} is available 😀</Typography>}
                 <TextField
                   label="Date of Birth"
                   type="date"
@@ -217,6 +223,8 @@ const debounceDelay = 1000;
                 
               </>
             )}
+           
+                
 
             <TextField
               label="Email"
@@ -253,9 +261,9 @@ const debounceDelay = 1000;
               sx={{
                 m: "2rem 0",
                // p: "1rem",
-                backgroundColor: palette.primary.main,
-                color: palette.background.alt,
-                "&:hover": { color: palette.primary.main },
+               backgroundColor: "black",
+               color: "white",
+                "&:hover": { color: "black", backgroundColor: "white"  },
                 borderRadius:"30px"
               }}
               
@@ -275,10 +283,10 @@ const debounceDelay = 1000;
               }}
               sx={{
                 //textDecoration: "underline",
-                color: palette.primary.main,
+                color: "black",
                 "&:hover": {
                   cursor: "pointer",
-                  color: palette.primary.light,
+                  color: "black",
                 },
               }}
             >
