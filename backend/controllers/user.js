@@ -9,7 +9,7 @@ export const updateAvatar = async (req, res, next) => {
     // Find the user
     const user = await User.findById(req.params.userId);
     const file = req.file;
-    const { username, bio } = req.body;
+    const { username, bio, filedata } = req.body;
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -17,7 +17,7 @@ export const updateAvatar = async (req, res, next) => {
 
     let result = '';
 
-    if (file) {
+    if (file || filedata) {
       // Configure Cloudinary
       cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -38,7 +38,8 @@ export const updateAvatar = async (req, res, next) => {
       }
 
       // Upload new avatar to Cloudinary
-      result = await cloudinary.uploader.upload(
+      if(file)
+      {result = await cloudinary.uploader.upload(
         `data:${file.mimetype};base64,${file.buffer.toString("base64")}`,
         function (error, result) {
           if (error) {
@@ -46,16 +47,27 @@ export const updateAvatar = async (req, res, next) => {
             return res.status(400).json("Upload failed");
           }
         }
-      );
+      );}else{
+        console.log(filedata);
+        result = await cloudinary.uploader.upload(filedata,
+          function (error, result) {
+            if (error) {
+              console.log(error);
+              return res.status(400).json("Upload failed");
+            }
+          }
+        );
+      }
     }
 
     // Update user details
     if (user.username !== username) user.username = username;
     if (user.bio !== bio) user.bio = bio;
-    if (file) user.avatar_url = result.secure_url;
-    
+    if (file || filedata) user.avatar_url = result.secure_url;
+    //console.log(filedata);
+    console.log(result);
     const updatedUser = await user.save();
-    console.log(updatedUser);
+    //console.log(updatedUser);
     res.json(updatedUser);
     next();
   } catch (error) {
