@@ -5,6 +5,7 @@ export const changewall=async(req,res)=>{
     const {id}=req.body;
     const hubid=req.params.hubid;
     const file=req.file;
+    console.log(req.body);
     try {
       const wallpaper=await Wallpaper.findOne({user_id:id,hub_id:hubid})
     cloudinary.config({
@@ -48,7 +49,7 @@ export const changewall=async(req,res)=>{
                 wall_url:result.secure_url
             })
             const savedWall=await wall.save();
-            res.status(200).json({savedWall});
+            res.status(200).json(savedWall);
         }
         
       } catch (error) {

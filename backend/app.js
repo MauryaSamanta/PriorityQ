@@ -37,7 +37,7 @@ dotenv.config();
 connectDB(process.env.MONGO_URI);  // connected to mongodb
 
 //middlewares
-app.use(express.json({limit:'50mb'}));
+app.use(express.json({limit:'500mb'}));
 app.use(cookieParser());
 app.use(cors());
 
@@ -154,7 +154,7 @@ cron.schedule('* * * * *', async () => {
     scheduled_time: { $lte: now },
     status: 'Pending'
   });
-  console.log(messagesToSend);
+  //console.log(messagesToSend);
   for (const message of messagesToSend) {
     // Send message to the recipient (use your message sending logic)
     console.log(message.zone);

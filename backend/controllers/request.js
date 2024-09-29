@@ -5,7 +5,7 @@ export const sendreq=async(req,res)=>{
     const {senderid, recname}=req.body;
    try{ const rec=await User.findOne({username:recname});
     if(!rec)
-        res.status(200).json(`User doesnot exist`);
+        return res.status(200).json(`User doesnot exist`);
 
     const recid=rec._id;
     const chat = await Chat.findOne({
