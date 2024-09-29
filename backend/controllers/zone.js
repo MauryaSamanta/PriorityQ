@@ -3,7 +3,7 @@ import Zone from "../models/Zone.js";
 export const createZone=async(req,res)=>{
     const qubeid=req.params.qubeid;
     const {name}=req.body;
-    
+    //console.log(name);
     try {
         const newZone=new Zone({
             qube_id:qubeid,

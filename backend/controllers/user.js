@@ -65,8 +65,9 @@ export const updateAvatar = async (req, res, next) => {
     if (user.bio !== bio) user.bio = bio;
     if (file || filedata) user.avatar_url = result.secure_url;
     //console.log(filedata);
-    console.log(result);
+    
     const updatedUser = await user.save();
+    console.log(updatedUser);
     //console.log(updatedUser);
     res.json(updatedUser);
     next();
@@ -87,6 +88,24 @@ export const getUser=async(req,res)=>{
       console.log(error);
       res.status(400).json({message:`Server down`});
     }
+}
+
+export const setpushtoken=async(req,res)=>{
+  const userId=req.params.userId;
+  const {pushtoken}=req.body;
+  console.log(pushtoken);
+  try {
+    const user=await User.findById(userId);
+   
+      user.pushtoken=pushtoken;
+    await user.save();
+    console.log(user);
+    res.status(200).json(user);
+
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(`Error`);
+  }
 }
 
 

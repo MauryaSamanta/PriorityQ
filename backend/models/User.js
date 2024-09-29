@@ -28,6 +28,9 @@ const userSchema = new mongoose.Schema({
   dob:{
     type:String
   },
+  pushtoken:{
+    type:String
+  },
   created_at: {
     type: Date,
     default: Date.now

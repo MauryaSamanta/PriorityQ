@@ -97,15 +97,18 @@ export const sendMessagewithFolder=async(req,res)=>{
       const files=req.files;
       // console.log("le");
       // console.log(files);
-      const {text,name_folder,senderAvatar,senderName,sender_id, zone,qube}=req.body;
-      console.log(name_folder);
+      const {text,name_folder,senderAvatar,senderName,sender_id, zone,qube,foldername,filesarray,uuid}=req.body;
+      //console.log(JSON.stringify(filesarray));
+      //console.log(filesarray[0]);
+      //console.log(req.files);
       cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
         api_secret: process.env.CLOUDINARY_API_SECRET
       });
-
-      const uploadPromises = files.map((file) => {
+      let uploadPromises;
+      if(files)
+       {uploadPromises = files.map((file) => {
         return new Promise((resolve, reject) => {
           cloudinary.uploader.upload(
             `data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result) {
@@ -120,7 +123,24 @@ export const sendMessagewithFolder=async(req,res)=>{
             }
           );
         });
-      });
+      });}
+      if(filesarray){
+        uploadPromises = filesarray.map((file) => {
+          return new Promise((resolve, reject) => {
+            cloudinary.uploader.upload(file.file_url,function (error, result) {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve({
+                    file_name: file.file_name,
+                    file_url: result.secure_url
+                  });
+                }
+              }
+            );
+          });
+        });
+      }
       const hashtagRegex = /#\w+/g;
       const hashtags = text.match(hashtagRegex);
 
@@ -131,7 +151,7 @@ export const sendMessagewithFolder=async(req,res)=>{
           text:text,
           senderAvatar:senderAvatar,
           senderName:senderName,
-          name_folder:name_folder,
+          //name_folder:name_folder,
           folder:results,
           sender_id:sender_id,
           zone_id:zone,
@@ -140,13 +160,21 @@ export const sendMessagewithFolder=async(req,res)=>{
       if(qube && qube!=='null'){
         messageforDB={...messageforDB,qube_id:qube};
       }
+      if(name_folder){
+        messageforDB={...messageforDB,name_folder:name_folder};
+      }
+      else
+      {
+        messageforDB={...messageforDB,name_folder:foldername};
+      }
       if(hashtags){
         messageforDB={...messageforDB,tags:hashtags[0]};
       }
      
       const newMessage=new Message(messageforDB);
      
-      const savednewMessage=await newMessage.save();
+      let savednewMessage=await newMessage.save();
+      savednewMessage={...savednewMessage.toObject(),uuid:uuid};
       req.io.to(zone).emit('receiveMessage', savednewMessage);
       console.log(savednewMessage);
       res.status(200).json('Success');

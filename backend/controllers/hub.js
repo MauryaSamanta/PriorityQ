@@ -235,6 +235,7 @@ export const listUsersInHub = async (req, res) => {
   export const editHubDetails=async(req,res)=>{
     const hubid=req.params.hubid;
     const {hubname, desc, demonym}=req.body;
+    console.log(req.body);
     const file=req.file;
     const hub=await Hub.findById(hubid);
       

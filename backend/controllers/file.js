@@ -92,7 +92,7 @@ export const removeFilefromFolder = async (req, res) => {
   
     try {
       const folder = await File.findById(folderid);
-  
+        //console.log(req.body);
       if (!folder) {
         return res.status(404).json({ message: 'Folder not found' });
       }
@@ -104,8 +104,13 @@ export const removeFilefromFolder = async (req, res) => {
       }
   
       folder.folder.splice(fileIndex, 1);
-  
+      if(folder.folder.length>0)
       await folder.save();
+      else
+      {
+        const deletedfolder=await File.deleteOne({_id:folderid});
+        
+      }
   
       const newFile = new File({
         file_name: file_name,
