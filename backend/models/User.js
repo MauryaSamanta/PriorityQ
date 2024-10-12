@@ -28,6 +28,9 @@ const userSchema = new mongoose.Schema({
   dob:{
     type:String
   },
+  color:{
+    type:String
+  },
   pushtoken:{
     type:String
   },

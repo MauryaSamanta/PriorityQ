@@ -77,6 +77,21 @@ export const updateAvatar = async (req, res, next) => {
   }
 };
 
+export const updateUserColor=async(req,res)=>{
+  const {userid}=req.params;
+  const {color}=req.body;
+  try {
+    const user=await User.findById(userid).select('-password_hash -email');
+    user.color=color;
+    await user.save();
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json('Error');
+    
+  }
+}
+
 
 export const getUser=async(req,res)=>{
     const userId=req.params.userId;

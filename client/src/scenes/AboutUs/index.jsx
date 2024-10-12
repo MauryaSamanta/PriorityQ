@@ -11,7 +11,7 @@ const AboutUsContainer = styled('div')({
 });
 
 const ContentContainer = styled(Box)({
-  textAlign: 'center',
+  textAlign: 'left',
   marginBottom: '40px',
   padding: '0 20px',
 });
@@ -31,39 +31,22 @@ const TeamCard = styled(Card)({
   border: '2px solid #635acc',
   transition: 'transform 0.3s, box-shadow 0.3s',
   cursor: 'pointer',
-  width: '90%',
-  height: '450px',
   maxWidth: '300px',
-  margin: 'auto',
+  width: '100%',
+  height: 'auto',
   '&:hover': {
     transform: 'translateY(-10px) scale(1.05)',
-    textDecoration: 'none',
     boxShadow: '0 0 30px rgba(99, 90, 204, 1)',
   },
 });
 
-const Hexagon = styled('div')({
-  width: '120px',
-  height: '120px',
-  margin: '0 auto 20px auto',
-  clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-  backgroundColor: '#635acc',
-  boxShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
-});
-
-const Image = styled('img')({
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
-  borderRadius: '5px',
-});
-
 const Footer = styled('footer')(({ theme }) => ({
-  background: 'linear-gradient(135deg, #1e1e2f 30%, #635acc 100%)',
+  //background: 'linear-gradient(135deg, #1e1e2f 30%, #635acc 100%)',
   color: '#fff',
   padding: theme.spacing(3, 2),
   textAlign: 'center',
-  boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+  // /boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+  marginTop:20
 }));
 
 const AboutUs = () => {
@@ -78,52 +61,44 @@ const AboutUs = () => {
       >
         EloKo
       </Typography>
-      <Container>
+      <Container sx={{marginBottom:25}}>
         <ContentContainer>
           <SectionTitle variant="h2">The Project</SectionTitle>
           <Typography variant="body1" sx={{ maxWidth: '800px', margin: 'auto', fontSize: '18px', lineHeight: '1.6' }}>
-            EloKo is a secure community-building and cloud-based resource sharing platform
+            EloKo is a secure chat application for both personal chats as well as communities equipped with efficient file management.
           </Typography>
         </ContentContainer>
-        
+
         <ContentContainer>
           <SectionTitle variant="h2">The People</SectionTitle>
           <Grid container spacing={4} justifyContent="center">
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={4} md={4}>
               <TeamCard>
-                <Hexagon>
-                  <Image src="https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg" alt="Team Member 1" />
-                </Hexagon>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Maurya Samanta</Typography>
-                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>
-                    Founder, Can't live without Horlicks and racing cars
+                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '12px', marginTop: '10px' }}>
+                    Co-Founder & App Developer
                   </Typography>
                 </CardContent>
               </TeamCard>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            
+            <Grid item xs={12} sm={4} md={4}>
               <TeamCard>
-                <Hexagon>
-                  <Image src="https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg" alt="Team Member 2" />
-                </Hexagon>
-                <CardContent>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Arya Bhattacharya</Typography>
-                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>
-                    Design Lead, May have traded people for money
-                  </Typography>
-                </CardContent>
-              </TeamCard>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TeamCard>
-                <Hexagon>
-                  <Image src="https://res.cloudinary.com/df9fz5s3o/image/upload/v1723274804/samples/man-portrait.jpg" alt="Team Member 3" />
-                </Hexagon>
                 <CardContent>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Rituraj Ray</Typography>
-                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '16px', marginTop: '10px' }}>
-                    Social Media and Marketing, Crazy about many things
+                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '12px', marginTop: '10px' }}>
+                    Co-Founder & Social Media Marketing
+                  </Typography>
+                </CardContent>
+              </TeamCard>
+            </Grid>
+            <Grid item xs={12} sm={4} md={4}>
+              <TeamCard>
+                <CardContent>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '20px', textAlign: 'center' }}>Nabyendu Das</Typography>
+                  <Typography variant="body2" sx={{ textAlign: 'center', fontSize: '12px', marginTop: '10px' }}>
+                    Web Developer
                   </Typography>
                 </CardContent>
               </TeamCard>
@@ -132,13 +107,11 @@ const AboutUs = () => {
         </ContentContainer>
       </Container>
       <Footer>
-        
         <Typography variant="caption">
           &copy; 2024 EloKo. All rights reserved.
         </Typography>
       </Footer>
     </AboutUsContainer>
-    
   );
 };
 
