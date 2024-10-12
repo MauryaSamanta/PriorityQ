@@ -1,10 +1,16 @@
 import Message from "../models/Message.js"
 import { attachmentsMulter } from "../middlewares/multer.js";
 import { v2 as cloudinary } from "cloudinary";
+import User from "../models/User.js";
 export const getMessages=async(req,res)=>{
     const zoneid=req.params.zoneid;
     try {
-        const messages=await Message.find({zone_id:zoneid});
+        const messages=await Message.find({zone_id:zoneid}).populate('sender_id');
+        // for (let message of messages) {
+        //   const user = await User.findById(message.sender_id, 'username'); // Assuming you want to fetch name and email
+        //   message.sender_info = user; // Add the populated data as a new field
+        // }
+        console.log(messages);
         res.status(200).json(messages);
     } catch (error) {
         console.log(error);
@@ -14,7 +20,7 @@ export const getMessages=async(req,res)=>{
 
 export const sendMessagewithFile=async(req,res)=>{
     const file=req.file;
-    const {text,senderAvatar,senderName,sender_id, zone,qube, filedata, filename, uuid}=req.body;
+    const {text,senderAvatar,senderName,sender_id, zone,qube, filedata, filename, uuid, members, hubname, qubename, color}=req.body;
     let result;
     if(file)
     {cloudinary.config({
@@ -83,9 +89,30 @@ export const sendMessagewithFile=async(req,res)=>{
         const newMessage=new Message(messageforDB);
        // req.io.to(zone).emit('receiveMessage', newMessage);
         let savednewMessage=await newMessage.save();
-         savednewMessage={...savednewMessage.toObject(),uuid:uuid};
+         savednewMessage={...savednewMessage.toObject(),uuid:uuid, color:color};
         // console.log(savednewMessage);
         req.io.to(zone).emit('receiveMessage', savednewMessage);
+        let notifs=[];
+    req.body.members.forEach(user=>{
+      if (Expo.isExpoPushToken(user.pushtoken)) 
+      {notifs.push({
+        to:user.pushtoken,
+        title:`${req.body.hubname}/${req.body.qubename}`,
+        body:`${req.body.senderName} sent a message`
+      })}
+    })
+    
+    let chunks = expo.chunkPushNotifications(notifs);
+    //console.log(chunks);
+    try {
+      for (let chunk of chunks) {
+        let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+       // tickets.push(...ticketChunk);
+       //console.log('sent notif');
+      }
+    } catch (error) {
+      console.error(error);
+    }
         res.status(200).json('Success');
       } catch (error) {
         console.log(error);
@@ -97,7 +124,7 @@ export const sendMessagewithFolder=async(req,res)=>{
       const files=req.files;
       // console.log("le");
       // console.log(files);
-      const {text,name_folder,senderAvatar,senderName,sender_id, zone,qube,foldername,filesarray,uuid}=req.body;
+      const {text,name_folder,senderAvatar,senderName,sender_id, zone,qube,foldername,filesarray,uuid, hubname, qubename, members, color}=req.body;
       //console.log(JSON.stringify(filesarray));
       //console.log(filesarray[0]);
       //console.log(req.files);
@@ -174,8 +201,29 @@ export const sendMessagewithFolder=async(req,res)=>{
       const newMessage=new Message(messageforDB);
      
       let savednewMessage=await newMessage.save();
-      savednewMessage={...savednewMessage.toObject(),uuid:uuid};
+      savednewMessage={...savednewMessage.toObject(),uuid:uuid, color:color};
       req.io.to(zone).emit('receiveMessage', savednewMessage);
+      let notifs=[];
+      req.body.members.forEach(user=>{
+        if (Expo.isExpoPushToken(user.pushtoken)) 
+        {notifs.push({
+          to:user.pushtoken,
+          title:`${req.body.hubname}/${req.body.qubename}`,
+          body:`${req.body.senderName} sent a message`
+        })}
+      })
+      
+      let chunks = expo.chunkPushNotifications(notifs);
+      //console.log(chunks);
+      try {
+        for (let chunk of chunks) {
+          let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+         // tickets.push(...ticketChunk);
+         //console.log('sent notif');
+        }
+      } catch (error) {
+        console.error(error);
+      }
       console.log(savednewMessage);
       res.status(200).json('Success');
         
@@ -249,6 +297,7 @@ export const messagewithaudio = async (req, res) => {
 
 export const deleteMessage=async(req,res)=>{
    const {messageid}=req.params;
+   console.log(messageid);
    try {
     const deletedmessage=await Message.deleteOne({_id:messageid});
     req.io.emit('deleteMessage',(messageid));

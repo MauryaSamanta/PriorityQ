@@ -26,6 +26,7 @@ import { attachmentsMulter } from "./middlewares/multer.js";
 import cron from "node-cron";
 import moment from "moment";
 import SchedMsg from "./models/SchedMsg.js";
+import {Expo} from "expo-server-sdk";
 
 const app=express();
 const server = http.createServer(app);
@@ -40,7 +41,7 @@ connectDB(process.env.MONGO_URI);  // connected to mongodb
 app.use(express.json({limit:'500mb'}));
 app.use(cookieParser());
 app.use(cors());
-
+const expo=new Expo();
 //apis
 app.use((req, res, next) => {
   req.io = io;
@@ -65,7 +66,7 @@ app.use("/chat",chatRoute);
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-
+  
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
@@ -108,15 +109,39 @@ io.on('connection', (socket) => {
       name_folder:message.name_folder,
       sender_id:message.sender_id,
       zone_id:message.zone,
-      qube_id:message.qube
+      qube_id:message.qube,
+      
     }
     if(hashtags){
       messageforDB={...messageforDB,tags:hashtags[0]};
     }
     console.log(message.zone);
     const newMessage=new Message(messageforDB);
-    const savednewMessage=await newMessage.save();
+    let savednewMessage=await newMessage.save();
+    savednewMessage={...savednewMessage.toObject(),color:message.color};
     io.to(message.zone).emit('receiveMessage', savednewMessage);
+    let notifs=[];
+    message.members.forEach(user=>{
+      if (Expo.isExpoPushToken(user.pushtoken)) 
+      {notifs.push({
+        to:user.pushtoken,
+        title:`${message.hubname}/${message.qubename}`,
+        body:`${message.senderName} sent a message`
+      })}
+    })
+    
+    let chunks = expo.chunkPushNotifications(notifs);
+    //console.log(chunks);
+    try {
+      for (let chunk of chunks) {
+        let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+       // tickets.push(...ticketChunk);
+       //console.log('sent notif');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
     console.log('ok');
    }
   );
