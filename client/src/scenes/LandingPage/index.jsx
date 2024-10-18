@@ -46,7 +46,7 @@ const GlowingCard = styled(Box)(({ theme, cardcolor }) => ({
   color: '#fff',
   borderRadius: '20px',
   padding: theme.spacing(3),
-  minWidth: '50vw',
+  minWidth: '20vw',
   [theme.breakpoints.down('md')]: {
     minWidth: '75vw',
     //justifyContent: 'space-between',
