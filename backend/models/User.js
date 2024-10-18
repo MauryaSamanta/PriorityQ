@@ -31,6 +31,12 @@ const userSchema = new mongoose.Schema({
   color:{
     type:String
   },
+  public_key:{
+    type:String
+  },
+  private_key:{
+    type:String
+  },
   pushtoken:{
     type:String
   },

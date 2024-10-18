@@ -1,30 +1,56 @@
 import Qube from "../models/Qube.js"
 import Qubemembers from "../models/Qubemembers.js";
 import Zone from "../models/Zone.js";
+import crypto from 'crypto';
+
+const generateKeyPair = () => {
+    return crypto.generateKeyPairSync('rsa', {
+      modulusLength: 2048,
+      publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem'
+      },
+      privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem',
+      }
+    });
+  };
 export const createQube=async(req,res)=>{
     const hubid=req.params.hubid;
-    const {qube_name,nick_name} =req.body;
+    const {qube_name,nick_name, access,owners} =req.body;
     console.log(req.body);
     try {
         const newQube=new Qube({
             hub_id:hubid,
             name:qube_name,
-            nickname:nick_name
+            nickname:nick_name,
+            access:access
         })
-        const savedQube=await newQube.save();
-
-        const newQubeMember=new Qubemembers({
+        let savedQube=await newQube.save();
+        let members=[];
+        if(access==='false')
+        {await Promise.all(owners.map(async(owner)=>{
+            const newQubeMember=new Qubemembers({
             qube_id:savedQube.id.toString(),
             hub_id:hubid,
-            user_id:req.user.id
-        })
-        const savedQubeMember=await newQubeMember.save();
+            user_id:owner}
+    )
+    const savedQubeMember=await newQubeMember.save();
+    members=[...members,owner];
+}
+)
+)}
+       
+        const { publicKey } = generateKeyPair();
         const newZone=new Zone({
             qube_id:savedQube.id.toString(),
-            name:'Discussion'
+            name:'Discussion',
+            symmkey:publicKey
         });
         const savedZone=await newZone.save();
-        res.status(200).json({savedQube, savedQubeMember});
+        savedQube={...savedQube.toObject(),members};
+        res.status(200).json({savedQube});
     } catch (error) {
         console.log(error);
         res.status(500).json({message:`Server Error`});
@@ -103,3 +129,13 @@ export const deleteQube=async(req,res)=>{
         res.status(400).json(`Error`);
     }
 }
+
+const qubesaddaccess=async()=>{
+    const result = await Qube.updateMany(
+        {}, // No filter, so it affects all documents
+        { $set: { access: true } } // Add access field with value true
+      );
+      console.log(result);
+}
+
+

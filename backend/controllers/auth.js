@@ -2,8 +2,22 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import dotenv from "dotenv";
-dotenv.config();
+import crypto from 'crypto';
 
+dotenv.config();
+const generateKeyPair = () => {
+  return crypto.generateKeyPairSync('rsa', {
+    modulusLength: 2048,
+    publicKeyEncoding: {
+      type: 'spki',
+      format: 'pem'
+    },
+    privateKeyEncoding: {
+      type: 'pkcs8',
+      format: 'pem',
+    }
+  });
+};
 /* REGISTER USER */
 export const register = async (req, res) => {
     try {
@@ -45,7 +59,17 @@ export const register = async (req, res) => {
   
       const isMatch = await bcrypt.compare(password, user.password_hash);
       if (!isMatch) return res.status(200).json( "Invalid" );
+      if (!user.public_key || !user.private_key) {
+        // Generate key pair
+        const { publicKey, privateKey } = generateKeyPair();
+        
+        // Update user with the new keys
+        user.public_key = publicKey;
+        user.private_key = privateKey;
   
+        // Save the updated user back to the database
+        await user.save();
+      }
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       delete user.password;
       res.status(200).json({ token, user });

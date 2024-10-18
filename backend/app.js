@@ -19,6 +19,7 @@ import fileRoute from "./routes/file.js";
 import tagRoute from "./routes/tag.js";
 import reqRoute from "./routes/request.js";
 import chatRoute from "./routes/chat.js";
+import qubepermissionsRoute from "./routes/qubepermissions.js";
 import Message from "./models/Message.js";
 import { v2 as cloudinary } from "cloudinary";
 import { attachmentsMulter } from "./middlewares/multer.js";
@@ -61,6 +62,7 @@ app.use("/file",fileRoute);
 app.use("/tag",tagRoute);
 app.use("/request",reqRoute);
 app.use("/chat",chatRoute);
+app.use("/qubepermit", qubepermissionsRoute);
 // app.use("/api/v1/chat", chatRoute);
 // app.use("/api/v1/admin", adminRoute);
 
@@ -122,11 +124,12 @@ io.on('connection', (socket) => {
     io.to(message.zone).emit('receiveMessage', savednewMessage);
     let notifs=[];
     message.members.forEach(user=>{
+      console.log(user);
       if (Expo.isExpoPushToken(user.pushtoken)) 
       {notifs.push({
         to:user.pushtoken,
-        title:`${message.hubname}/${message.qubename}`,
-        body:`${message.senderName} sent a message`
+        title:message.hubname?`${message.hubname}/${message.qubename}`:`${message.senderName} sent a message`,
+        body:message.hubname?`${message.senderName} sent a message`:`${message.text}`
       })}
     })
     
@@ -136,7 +139,7 @@ io.on('connection', (socket) => {
       for (let chunk of chunks) {
         let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
        // tickets.push(...ticketChunk);
-       //console.log('sent notif');
+       console.log('sent notif');
       }
     } catch (error) {
       console.error(error);
