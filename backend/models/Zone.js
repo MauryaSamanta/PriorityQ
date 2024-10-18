@@ -11,7 +11,9 @@ const zoneSchema = new mongoose.Schema({
     required: true,
     maxlength: 255
   },
-  
+  symmkey:{
+    type:String
+  },
   created_at: {
     type: Date,
     default: Date.now

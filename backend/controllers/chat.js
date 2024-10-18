@@ -25,11 +25,11 @@ export const getchats = async (req, res) => {
       })
       .populate({
         path: 'members',
-        select: 'username avatar_url', // Adjust fields as needed
+        select: 'username avatar_url public_key pushtoken', // Adjust fields as needed
         model: User
       })
       .exec();
-  
+       //console.log(chats);
       // Return the chats with populated user data
       res.status(200).json({ chats });
     } catch (error) {

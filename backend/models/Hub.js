@@ -9,10 +9,10 @@ const hubSchema = new mongoose.Schema({
   description: {
     type: String
   },
-  owner_id: {
+  owner_id: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  },
+  }],
   avatar_url: {
     type: String
   },

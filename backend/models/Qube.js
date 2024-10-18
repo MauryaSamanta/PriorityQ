@@ -14,6 +14,9 @@ const qubeSchema = new mongoose.Schema({
     type:String,
     required:true
   },
+  access:{
+    type:String
+  },
   created_at: {
     type: Date,
     default: Date.now

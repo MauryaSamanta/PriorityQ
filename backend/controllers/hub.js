@@ -4,7 +4,9 @@ import Qube from "../models/Qube.js";
 import Zone from "../models/Zone.js";
 import Message from "../models/Message.js";
 import Qubemembers from "../models/Qubemembers.js";
+import User from "../models/User.js";
 import { v2 as cloudinary } from "cloudinary";
+
 export const createHub=async(req,res)=>{
     const {name, description,filedata}=req.body;
     const file=req.file;
@@ -47,7 +49,7 @@ export const createHub=async(req,res)=>{
         const newHub=new Hub({
             name,
             description,
-            owner_id:req.user.id,
+            owner_id:[req.user.id],
             avatar_url:avatar_url
         });
         const savedHub=await newHub.save();
@@ -95,7 +97,7 @@ export const createHubApp=async(req,res)=>{
       const newHub=new Hub({
           name,
           description,
-          owner_id:req.user.id,
+          owner_id:[req.user.id],
           avatar_url:avatar_url
       });
       const savedHub=await newHub.save();
@@ -167,8 +169,22 @@ export const listUsersInHub = async (req, res) => {
     const id=req.user.id;
     console.log(hubid);
     try {
-        const qubes=await Qube.find({hub_id:hubid});
-       // const qubes=myqubes.map(myqube=>myqube.qube_id);
+        let qubes=await Qube.find({hub_id:hubid});
+       // Step 2: Create a new array to hold updated qubes
+       const updatedQubes = await Promise.all(qubes.map(async (qube) => {
+        // Check if access is 'false'
+        if (qube.access === 'false') {
+            // Step 3: Find all members for this qube
+            const members = await Qubemembers.find({ qube_id: qube._id });
+            // Extract user_ids from the members
+            const userIds = members.map(member => member.user_id);
+            // Add user_ids to the qube object
+            return { ...qube._doc, members: userIds }; // Use _doc to get the plain object representation
+        }
+        // Return the qube unchanged if access is not 'false'
+        return qube;
+    }));
+    qubes=updatedQubes;
         res.status(200).json({qubes});
     } catch (error) {
         console.log(error);
@@ -328,6 +344,39 @@ export const listUsersInHub = async (req, res) => {
       res.status(500).json({error:`Internal Server Issue`});
     }
   }
+
+export const addowners=async(req,res)=>{
+ const {hubid,user}=req.body;
+ try {
+  const foundHub=await Hub.findById(hubid);
+  const founduser=await User.findById(user);
+  foundHub.owner_id.push(user);
+  const savedHub=await foundHub.save();
+  res.status(200).json({savedHub,founduser});
+ } catch (error) {
+  console.log(error);
+  res.status(400).json('error');
+  
+ }
+}
+
+export const removeowners=async(req,res)=>{
+  const {hubid,user}=req.body;
+  try {
+   const foundHub=await Hub.findById(hubid);
+   const founduser=await User.findById(user);
+   foundHub.owner_id.pull(user);
+   const savedHub=await foundHub.save();
+   res.status(200).json({savedHub,founduser});
+  } catch (error) {
+   console.log(error);
+   res.status(400).json('error');
+   
+  }
+}
+
+
+  //changeHubstructure();
 
   
   
