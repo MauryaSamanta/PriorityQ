@@ -2,6 +2,9 @@ import Message from "../models/Message.js"
 import { attachmentsMulter } from "../middlewares/multer.js";
 import { v2 as cloudinary } from "cloudinary";
 import User from "../models/User.js";
+import sharp from 'sharp';
+import { compress } from 'compress-pdf';
+import { saveinAWS } from "../aws.js";
 export const getMessages=async(req,res)=>{
     const zoneid=req.params.zoneid;
     try {
@@ -21,18 +24,23 @@ export const getMessages=async(req,res)=>{
 export const sendMessagewithFile=async(req,res)=>{
     const file=req.file;
     const {text,senderAvatar,senderName,sender_id, zone,qube, filedata, filename, uuid, members, hubname, qubename, color}=req.body;
-    //console.log(members);
-    
+    console.log(file);
+    const type=(file.mimetype.split('/')[1]!=='pdf' && file.mimetype.split('/')[1]!=='jpg' && file.mimetype.split('/')[1]!=='jpeg' && file.mimetype.split('/')[1]!=='png') && 'raw';
+    //console.log('hello');
     let result;
+    const filesize=(file.size / (1024 * 1024)).toFixed(4);
+    console.log(filesize);
     if(file)
-    {cloudinary.config({
+    { 
+      if(filesize<=10)
+      {cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
         api_key: process.env.CLOUDINARY_API_KEY,
         api_secret: process.env.CLOUDINARY_API_SECRET
       });
       // // Upload to Cloudinary
         result = await cloudinary.uploader
-       .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,function (error, result){
+       .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,{resource_type:type},function (error, result){
         //console.log(result);
         if (error){
           console.log(error);
@@ -40,7 +48,14 @@ export const sendMessagewithFile=async(req,res)=>{
         }
       }
       
-      );}
+      );
+    }
+    else
+    {
+      saveinAWS(uuid,file);
+      result.secure_url=`https://eloko-10mb.s3.eu-north-1.amazonaws.com/${uuid}`;
+    }
+  }
 
       if(filedata){cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -87,11 +102,14 @@ export const sendMessagewithFile=async(req,res)=>{
         if(hashtags){
           messageforDB={...messageforDB,tags:hashtags[0]};
         }
-        
+        if(filesize>10)
+        {
+          messageforDB={...messageforDB, key:uuid};
+        }
         const newMessage=new Message(messageforDB);
        // req.io.to(zone).emit('receiveMessage', newMessage);
         let savednewMessage=await newMessage.save();
-         savednewMessage={...savednewMessage.toObject(),uuid:uuid, color:color};
+         savednewMessage={...savednewMessage.toObject(), uuid:uuid, color:color};
         // console.log(savednewMessage);
         req.io.to(zone).emit('receiveMessage', savednewMessage);
     //     let notifs=[];

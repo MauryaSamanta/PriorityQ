@@ -40,6 +40,9 @@ const messageSchema = new Schema(
     tags:{
       type:String
     },
+    key:{
+      type:String
+    },
     
   },
  

@@ -25,6 +25,20 @@ export const getrequests=async(req,res)=>{
     }
 }
 
+export const checkstatus=async(req,res)=>{
+    const {userid,qubeid}=req.body;
+    try {
+        const checkstat=await QubePermissions.findOne({user_id:userid, qube_id:qubeid});
+        //console.log(checkstat);
+        if(checkstat)
+            res.status(200).json('True');
+        else
+            res.status(200).json('False');
+    } catch (error) {
+        
+    }
+}
+
 export const processrequests=async(req,res)=>{
     const {qube_id,user_id,hub_id, status, req_id}=req.body;
     //console.log(req.body);
