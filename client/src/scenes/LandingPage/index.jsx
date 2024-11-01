@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  AppBar, Toolbar, Typography, Button, Box, Container, useMediaQuery, Link, IconButton
+  AppBar, Toolbar, Typography, Box, Container, useMediaQuery, Link, IconButton
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { styled } from '@mui/system';
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/Twitter';
-
+import Button from 'components/Button';
 const DrawerContainer = styled(Box)(({ theme }) => ({
   width: 250,
   height: '100%',
@@ -151,13 +151,14 @@ const LandingPage = () => {
             >
               EloKo
             </Typography>
-            <Button
+            {/* <Button
               variant="contained"
               sx={{ border: '2px solid', borderColor: 'primary.main', borderRadius: 10 }}
               color="primary"
             >
               Get Early Access
-            </Button>
+            </Button> */}
+            <Button/>
           </Toolbar>
         </AppBar>
 
