@@ -16,6 +16,7 @@ export const getFiles=async(req,res)=>{
 
 export const getFilesUser=async(req,res)=>{
     const userid=req.params.userid;
+    //console.log(userid);
     try {
         const files=await File.find({user_id:userid});
         console.log(files);
