@@ -23,14 +23,14 @@ export const getMessages=async(req,res)=>{
 
 export const sendMessagewithFile=async(req,res)=>{
     const file=req.file;
-    const {text,senderAvatar,senderName,sender_id, zone,qube, filedata, filename, uuid, members, hubname, qubename, color}=req.body;
+    const {text,senderAvatar,senderName,sender_id, zone,qube, filedata, filename, uuid, members, hubname, qubename, color, store}=req.body;
     console.log(file);
     const type=(file.mimetype.split('/')[1]!=='pdf' && file.mimetype.split('/')[1]!=='jpg' && file.mimetype.split('/')[1]!=='jpeg' && file.mimetype.split('/')[1]!=='png') && 'raw';
     //console.log('hello');
     let result;
     const filesize=(file.size / (1024 * 1024)).toFixed(4);
     console.log(filesize);
-    if(file)
+   try{ if(file)
     { 
       if(filesize<=10)
       {cloudinary.config({
@@ -53,8 +53,11 @@ export const sendMessagewithFile=async(req,res)=>{
     else
     {
       saveinAWS(uuid,file);
-      result.secure_url=`https://eloko-10mb.s3.eu-north-1.amazonaws.com/${uuid}`;
+      result={secure_url:`https://eloko-10mb.s3.eu-north-1.amazonaws.com/${uuid}`};
+      console.log(result.secure_url);
     }
+  }}catch(error){
+    console.log(error);
   }
 
       if(filedata){cloudinary.config({
@@ -105,11 +108,12 @@ export const sendMessagewithFile=async(req,res)=>{
         if(filesize>10)
         {
           messageforDB={...messageforDB, key:uuid};
+
         }
         const newMessage=new Message(messageforDB);
        // req.io.to(zone).emit('receiveMessage', newMessage);
         let savednewMessage=await newMessage.save();
-         savednewMessage={...savednewMessage.toObject(), uuid:uuid, color:color};
+         savednewMessage={...savednewMessage.toObject(), uuid:uuid, color:color, store:filesize>10&&store};
         // console.log(savednewMessage);
         req.io.to(zone).emit('receiveMessage', savednewMessage);
     //     let notifs=[];
@@ -256,8 +260,8 @@ export const sendMessagewithFolder=async(req,res)=>{
 
 export const messagewithaudio = async (req, res) => {
   const file = req.file;
-  const { senderAvatar, senderName, sender_id, zone, qube } = req.body;
-
+  const { senderAvatar, senderName, sender_id, zone, qube,uuid, hubname,qubename,members,color } = req.body;
+  console.log(file);
   if (!file) {
     return res.status(400).json('No file uploaded');
   }
@@ -303,7 +307,8 @@ export const messagewithaudio = async (req, res) => {
     console.log(messageforDB);
      const newMessage = new Message(messageforDB);
     
-    const msg=await newMessage.save();
+    let msg=await newMessage.save();
+    msg={...msg.toObject(),uuid:uuid, color:color};
     req.io.to(zone).emit('receiveMessage', msg);
     res.status(200).json('Success');
   } catch (error) {
