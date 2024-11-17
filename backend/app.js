@@ -72,6 +72,14 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
+
+  socket.on('userjoined', (hub) => {
+    socket.join(hub);
+    const room = io.sockets.adapter.rooms.get(hub); // Get the room details
+    const numberOfUsers = room ? room.size : 0; // Get the number of users in the room
+    console.log(`User ${socket.id} joined hub ${hub}. Total users in hub: ${numberOfUsers}`);
+    io.to(hub).emit('roomCount',  numberOfUsers ); 
+  });
   
   socket.on('joinZone', (zone) => {
     socket.join(zone);
@@ -98,7 +106,8 @@ io.on('connection', (socket) => {
     //const file=req.file;
    
     const hashtagRegex = /#\w+/g;
-    const hashtags = message.text.match(hashtagRegex);
+    const hashtags = message.untext.match(hashtagRegex);
+    console.log(hashtags);
     //console.log(message.folder);
     console.log("hello");
     let messageforDB={
@@ -129,7 +138,7 @@ io.on('connection', (socket) => {
       {notifs.push({
         to:user.pushtoken,
         title:message.hubname?`${message.hubname}/${message.qubename}`:`${message.senderName} sent a message`,
-        body:message.hubname?`${message.senderName} sent a message`:`${message.text}`
+        body:message.hubname?`${message.senderName} sent a message`:``
       })}
     })
     

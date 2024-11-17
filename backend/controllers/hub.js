@@ -10,7 +10,7 @@ import { v2 as cloudinary } from "cloudinary";
 export const createHub=async(req,res)=>{
     const {name, description,filedata}=req.body;
     const file=req.file;
-   // console.log(file);
+    console.log(file);
     let avatar_url='';
     cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
