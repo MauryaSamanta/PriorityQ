@@ -6,7 +6,7 @@ export const getFiles=async(req,res)=>{
     const {hubid}=req.params;
     try {
         const files=await File.find({user_id:userid, hub_id:hubid});
-        //console.log(files);
+        console.log(files);
         res.status(200).json(files);
     } catch (error) {
         console.log(error);
@@ -18,7 +18,7 @@ export const getFilesUser=async(req,res)=>{
     const userid=req.params.userid;
     //console.log(userid);
     try {
-        const files=await File.find({user_id:userid});
+        const files=await File.find({user_id:userid}).populate('hub_id');
         console.log(files);
         res.status(200).json(files);
     } catch (error) {
@@ -26,6 +26,8 @@ export const getFilesUser=async(req,res)=>{
         res.status(200).json(`Error`);
     }
 }
+
+
 
 
 export const saveFile=async(req,res)=>{

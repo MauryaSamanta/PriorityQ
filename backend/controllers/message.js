@@ -144,6 +144,118 @@ export const sendMessagewithFile=async(req,res)=>{
       }
 }
 
+export const sendMessagewithVideo=async(req,res)=>{
+  const file=req.file;
+  const {text,senderAvatar,senderName,sender_id, zone,qube, filedata, filename, uuid, members, hubname, qubename, color, store}=req.body;
+  console.log(file);
+  //const type=(file.mimetype.split('/')[1]!=='pdf' && file.mimetype.split('/')[1]!=='jpg' && file.mimetype.split('/')[1]!=='jpeg' && file.mimetype.split('/')[1]!=='png') && 'raw';
+  //console.log('hello');
+  let result;
+ // console.log(filesize);
+ try{ if(file)
+  { 
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+    // // Upload to Cloudinary
+      result = await cloudinary.uploader
+     .upload(`data:${file.mimetype};base64,${file.buffer.toString("base64")}`,{resource_type:'video'},function (error, result){
+      //console.log(result);
+      if (error){
+        console.log(error);
+        res.status(400).json("Not working");
+      }
+    }
+    
+    );
+  
+  
+}}catch(error){
+  console.log(error);
+}
+
+    if(filedata){cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+       result = await cloudinary.uploader
+    .upload(filedata,function (error, result){
+     //console.log(result);
+     if (error){
+       console.log(error);
+       res.status(400).json("Not working");
+     }
+   }
+   );
+    }
+    const hashtagRegex = /#\w+/g;
+    const hashtags = text.match(hashtagRegex);
+
+    try {
+      let messageforDB={
+          text:text,
+          senderAvatar:senderAvatar,
+          senderName:senderName,
+         // name_file:file.originalname || filename,
+          file:result.secure_url,
+          sender_id:sender_id,
+          zone_id:zone,
+          
+      };
+      if(file)
+      {
+        messageforDB={...messageforDB,name_file:file.originalname};
+
+      }
+      else
+      {
+        messageforDB={...messageforDB,name_file:filename};
+      }
+      if(qube && qube!=='null'){
+        console.log(typeof qube);
+        messageforDB={...messageforDB,qube_id:qube};
+      }
+      if(hashtags){
+        messageforDB={...messageforDB,tags:hashtags[0]};
+      }
+      
+      const newMessage=new Message(messageforDB);
+     // req.io.to(zone).emit('receiveMessage', newMessage);
+      let savednewMessage=await newMessage.save();
+       savednewMessage={...savednewMessage.toObject(), uuid:uuid, color:color};
+      // console.log(savednewMessage);
+      req.io.to(zone).emit('receiveMessage', savednewMessage);
+  //     let notifs=[];
+  // members.forEach(user=>{
+  //   if (Expo.isExpoPushToken(user.pushtoken)) 
+  //   {notifs.push({
+  //     to:user.pushtoken,
+  //     title:`${req.body.hubname}/${req.body.qubename}`,
+  //     body:`${req.body.senderName} sent a message`
+  //   })}
+  // })
+  
+  // let chunks = expo.chunkPushNotifications(notifs);
+  // //console.log(chunks);
+  // try {
+  //   for (let chunk of chunks) {
+  //     let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+  //    // tickets.push(...ticketChunk);
+  //    //console.log('sent notif');
+  //   }
+  // } catch (error) {
+  //   console.error(error);
+  // }
+      res.status(200).json('Success');
+    } catch (error) {
+      console.log(error);
+      res.status(400).json('error');
+    }
+}
+
 export const sendMessagewithFolder=async(req,res)=>{
       const files=req.files;
       // console.log("le");
@@ -319,6 +431,19 @@ export const messagewithaudio = async (req, res) => {
     }
   }
 };
+
+export const getmessageswithfilesinqube=async(req,res)=>{
+  const {qubeid}=req.params;
+  try {
+    const messages=await Message.find({qube_id:qubeid,
+      file: { $exists: true, $ne: '' }});
+      res.status(200).json(messages);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(`Error`);
+    
+  }
+}
 
 export const deleteMessage=async(req,res)=>{
    const {messageid}=req.params;
