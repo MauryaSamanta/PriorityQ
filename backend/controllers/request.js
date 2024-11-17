@@ -46,18 +46,28 @@ export const reqstat=async(req,res)=>{
     try {
         const reqs = await Request.findOne({ receiver_id: userid, sender_id:senderid })
         const reqs2=await Request.findOne({receiver_id:senderid, sender_id:userid});
-        if(reqs || reqs2)
-        {   const chat = await Chat.findOne({
-            members: { $all: [senderid, userid] }
-        });
-        //console.log(chat);
-            if(chat)
-            res.status(200).json('friend');
-        else
+        // if(reqs || reqs2)
+        // {   const chat = await Chat.findOne({
+        //     members: { $all: [senderid, userid] }
+        // });
+        // //console.log(chat);
+        //     if(chat)
+        //     res.status(200).json('friend');
+        // else
+        //     res.status(200).json('sent');
+        // }
+        // else
+        // res.status(200).json('not sent');
+        const chat = await Chat.findOne({
+                members: { $all: [senderid, userid] }
+            });
+            //console.log(chat);
+                if(chat)
+                res.status(200).json('friend');
+            else if(reqs || reqs2)
+                res.status(200).json('sent');
+            else 
             res.status(200).json('sent');
-        }
-        else
-        res.status(200).json('not sent');
     } catch (error) {
         console.log(error);
         res.status(400).json(`Error`);

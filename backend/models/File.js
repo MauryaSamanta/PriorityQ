@@ -9,6 +9,10 @@ const fileSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Hub'
       },
+      qube_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Qube'
+      },
       file_url:{
         type:String,
         
