@@ -4,6 +4,7 @@ import HomePage from "scenes/homePage";
 import AboutUs from "scenes/AboutUs";
 import LoginPage from "scenes/loginPage";
 import HubPage from "scenes/HubPage";
+import ContactUs from "scenes/ContactUs"
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { CssBaseline, ThemeProvider } from "@mui/material";
@@ -37,6 +38,7 @@ function App() {
               path="/hub/:hubId/:ownerId/:hubname"
               element={isAuth ? <HubPage hub={hub}/> : <Navigate to="/" />}
             />
+            <Route path="/contact-us" element={<ContactUs />} />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>
